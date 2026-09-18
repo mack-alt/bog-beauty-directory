@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Blades of Grass — Renton / South King County beauty directory. Find salons, barbers, spas, and more." />
+  <meta name="theme-color" content="#1a3a2a" />
+  <title>Blades of Grass — Beauty Directory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <p class="brand-mark">Blades of Grass</p>
+      <h1>Renton / South King County beauty directory</h1>
+      <p class="tagline">Local salons, barbers, spas &amp; more — find a spot and book.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="controls" aria-label="Search and filters">
+      <label class="search-label" for="search">
+        <span class="sr-only">Search by name</span>
+        <input id="search" type="search" placeholder="Search by name…" autocomplete="off" enterkeyhint="search" />
+      </label>
+      <div id="chips" class="chips" role="group" aria-label="Category filters"></div>
+    </section>
+
+    <p id="count" class="count" aria-live="polite"></p>
+    <div id="listings" class="listings"></div>
+    <p id="empty" class="empty hidden">No listings match. Try another category or clear search.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>Blades of Grass · Renton / South King County</p>
+    <p class="fine">Community beauty directory preview. Listings may be pending confirmation.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

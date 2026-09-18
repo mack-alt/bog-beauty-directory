@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "name": "Hair Nation LLC",
+    "category": "Hair Salon",
+    "address": "17800 Talbot Road South, Renton, WA 98055",
+    "phone": "+12064378661",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://hairnation-wa.com/"
+  },
+  {
+    "id": 2,
+    "name": "Moda Organic Salon & Spa",
+    "category": "Spa / Esthetics",
+    "address": "5335 Northeast 4th Street, Renton, WA 98059",
+    "phone": "+14252286222",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://www.modaorganicsalonandspa.com/"
+  },
+  {
+    "id": 3,
+    "name": "Method + Madness Salon",
+    "category": "Hair Salon",
+    "address": "231 Wells Avenue S, Renton, WA 98057",
+    "phone": "+14252825046",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://www.method-madness.com/"
+  },
+  {
+    "id": 4,
+    "name": "Salon Fifty 7",
+    "category": "Hair Salon",
+    "address": "415 S 3rd St, Renton, WA 98057",
+    "phone": "+12539056029",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://salonfifty7.com/"
+  },
+  {
+    "id": 5,
+    "name": "Salon 44",
+    "category": "Hair Salon",
+    "address": "1717 NE 44th St, Renton, WA 98056",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://www.salon44hair.com/"
+  },
+  {
+    "id": 6,
+    "name": "Gene Juarez Salon & Spa — Southcenter",
+    "category": "Spa / Esthetics",
+    "address": "17100 Southcenter Pkwy Suite N150, Tukwila, WA 98188",
+    "phone": "+12064318888",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://genejuarez.com/pages/location-southcenter"
+  },
+  {
+    "id": 7,
+    "name": "Thi's Salon Services",
+    "category": "Hair Salon",
+    "address": "14401 51st Ave S, Tukwila, WA 98168",
+    "phone": "+12062419984",
+    "status": "pending",
+    "confirmed": false
+  },
+  {
+    "id": 8,
+    "name": "Sacred Hair Co.",
+    "category": "Hair Salon",
+    "address": "6632 S 191st Pl Suite E107, Kent, WA 98032",
+    "phone": "+14259028112",
+    "status": "pending",
+    "confirmed": false
+  },
+  {
+    "id": 9,
+    "name": "Pro Fade Barber & Beauty Salon",
+    "category": "Barber Shop",
+    "address": "25250 Pacific Hwy S Suite B114, Kent, WA 98032",
+    "phone": "+12066083979",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://profadebarberkent.com/"
+  },
+  {
+    "id": 10,
+    "name": "Cindy Soung Hair Studio",
+    "category": "Hair Salon",
+    "address": "24860 Pacific Highway S Suite 202, Kent, WA 98032",
+    "phone": "+12067997604",
+    "status": "pending",
+    "confirmed": false,
+    "website": "https://cindysoung.wixsite.com/website"
+  },
+  {
+    "id": 11,
+    "name": "Ladies & Gentlemen Hair Salon",
+    "category": "Hair Salon",
+    "address": "212 SW 43rd St, Renton WA 98057",
+    "phone": "425-254-3554",
+    "status": "live",
+    "confirmed": true,
+    "hours": "Mon-Sat 10-7 / Sun 10:30-5",
+    "oneLiner": "Walk-ins welcome",
+    "showHours": true,
+    "showOneLiner": true
+  }
+]

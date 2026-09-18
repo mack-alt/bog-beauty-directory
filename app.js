@@ -1,0 +1,327 @@
+(function () {
+  const ALL_CATEGORIES = [
+    "Hair Salon",
+    "Barber Shop",
+    "Nail Salon",
+    "Spa / Esthetics",
+    "Massage",
+    "Brows / Lashes",
+    "Makeup",
+    "Skincare",
+    "Wellness / Other",
+  ];
+
+  const chipsEl = document.getElementById("chips");
+  const listingsEl = document.getElementById("listings");
+  const countEl = document.getElementById("count");
+  const emptyEl = document.getElementById("empty");
+  const searchEl = document.getElementById("search");
+
+  let listings = [];
+  let activeCategory = "All";
+  let query = "";
+
+  function normalizePhone(phone) {
+    if (!phone) return "";
+    const digits = String(phone).replace(/[^\d+]/g, "");
+    return digits.startsWith("+") ? digits : digits.replace(/^1?/, "+1");
+  }
+
+  function formatPhone(phone) {
+    if (!phone) return "";
+    const d = String(phone).replace(/\D/g, "");
+    const local = d.length === 11 && d.startsWith("1") ? d.slice(1) : d;
+    if (local.length === 10) {
+      return `(${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6)}`;
+    }
+    return phone;
+  }
+
+  function hasValue(v) {
+    if (v === null || v === undefined) return false;
+    if (typeof v === "number") return !Number.isNaN(v);
+    return String(v).trim() !== "";
+  }
+
+  /** Owner/optional blocks: show when value present and toggle !== false (default true). */
+  function showField(item, valueKey, toggleKey) {
+    if (!hasValue(item[valueKey])) return false;
+    if (item[toggleKey] === false) return false;
+    return true;
+  }
+
+  function isLive(item) {
+    if (item.status === "live") return true;
+    if (item.status === "pending") return false;
+    return !!item.confirmed;
+  }
+
+  function bookHref(item) {
+    const booking = (item.bookingUrl || item.website || "").trim();
+    if (booking) return { href: booking, label: "Book", external: true };
+    if (item.phone) {
+      return { href: "tel:" + normalizePhone(item.phone), label: "Call to book", external: false };
+    }
+    return null;
+  }
+
+  function starLabel(rating) {
+    const n = Number(rating);
+    if (Number.isNaN(n)) return "";
+    const full = Math.max(0, Math.min(5, Math.round(n)));
+    return "★".repeat(full) + "☆".repeat(5 - full);
+  }
+
+  function presentCategories(data) {
+    const present = new Set(data.map((d) => d.category).filter(Boolean));
+    return ["All"].concat(ALL_CATEGORIES.filter((c) => present.has(c)));
+  }
+
+  function renderChips(categories) {
+    chipsEl.innerHTML = "";
+    categories.forEach((cat) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.textContent = cat;
+      btn.setAttribute("aria-pressed", cat === activeCategory ? "true" : "false");
+      btn.addEventListener("click", () => {
+        activeCategory = cat;
+        Array.from(chipsEl.children).forEach((c) => {
+          c.setAttribute("aria-pressed", c.textContent === activeCategory ? "true" : "false");
+        });
+        renderList();
+      });
+      chipsEl.appendChild(btn);
+    });
+  }
+
+  function filtered() {
+    const q = query.trim().toLowerCase();
+    return listings.filter((item) => {
+      if (activeCategory !== "All" && item.category !== activeCategory) return false;
+      if (q && !(item.name || "").toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  function appendOwnerBlock(parent, label, text) {
+    const row = document.createElement("p");
+    row.className = "owner-block";
+    const lab = document.createElement("span");
+    lab.className = "owner-label";
+    lab.textContent = label;
+    row.appendChild(lab);
+    row.appendChild(document.createTextNode(text));
+    parent.appendChild(row);
+  }
+
+  function renderCard(item) {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const media = document.createElement("div");
+    media.className = "card-media";
+    if (hasValue(item.photoUrl)) {
+      const img = document.createElement("img");
+      img.src = item.photoUrl;
+      img.alt = item.name || "Salon photo";
+      img.loading = "lazy";
+      media.appendChild(img);
+    } else {
+      const ph = document.createElement("div");
+      ph.className = "photo-placeholder";
+      ph.setAttribute("aria-hidden", "true");
+      ph.innerHTML = "<span>Photo pending</span>";
+      media.appendChild(ph);
+    }
+    card.appendChild(media);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+
+    const top = document.createElement("div");
+    top.className = "card-top";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = item.name;
+    top.appendChild(h2);
+
+    const badges = document.createElement("div");
+    badges.className = "badges";
+
+    if (item.category) {
+      const cat = document.createElement("span");
+      cat.className = "cat-badge";
+      cat.textContent = item.category;
+      badges.appendChild(cat);
+    }
+
+    const status = document.createElement("span");
+    if (isLive(item)) {
+      status.className = "status-badge status-live";
+      status.textContent = "Live";
+    } else {
+      status.className = "status-badge status-pending";
+      status.textContent = "Pending confirm";
+    }
+    badges.appendChild(status);
+    top.appendChild(badges);
+    body.appendChild(top);
+
+    if (
+      showField(item, "googleRating", "showRating") &&
+      typeof item.googleRating === "number"
+    ) {
+      const rating = document.createElement("p");
+      rating.className = "rating";
+      const stars = document.createElement("span");
+      stars.className = "stars";
+      stars.setAttribute("aria-hidden", "true");
+      stars.textContent = starLabel(item.googleRating);
+      rating.appendChild(stars);
+      const num = document.createElement("span");
+      num.className = "rating-num";
+      num.textContent = Number(item.googleRating).toFixed(1);
+      rating.appendChild(num);
+      if (hasValue(item.googleReviewCount)) {
+        const count = document.createElement("span");
+        count.className = "rating-count";
+        count.textContent =
+          "(" + item.googleReviewCount + " review" + (item.googleReviewCount === 1 ? "" : "s") + ")";
+        rating.appendChild(count);
+      }
+      body.appendChild(rating);
+      if (showField(item, "googleSnippet", "showRating")) {
+        const snip = document.createElement("p");
+        snip.className = "snippet";
+        snip.textContent = String(item.googleSnippet).trim();
+        body.appendChild(snip);
+      }
+    }
+
+    if (item.address) {
+      const addr = document.createElement("p");
+      addr.className = "meta";
+      addr.textContent = item.address;
+      body.appendChild(addr);
+    }
+
+    if (item.phone) {
+      const phoneP = document.createElement("p");
+      phoneP.className = "meta";
+      const a = document.createElement("a");
+      a.href = "tel:" + normalizePhone(item.phone);
+      a.textContent = formatPhone(item.phone);
+      phoneP.appendChild(a);
+      body.appendChild(phoneP);
+    }
+
+    if (showField(item, "oneLiner", "showOneLiner") || showField(item, "blurb", "showOneLiner")) {
+      const line = document.createElement("p");
+      line.className = "blurb";
+      line.textContent = (item.oneLiner || item.blurb || "").trim();
+      body.appendChild(line);
+    }
+
+    if (showField(item, "knownFor", "showKnownFor")) {
+      appendOwnerBlock(body, "Known for: ", String(item.knownFor).trim());
+    }
+    if (showField(item, "hours", "showHours")) {
+      appendOwnerBlock(body, "Hours: ", String(item.hours).trim());
+    }
+    if (showField(item, "languages", "showLanguages")) {
+      appendOwnerBlock(body, "Languages: ", String(item.languages).trim());
+    }
+
+    const links = document.createElement("div");
+    links.className = "owner-links";
+    let hasLinks = false;
+
+    const booking = (item.bookingUrl || "").trim();
+    if (booking && item.showBooking !== false) {
+      const a = document.createElement("a");
+      a.href = booking;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Booking";
+      links.appendChild(a);
+      hasLinks = true;
+    }
+    if (showField(item, "instagram", "showIg")) {
+      let ig = String(item.instagram).trim();
+      if (ig && !/^https?:\/\//i.test(ig) && ig.startsWith("@")) {
+        ig = "https://instagram.com/" + ig.slice(1);
+      } else if (ig && !/^https?:\/\//i.test(ig)) {
+        ig = "https://instagram.com/" + ig.replace(/^@/, "");
+      }
+      const a = document.createElement("a");
+      a.href = ig;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Instagram";
+      links.appendChild(a);
+      hasLinks = true;
+    }
+    if (hasLinks) body.appendChild(links);
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+    const book = bookHref(item);
+    if (book) {
+      const a = document.createElement("a");
+      a.className = "btn btn-primary";
+      a.href = book.href;
+      a.textContent = book.label;
+      if (book.external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      actions.appendChild(a);
+    } else {
+      const soon = document.createElement("span");
+      soon.className = "btn btn-soon";
+      soon.textContent = "Booking soon";
+      actions.appendChild(soon);
+    }
+    body.appendChild(actions);
+
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderList() {
+    const items = filtered();
+    listingsEl.innerHTML = "";
+    items.forEach((item) => listingsEl.appendChild(renderCard(item)));
+    countEl.textContent =
+      items.length === listings.length
+        ? `${items.length} listing${items.length === 1 ? "" : "s"}`
+        : `${items.length} of ${listings.length} listings`;
+    emptyEl.classList.toggle("hidden", items.length > 0);
+  }
+
+  fetch("listings.json")
+    .then((r) => {
+      if (!r.ok) throw new Error("Failed to load listings.json");
+      return r.json();
+    })
+    .then((data) => {
+      listings = Array.isArray(data) ? data : [];
+      renderChips(presentCategories(listings));
+      renderList();
+    })
+    .catch((err) => {
+      countEl.textContent = "Could not load listings.";
+      console.error(err);
+    });
+
+  let debounce;
+  searchEl.addEventListener("input", () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      query = searchEl.value;
+      renderList();
+    }, 120);
+  });
+})();
