@@ -158,7 +158,8 @@
 
   function renderCard(item) {
     const card = document.createElement("article");
-    card.className = "card";
+    const demo = isDemoListing(item);
+    card.className = demo ? "card card-demo" : "card";
     const href = shopHref(item);
     card.addEventListener("click", (event) => {
       if (event.target.closest("a, button")) return;
