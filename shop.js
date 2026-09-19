@@ -21,15 +21,26 @@
   const reelEl = document.getElementById("shop-reel-slideshow");
   const reviewsSection = document.getElementById("shop-reviews");
   const reviewList = document.getElementById("shop-review-list");
+  const demoBannerEl = document.getElementById("shop-demo-banner");
+  const langSwitchEl = document.getElementById("shop-lang");
+  const localeNoteEl = document.getElementById("shop-locale-note");
+  const demoNoteEl = document.getElementById("shop-demo-note");
+
+  const LOCALES = ["en", "vi", "es"];
+  let currentListing = null;
+  let currentEnrichment = null;
+  let activeLocale = "en";
 
   function params() {
     const q = new URLSearchParams(window.location.search);
     const idRaw = (q.get("id") || "").trim();
     const slug = (q.get("slug") || "").trim().toLowerCase();
     const id = idRaw === "" ? null : Number(idRaw);
+    const lang = (q.get("lang") || "").trim().toLowerCase();
     return {
       id: Number.isFinite(id) ? id : null,
       slug,
+      lang: LOCALES.indexOf(lang) !== -1 ? lang : "",
     };
   }
 
@@ -69,6 +80,19 @@
     return !!item.confirmed;
   }
 
+  /**
+   * Canonical model (source of truth):
+   * 1. Card snap = basics (name, phone, directions, hours).
+   * 2. Shop page always shows EN|VI|ES switch — never a guessed translation.
+   * 3. Interview unlocks story + confirmed links; empty slots stay hidden.
+   * 4. Action row (real hrefs only): Call, Text (textFirst prefers Text),
+   *    Directions, Reviews on Google, Share, then Website/IG/FB/TikTok/
+   *    Email/Booking/Yelp when filled + unlocked.
+   * 5. SHELF: contested enrichment hidden until a toggle is explicitly true.
+   * 6. Owner point cards (VI/ES) are a separate product — not this site.
+   *
+   * Optional roster (null/absent = do not render; never invent URLs on real shops).
+   */
   const SHELF_TOGGLE_KEYS = [
     "showStory",
     "showReviews",
@@ -83,6 +107,9 @@
     "showIg",
     "showTiktok",
     "showTikTok",
+    "showFacebook",
+    "showEmail",
+    "showYelp",
     "showLanguages",
     "showKnownFor",
   ];
@@ -95,6 +122,77 @@
 
   function socialToggleOn(toggles, keys) {
     return keys.some((key) => toggleOn(toggles, key));
+  }
+
+  function isDemoShop(shop) {
+    return !!(shop && (shop.isDemo === true || shop.demo === true));
+  }
+
+  /** Safe extras: show when a real href exists unless the toggle is explicitly false. */
+  function extraLinkOn(toggles, key, href) {
+    if (!isUsableHref(href)) return false;
+    if (!toggles || toggles[key] === undefined || toggles[key] === null) return true;
+    return toggles[key] === true;
+  }
+
+  function readStoredLocale() {
+    try {
+      const stored = sessionStorage.getItem("bog-shop-lang");
+      if (LOCALES.indexOf(stored) !== -1) return stored;
+    } catch (err) {}
+    return "";
+  }
+
+  function persistLocale(locale) {
+    try {
+      sessionStorage.setItem("bog-shop-lang", locale);
+    } catch (err) {}
+    if (window.history && window.history.replaceState) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", locale);
+        window.history.replaceState({}, "", url);
+      } catch (err) {}
+    }
+    document.documentElement.lang = locale;
+  }
+
+  /** Strings are English source. Objects may key en/vi/es. Never invent a translation. */
+  function localeBundle(value, locale) {
+    if (value == null) return { text: "", fallback: false };
+    if (typeof value === "object" && !Array.isArray(value)) {
+      const hit = hasValue(value[locale]) ? String(value[locale]).trim() : "";
+      if (hit) return { text: hit, fallback: false };
+      const en = hasValue(value.en) ? String(value.en).trim() : "";
+      return { text: en, fallback: locale !== "en" && !!en };
+    }
+    const text = hasValue(value) ? String(value).trim() : "";
+    return { text: text, fallback: locale !== "en" && !!text };
+  }
+
+  function localeNote(locale) {
+    if (locale === "vi") return "Showing English — Vietnamese isn’t on this page yet. We don’t guess a translation.";
+    if (locale === "es") return "Showing English — Spanish isn’t on this page yet. We don’t guess a translation.";
+    return "";
+  }
+
+  function renderLangSwitch(active) {
+    if (!langSwitchEl) return;
+    langSwitchEl.innerHTML = "";
+    langSwitchEl.classList.remove("hidden");
+    LOCALES.forEach((loc) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "lang-btn";
+      btn.textContent = loc.toUpperCase();
+      btn.setAttribute("aria-pressed", loc === active ? "true" : "false");
+      btn.addEventListener("click", function () {
+        activeLocale = loc;
+        persistLocale(loc);
+        if (currentListing) render(currentListing, currentEnrichment || emptyEnrichment());
+      });
+      langSwitchEl.appendChild(btn);
+    });
   }
 
   function resolveToggles(shop, enrichment) {
@@ -133,6 +231,20 @@
       reviews: [],
       googleRating: null,
       reviewCount: null,
+      googlePlaceId: null,
+      googleMapsUrl: null,
+      googleReviewsUrl: null,
+      facebook: null,
+      email: null,
+      yelpUrl: null,
+      appleMapsUrl: null,
+      languages: null,
+      pageLocale: null,
+      translateUrl: null,
+      textFirst: false,
+      isDemo: false,
+      demo: false,
+      demoNote: null,
       toggles: {},
       reel: {},
     };
@@ -181,13 +293,89 @@
     return /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(String(url || ""));
   }
 
+  function httpHref(value) {
+    if (!hasValue(value)) return "";
+    const v = String(value).trim();
+    return /^https?:\/\//i.test(v) ? v : "";
+  }
+
+  function mailtoHref(value) {
+    if (!hasValue(value)) return "";
+    const v = String(value).trim();
+    if (/^mailto:/i.test(v)) return v;
+    if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return "mailto:" + v;
+    return "";
+  }
+
+  function isUsableHref(href) {
+    if (!hasValue(href)) return false;
+    return /^(https?:\/\/|tel:|sms:|mailto:)/i.test(String(href).trim());
+  }
+
   function socialHref(value, kind) {
     const v = String(value || "").trim();
     if (!v) return "";
     if (/^https?:\/\//i.test(v)) return v;
-    if (kind === "instagram") return "https://instagram.com/" + v.replace(/^@/, "");
-    if (kind === "tiktok") return "https://www.tiktok.com/@" + v.replace(/^@/, "");
-    return v;
+    if (kind === "instagram" && /^@?[A-Za-z0-9._]+$/.test(v)) {
+      return "https://instagram.com/" + v.replace(/^@/, "");
+    }
+    if (kind === "tiktok" && /^@?[A-Za-z0-9._]+$/.test(v)) {
+      return "https://www.tiktok.com/@" + v.replace(/^@/, "");
+    }
+    return "";
+  }
+
+  const PAGES_SHOP = "https://mack-alt.github.io/bog-beauty-directory/shop.html";
+
+  function canonicalShopUrl(shop) {
+    const fallbackQuery =
+      shop && shop.id != null && shop.id !== ""
+        ? "id=" + encodeURIComponent(shop.id)
+        : shop && hasValue(shop.slug)
+          ? "slug=" + encodeURIComponent(String(shop.slug).trim())
+          : "";
+    const fallback = fallbackQuery ? PAGES_SHOP + "?" + fallbackQuery : PAGES_SHOP;
+    try {
+      let base = PAGES_SHOP;
+      const protocol = window.location && window.location.protocol;
+      if (protocol === "http:" || protocol === "https:") {
+        const loc = new URL(window.location.href);
+        if (/shop\.html$/i.test(loc.pathname)) {
+          base = loc.origin + loc.pathname;
+        } else {
+          base = loc.origin + loc.pathname.replace(/[^/]*$/, "") + "shop.html";
+        }
+      }
+      const url = new URL(base);
+      url.search = "";
+      url.hash = "";
+      if (shop && shop.id != null && shop.id !== "") {
+        url.searchParams.set("id", String(shop.id));
+      } else if (shop && hasValue(shop.slug)) {
+        url.searchParams.set("slug", String(shop.slug).trim());
+      }
+      return url.toString();
+    } catch (err) {
+      return fallback;
+    }
+  }
+
+  function mapHref(shop) {
+    const explicit = httpHref(shop && shop.googleMapsUrl);
+    if (explicit) return explicit;
+    if (shop && hasValue(shop.googlePlaceId)) {
+      const query = encodeURIComponent(shop.name || shop.address || "place");
+      return (
+        "https://www.google.com/maps/search/?api=1&query=" +
+        query +
+        "&query_place_id=" +
+        encodeURIComponent(String(shop.googlePlaceId).trim())
+      );
+    }
+    if (shop && hasValue(shop.address)) {
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(shop.address);
+    }
+    return "";
   }
 
   function photoSrc(photo) {
@@ -226,6 +414,42 @@
     a.href = href;
     a.textContent = label;
     return a;
+  }
+
+  /** Basics-safe link-out. Not a SHELF toggle — show when place id or URL is present. */
+  function googleReviewsHref(shop) {
+    const explicit = httpHref(shop && shop.googleReviewsUrl) || httpHref(shop && shop.googleMapsUrl);
+    if (explicit) return explicit;
+    const placeId = shop && shop.googlePlaceId;
+    if (!hasValue(placeId)) return "";
+    const query = encodeURIComponent(shop.name || shop.address || "place");
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      query +
+      "&query_place_id=" +
+      encodeURIComponent(String(placeId).trim())
+    );
+  }
+
+  function shareShop(event, url, title) {
+    if (!url) return;
+    if (navigator.share) {
+      event.preventDefault();
+      navigator.share({ title: title, text: title, url: url }).catch(function () {});
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      event.preventDefault();
+      navigator.clipboard.writeText(url).then(function () {
+        const el = event.currentTarget;
+        if (!el) return;
+        const prev = el.textContent;
+        el.textContent = "Link copied";
+        window.setTimeout(function () {
+          el.textContent = prev;
+        }, 1600);
+      }).catch(function () {});
+    }
   }
 
   function renderReviewCard(review) {
@@ -393,14 +617,46 @@
     shopEl.classList.add("hidden");
   }
 
+  function hideEl(el) {
+    if (!el) return;
+    el.classList.add("hidden");
+  }
+
   function render(listing, enrichment) {
+    currentListing = listing;
+    currentEnrichment = enrichment;
     const shop = Object.assign({}, listing, enrichment);
     const toggles = resolveToggles(shop, enrichment);
     const name = shop.name || "Shop";
-    document.title = name + " — Blades of Grass";
+    const demo = isDemoShop(shop);
+    document.title = (demo ? "DEMO — " : "") + name + " — Blades of Grass";
     nameEl.textContent = name;
 
+    hideEl(oneLinerEl);
+    hideEl(ratingEl);
+    hideEl(addressEl);
+    hideEl(hoursEl);
+    hideEl(storySection);
+    hideEl(servicesSection);
+    hideEl(photosSection);
+    hideEl(reelSection);
+    hideEl(reviewsSection);
+    hideEl(aggregateNoteEl);
+    hideEl(demoNoteEl);
+    hideEl(localeNoteEl);
+    if (ratingEl) ratingEl.innerHTML = "";
+
+    renderLangSwitch(activeLocale);
+
+    if (demoBannerEl) {
+      if (demo) demoBannerEl.classList.remove("hidden");
+      else hideEl(demoBannerEl);
+    }
+
     badgesEl.innerHTML = "";
+    if (demo) {
+      appendBadge("DEMO / TEMPLATE", "demo-badge");
+    }
     if (shop.category) {
       appendBadge(shop.category, "cat-badge");
     }
@@ -415,9 +671,9 @@
       verifiedEl.classList.add("hidden");
     }
 
-    const oneLiner = (shop.oneLiner || shop.blurb || "").trim();
-    if (hasValue(oneLiner)) {
-      oneLinerEl.textContent = oneLiner;
+    const oneLiner = localeBundle(shop.oneLiner || shop.blurb, activeLocale);
+    if (hasValue(oneLiner.text)) {
+      oneLinerEl.textContent = oneLiner.text;
       oneLinerEl.classList.remove("hidden");
     }
 
@@ -451,82 +707,112 @@
       addressEl.classList.remove("hidden");
     }
 
-    if (hasValue(shop.hours)) {
+    const hours = localeBundle(shop.hours, activeLocale);
+    if (hasValue(hours.text)) {
       hoursEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "owner-label";
       lab.textContent = "Hours: ";
       hoursEl.appendChild(lab);
-      hoursEl.appendChild(document.createTextNode(String(shop.hours).trim()));
+      hoursEl.appendChild(document.createTextNode(hours.text));
       hoursEl.classList.remove("hidden");
+    }
+
+    if (demo && hasValue(shop.demoNote) && demoNoteEl) {
+      demoNoteEl.textContent = String(shop.demoNote).trim();
+      demoNoteEl.classList.remove("hidden");
     }
 
     actionsEl.innerHTML = "";
     actionsEl.classList.remove("hidden");
+    socialsEl.innerHTML = "";
+    socialsEl.classList.add("hidden");
+
+    function appendAction(href, label, extraClass, opts) {
+      if (!isUsableHref(href)) return;
+      const a = actionLink(href, label, extraClass);
+      const o = opts || {};
+      if (o.external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      if (typeof o.onClick === "function") {
+        a.addEventListener("click", o.onClick);
+      }
+      actionsEl.appendChild(a);
+    }
+
     if (hasValue(shop.phone)) {
       const tel = normalizePhone(shop.phone);
-      actionsEl.appendChild(actionLink("tel:" + tel, "Call " + formatPhone(shop.phone), "btn-primary"));
-      actionsEl.appendChild(actionLink("sms:" + tel, "Text", "btn-secondary"));
+      if (tel) {
+        const callHref = "tel:" + tel;
+        const textHref = "sms:" + tel;
+        const callLabel = "Call " + formatPhone(shop.phone);
+        if (shop.textFirst === true) {
+          appendAction(textHref, "Text", "btn-primary");
+          appendAction(callHref, callLabel, "btn-secondary");
+        } else {
+          appendAction(callHref, callLabel, "btn-primary");
+          appendAction(textHref, "Text", "btn-secondary");
+        }
+      }
     }
-    if (hasValue(shop.address)) {
-      const map = actionLink(
-        "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(shop.address),
-        "Map",
-        "btn-secondary"
-      );
-      map.target = "_blank";
-      map.rel = "noopener noreferrer";
-      actionsEl.appendChild(map);
+    appendAction(mapHref(shop), "Directions", "btn-secondary", { external: true });
+    appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-secondary", { external: true });
+
+    const shareUrl = canonicalShopUrl(shop);
+    appendAction(shareUrl, "Share", "btn-secondary", {
+      onClick: function (event) {
+        shareShop(event, shareUrl, name);
+      },
+    });
+
+    const websiteHref = httpHref(shop.website);
+    const bookingHref = httpHref(shop.bookingUrl) || (toggleOn(toggles, "showBooking") ? websiteHref : "");
+    if (toggleOn(toggles, "showBooking")) {
+      appendAction(bookingHref, "Book", "btn-primary", { external: true });
     }
-    const booking = (shop.bookingUrl || shop.website || "").trim();
-    if (booking && toggleOn(toggles, "showBooking")) {
-      const book = actionLink(booking, "Book", "btn-primary");
-      book.target = "_blank";
-      book.rel = "noopener noreferrer";
-      actionsEl.appendChild(book);
+    if (
+      toggleOn(toggles, "showWebsite") &&
+      websiteHref &&
+      !(toggleOn(toggles, "showBooking") && websiteHref === bookingHref)
+    ) {
+      appendAction(websiteHref, "Website", "btn-secondary", { external: true });
     }
+    if (socialToggleOn(toggles, ["showInstagram", "showIg"])) {
+      appendAction(socialHref(shop.instagram, "instagram"), "Instagram", "btn-secondary", {
+        external: true,
+      });
+    }
+    if (toggleOn(toggles, "showFacebook")) {
+      appendAction(httpHref(shop.facebook), "Facebook", "btn-secondary", { external: true });
+    }
+    if (socialToggleOn(toggles, ["showTiktok", "showTikTok"])) {
+      appendAction(socialHref(shop.tiktok, "tiktok"), "TikTok", "btn-secondary", { external: true });
+    }
+    if (toggleOn(toggles, "showEmail")) {
+      appendAction(mailtoHref(shop.email), "Email", "btn-secondary");
+    }
+    const yelpHref = httpHref(shop.yelpUrl);
+    if (extraLinkOn(toggles, "showYelp", yelpHref)) {
+      appendAction(yelpHref, "Yelp", "btn-secondary", { external: true });
+    }
+    appendAction(httpHref(shop.appleMapsUrl), "Apple Maps", "btn-secondary", { external: true });
+
     if (!actionsEl.children.length) {
       actionsEl.classList.add("hidden");
     }
 
-    socialsEl.innerHTML = "";
-    socialsEl.classList.add("hidden");
-    const socials = [];
-    if (
-      hasValue(shop.instagram) &&
-      socialToggleOn(toggles, ["showInstagram", "showIg"])
-    ) {
-      socials.push({ href: socialHref(shop.instagram, "instagram"), label: "Instagram" });
-    }
-    if (
-      hasValue(shop.tiktok) &&
-      socialToggleOn(toggles, ["showTiktok", "showTikTok"])
-    ) {
-      socials.push({ href: socialHref(shop.tiktok, "tiktok"), label: "TikTok" });
-    }
-    if (
-      hasValue(shop.website) &&
-      shop.website !== shop.bookingUrl &&
-      toggleOn(toggles, "showWebsite")
-    ) {
-      socials.push({ href: String(shop.website).trim(), label: "Website" });
-    }
-    if (socials.length) {
-      socials.forEach((item) => {
-        const a = document.createElement("a");
-        a.href = item.href;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        a.textContent = item.label;
-        socialsEl.appendChild(a);
-      });
-      socialsEl.classList.remove("hidden");
+    const story = localeBundle(enrichment.story, activeLocale);
+    if (story.text && toggleOn(toggles, "showStory")) {
+      storyText.textContent = story.text;
+      storySection.classList.remove("hidden");
     }
 
-    const story = hasValue(enrichment.story) ? String(enrichment.story).trim() : "";
-    if (story && toggleOn(toggles, "showStory")) {
-      storyText.textContent = story;
-      storySection.classList.remove("hidden");
+    const usedFallback = oneLiner.fallback || hours.fallback || story.fallback;
+    if (localeNoteEl && usedFallback) {
+      localeNoteEl.textContent = localeNote(activeLocale);
+      localeNoteEl.classList.remove("hidden");
     }
 
     const services = Array.isArray(enrichment.services)
@@ -603,6 +889,8 @@
   }
 
   const query = params();
+  activeLocale = query.lang || readStoredLocale() || "en";
+  persistLocale(activeLocale);
   if (query.id == null && !query.slug) {
     fail("Add ?id= or ?slug= to open a shop page.");
     return;
