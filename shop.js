@@ -5,8 +5,10 @@
   const badgesEl = document.getElementById("shop-badges");
   const verifiedEl = document.getElementById("shop-verified");
   const oneLinerEl = document.getElementById("shop-oneliner");
+  const offerEl = document.getElementById("shop-offer");
   const ratingEl = document.getElementById("shop-rating");
   const addressEl = document.getElementById("shop-address");
+  const walkInsEl = document.getElementById("shop-walkins");
   const hoursEl = document.getElementById("shop-hours");
   const actionsEl = document.getElementById("shop-actions");
   const socialsEl = document.getElementById("shop-socials");
@@ -653,8 +655,10 @@
     nameEl.textContent = name;
 
     hideEl(oneLinerEl);
+    hideEl(offerEl);
     hideEl(ratingEl);
     hideEl(addressEl);
+    hideEl(walkInsEl);
     hideEl(hoursEl);
     hideEl(storySection);
     hideEl(servicesSection);
@@ -691,8 +695,19 @@
       verifiedEl.classList.add("hidden");
     }
 
+    const offer = localeBundle(shop.offer || shop.offerHighlight, activeLocale);
+    if (offerEl && hasValue(offer.text)) {
+      offerEl.innerHTML = "";
+      const lab = document.createElement("span");
+      lab.className = "offer-label";
+      lab.textContent = "Offer";
+      offerEl.appendChild(lab);
+      offerEl.appendChild(document.createTextNode(offer.text));
+      offerEl.classList.remove("hidden");
+    }
+
     const oneLiner = localeBundle(shop.oneLiner || shop.blurb, activeLocale);
-    if (hasValue(oneLiner.text)) {
+    if (hasValue(oneLiner.text) && oneLiner.text !== offer.text) {
       oneLinerEl.textContent = oneLiner.text;
       oneLinerEl.classList.remove("hidden");
     }
@@ -725,6 +740,12 @@
     if (hasValue(shop.address)) {
       addressEl.textContent = shop.address;
       addressEl.classList.remove("hidden");
+    }
+
+    const walkIns = localeBundle(shop.walkIns, activeLocale);
+    if (walkInsEl && hasValue(walkIns.text)) {
+      walkInsEl.textContent = walkIns.text;
+      walkInsEl.classList.remove("hidden");
     }
 
     const hours = localeBundle(shop.hours, activeLocale);
@@ -831,7 +852,7 @@
       storySection.classList.remove("hidden");
     }
 
-    const usedFallback = oneLiner.fallback || hours.fallback || story.fallback;
+    const usedFallback = oneLiner.fallback || offer.fallback || walkIns.fallback || hours.fallback || story.fallback;
     if (localeNoteEl && usedFallback) {
       localeNoteEl.textContent = localeNote(activeLocale);
       localeNoteEl.classList.remove("hidden");

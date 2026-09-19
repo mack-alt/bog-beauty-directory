@@ -299,6 +299,33 @@ body {
   color: var(--ink);
 }
 
+.offer-highlight {
+  margin: 0.65rem 0 0;
+  padding: 0.7rem 0.85rem;
+  border-radius: 12px;
+  background: var(--live-bg);
+  color: var(--ink);
+  border: 1px solid #b7e0c8;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.offer-label {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--live);
+  vertical-align: middle;
+}
+
+.walkins {
+  font-style: italic;
+}
+
 .owner-block {
   margin: 0.4rem 0 0;
   font-size: 0.9rem;
