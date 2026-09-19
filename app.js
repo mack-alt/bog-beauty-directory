@@ -43,11 +43,11 @@
     return String(v).trim() !== "";
   }
 
-  /** Owner/optional blocks: show when value present and toggle !== false (default true). */
-  function showField(item, valueKey, toggleKey) {
+  /** Shelf/enrichment: show only when the value is present and the toggle is explicitly true. */
+  function showField(item, valueKey, toggleKeys) {
     if (!hasValue(item[valueKey])) return false;
-    if (item[toggleKey] === false) return false;
-    return true;
+    const keys = Array.isArray(toggleKeys) ? toggleKeys : [toggleKeys];
+    return keys.some((key) => item[key] === true);
   }
 
   function isLive(item) {
@@ -58,9 +58,8 @@
 
   function bookHref(item) {
     const booking = (item.bookingUrl || item.website || "").trim();
-    if (booking) return { href: booking, label: "Book", external: true };
-    if (item.phone) {
-      return { href: "tel:" + normalizePhone(item.phone), label: "Call to book", external: false };
+    if (booking && item.showBooking === true) {
+      return { href: booking, label: "Book", external: true };
     }
     return null;
   }
@@ -135,22 +134,16 @@
       window.location.href = href;
     });
 
-    const media = document.createElement("div");
-    media.className = "card-media";
     if (hasValue(item.photoUrl)) {
+      const media = document.createElement("div");
+      media.className = "card-media";
       const img = document.createElement("img");
       img.src = item.photoUrl;
       img.alt = item.name || "Salon photo";
       img.loading = "lazy";
       media.appendChild(img);
-    } else {
-      const ph = document.createElement("div");
-      ph.className = "photo-placeholder";
-      ph.setAttribute("aria-hidden", "true");
-      ph.innerHTML = "<span>Photo pending</span>";
-      media.appendChild(ph);
+      card.appendChild(media);
     }
-    card.appendChild(media);
 
     const body = document.createElement("div");
     body.className = "card-body";
@@ -188,8 +181,15 @@
     top.appendChild(badges);
     body.appendChild(top);
 
+    if (item.verifiedByBog === true) {
+      const verified = document.createElement("p");
+      verified.className = "verified";
+      verified.textContent = "Verified by BoG";
+      body.appendChild(verified);
+    }
+
     if (
-      showField(item, "googleRating", "showRating") &&
+      showField(item, "googleRating", ["showRating", "showGoogle"]) &&
       typeof item.googleRating === "number"
     ) {
       const rating = document.createElement("p");
@@ -211,7 +211,7 @@
         rating.appendChild(count);
       }
       body.appendChild(rating);
-      if (showField(item, "googleSnippet", "showRating")) {
+      if (showField(item, "googleSnippet", ["showRating", "showGoogle"])) {
         const snip = document.createElement("p");
         snip.className = "snippet";
         snip.textContent = String(item.googleSnippet).trim();
@@ -236,17 +236,18 @@
       body.appendChild(phoneP);
     }
 
-    if (showField(item, "oneLiner", "showOneLiner") || showField(item, "blurb", "showOneLiner")) {
+    const lineText = (item.oneLiner || item.blurb || "").trim();
+    if (lineText) {
       const line = document.createElement("p");
       line.className = "blurb";
-      line.textContent = (item.oneLiner || item.blurb || "").trim();
+      line.textContent = lineText;
       body.appendChild(line);
     }
 
     if (showField(item, "knownFor", "showKnownFor")) {
       appendOwnerBlock(body, "Known for: ", String(item.knownFor).trim());
     }
-    if (showField(item, "hours", "showHours")) {
+    if (hasValue(item.hours)) {
       appendOwnerBlock(body, "Hours: ", String(item.hours).trim());
     }
     if (showField(item, "languages", "showLanguages")) {
@@ -258,7 +259,7 @@
     let hasLinks = false;
 
     const booking = (item.bookingUrl || "").trim();
-    if (booking && item.showBooking !== false) {
+    if (booking && item.showBooking === true) {
       const a = document.createElement("a");
       a.href = booking;
       a.target = "_blank";
@@ -267,7 +268,16 @@
       links.appendChild(a);
       hasLinks = true;
     }
-    if (showField(item, "instagram", "showIg")) {
+    if (showField(item, "website", "showWebsite") && item.website !== item.bookingUrl) {
+      const a = document.createElement("a");
+      a.href = String(item.website).trim();
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "Website";
+      links.appendChild(a);
+      hasLinks = true;
+    }
+    if (showField(item, "instagram", ["showIg", "showInstagram"])) {
       let ig = String(item.instagram).trim();
       if (ig && !/^https?:\/\//i.test(ig) && ig.startsWith("@")) {
         ig = "https://instagram.com/" + ig.slice(1);
@@ -286,10 +296,15 @@
 
     const actions = document.createElement("div");
     actions.className = "actions";
+    const view = document.createElement("a");
+    view.className = "btn btn-primary";
+    view.href = href;
+    view.textContent = "View shop";
+    actions.appendChild(view);
     const book = bookHref(item);
     if (book) {
       const a = document.createElement("a");
-      a.className = "btn btn-primary";
+      a.className = "btn btn-secondary";
       a.href = book.href;
       a.textContent = book.label;
       if (book.external) {
@@ -297,13 +312,8 @@
         a.rel = "noopener noreferrer";
       }
       actions.appendChild(a);
-    } else {
-      const soon = document.createElement("span");
-      soon.className = "btn btn-soon";
-      soon.textContent = "Booking soon";
-      actions.appendChild(soon);
     }
-    if (item.phone && (!book || book.external)) {
+    if (item.phone) {
       const call = document.createElement("a");
       call.className = "btn btn-secondary";
       call.href = "tel:" + normalizePhone(item.phone);
