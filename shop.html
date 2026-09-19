@@ -6,6 +6,23 @@
   <meta name="description" content="Blades of Grass — shop page for a local beauty business." />
   <meta name="theme-color" content="#1a3a2a" />
   <title>Shop — Blades of Grass</title>
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        var id = q.get("id");
+        var slug = (q.get("slug") || "").toLowerCase();
+        if (id === "12" || slug === "11-fingers-and-toe") {
+          document.documentElement.setAttribute("data-theme", "beauty");
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", "#f4eee6");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919b" />
 </head>
 <body class="shop-page">

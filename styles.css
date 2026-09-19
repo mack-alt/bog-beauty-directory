@@ -748,3 +748,329 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .reel-track { transition: none; }
 }
+
+/* --------------------------------------------------------------------------
+   DEMO beauty mock — html[data-theme="beauty"] / body.theme-beauty
+   Applied only when shop.isDemo (id 12, 11 Fingers and Toe).
+   Stop 4 Nails (id 11) keeps the default green theme until Kenny approves.
+   -------------------------------------------------------------------------- */
+html[data-theme="beauty"] {
+  background: #f4eee6;
+  --bg: #f4eee6;
+  --surface: #fffcf8;
+  --ink: #2c2622;
+  --muted: #7a716a;
+  --brand: #3a322d;
+  --brand-soft: #f3e6dd;
+  --accent: #a56a5c;
+  --accent-hover: #8f574b;
+  --chip: #f3eae3;
+  --chip-active: #3a322d;
+  --border: #eadfd4;
+  --live: #8d5b4c;
+  --live-bg: #f4e5dd;
+  --radius: 20px;
+  --shadow: 0 1px 2px rgba(44, 38, 34, 0.04), 0 14px 36px rgba(44, 38, 34, 0.07);
+  --font: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --display: "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --blush: #c48a7b;
+  --blush-soft: #f6ebe5;
+}
+
+html[data-theme="beauty"] body,
+body.theme-beauty {
+  background:
+    radial-gradient(900px 380px at 50% -120px, #f8e6dc 0%, transparent 68%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+}
+
+html[data-theme="beauty"] .site-header {
+  background: transparent;
+  color: var(--ink);
+  padding: 1.1rem 1.1rem 0.2rem;
+}
+
+html[data-theme="beauty"] .brand-mark {
+  letter-spacing: 0.2em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  opacity: 1;
+}
+
+html[data-theme="beauty"] .shop-header .tagline {
+  display: none;
+}
+
+html[data-theme="beauty"] .back-link {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+html[data-theme="beauty"] .shop-header .brand {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+html[data-theme="beauty"] .lang-switch {
+  gap: 0.2rem;
+  margin: 0 0 1rem;
+}
+
+html[data-theme="beauty"] .lang-btn {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  min-width: 2.55rem;
+  min-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+html[data-theme="beauty"] .lang-btn:hover {
+  border-color: transparent;
+  color: var(--ink);
+  background: var(--blush-soft);
+}
+
+html[data-theme="beauty"] .lang-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-theme="beauty"] .lang-btn[aria-pressed="true"] {
+  background: var(--brand);
+  color: #f7f1ea;
+  border-color: var(--brand);
+}
+
+html[data-theme="beauty"] .locale-note {
+  font-size: 0.84rem;
+}
+
+html[data-theme="beauty"] .shop-hero,
+html[data-theme="beauty"] .shop-section {
+  border: none;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+html[data-theme="beauty"] .shop-hero {
+  padding: 1.5rem 1.25rem 1.45rem;
+}
+
+html[data-theme="beauty"] .shop-hero-top {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+html[data-theme="beauty"] .shop-name {
+  font-family: var(--display);
+  font-size: clamp(2.35rem, 9vw, 3.35rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums;
+  flex: none;
+  width: 100%;
+}
+
+html[data-theme="beauty"] .badges {
+  justify-content: flex-start;
+}
+
+html[data-theme="beauty"] .cat-badge {
+  color: #8f4f43;
+  background: var(--blush-soft);
+  font-weight: 600;
+}
+
+html[data-theme="beauty"] .status-live {
+  color: var(--live);
+  background: var(--live-bg);
+}
+
+html[data-theme="beauty"] .verified {
+  color: #6e5a4c;
+  background: #efe6dc;
+}
+
+html[data-theme="beauty"] .shop-hero .blurb {
+  margin-top: 0.9rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--ink);
+  max-width: 38ch;
+}
+
+html[data-theme="beauty"] .shop-hero .meta,
+html[data-theme="beauty"] .shop-hero .owner-block,
+html[data-theme="beauty"] .shop-hero .demo-note,
+html[data-theme="beauty"] .shop-hero .rating {
+  font-size: 0.86rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+html[data-theme="beauty"] .shop-hero .owner-label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+html[data-theme="beauty"] .shop-actions {
+  gap: 0.5rem 0.55rem;
+  margin-top: 1.15rem;
+}
+
+html[data-theme="beauty"] .btn {
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+  min-height: 42px;
+  padding: 0.5rem 1.1rem;
+}
+
+html[data-theme="beauty"] .btn-primary {
+  background: var(--accent);
+  color: #fffaf6;
+  box-shadow: 0 1px 2px rgba(165, 106, 92, 0.22);
+}
+
+html[data-theme="beauty"] .btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+html[data-theme="beauty"] .btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid transparent;
+  box-shadow: 0 1px 2px rgba(44, 38, 34, 0.05);
+}
+
+html[data-theme="beauty"] .btn-secondary:hover {
+  background: var(--blush-soft);
+  border-color: transparent;
+}
+
+html[data-theme="beauty"] .btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-theme="beauty"] .shop-section {
+  padding: 1.15rem 1.2rem 1.25rem;
+}
+
+html[data-theme="beauty"] .shop-section h3 {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+}
+
+html[data-theme="beauty"] .shop-story-text {
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+html[data-theme="beauty"] .service-chip {
+  background: var(--blush-soft);
+  color: #6e4339;
+  font-weight: 500;
+}
+
+html[data-theme="beauty"] .gallery-link {
+  background: var(--blush-soft);
+  color: #6e4339;
+  border: none;
+}
+html[data-theme="beauty"] .gallery-link:hover {
+  background: #edd8ce;
+}
+
+html[data-theme="beauty"] .photo-item {
+  background: #efe6dc;
+}
+
+html[data-theme="beauty"] .review-card {
+  border: none;
+  background: #faf6f1;
+  box-shadow: 0 1px 2px rgba(44, 38, 34, 0.04);
+}
+
+html[data-theme="beauty"] .reel-end-card {
+  background: linear-gradient(160deg, #3a322d 0%, #5c4a42 100%);
+  color: #f7f1ea;
+}
+
+html[data-theme="beauty"] .reel-nav {
+  background: var(--surface);
+  border-color: transparent;
+  box-shadow: 0 1px 2px rgba(44, 38, 34, 0.05);
+}
+
+html[data-theme="beauty"] .reel-nav:focus-visible {
+  outline-color: var(--accent);
+}
+
+html[data-theme="beauty"] .reel-dot[aria-selected="true"] {
+  background: var(--accent);
+}
+
+html[data-theme="beauty"] .site-footer a {
+  color: var(--accent);
+}
+
+@media (min-width: 640px) {
+  html[data-theme="beauty"] .site-header {
+    padding: 1.4rem 1.5rem 0.35rem;
+  }
+  html[data-theme="beauty"] .shop-name {
+    font-size: 3.35rem;
+  }
+}
+
+/* Directory: light DEMO card refresh only — other listings stay as-is. */
+.card-demo {
+  border: none;
+  background: #fffcf8;
+  box-shadow: 0 1px 2px rgba(44, 38, 34, 0.04), 0 14px 36px rgba(44, 38, 34, 0.07);
+}
+
+.card-demo h2 {
+  font-family: "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 1.42rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.card-demo .cat-badge {
+  color: #8f4f43;
+  background: #f6ebe5;
+}
+
+.card-demo .status-live {
+  color: #8d5b4c;
+  background: #f4e5dd;
+}
+
+.card-demo .verified {
+  color: #6e5a4c;
+  background: #efe6dc;
+}
+
+.card-demo .btn-primary {
+  background: #a56a5c;
+  color: #fffaf6;
+}
+.card-demo .btn-primary:hover { background: #8f574b; }
+
+.card-demo .btn-secondary {
+  background: #fff;
+  color: #2c2622;
+  border-color: #eadfd4;
+}
+.card-demo .btn-secondary:hover { background: #f6ebe5; }

@@ -128,6 +128,25 @@
     return !!(shop && (shop.isDemo === true || shop.demo === true));
   }
 
+  const THEME_COLOR_DEFAULT = "#1a3a2a";
+  const THEME_COLOR_BEAUTY = "#f4eee6";
+
+  /** DEMO mock only. Stop 4 / real shops keep the default green theme until Kenny approves. */
+  function applyBeautyTheme(on) {
+    const root = document.documentElement;
+    if (on) {
+      root.setAttribute("data-theme", "beauty");
+      document.body.classList.add("theme-beauty");
+    } else {
+      root.removeAttribute("data-theme");
+      document.body.classList.remove("theme-beauty");
+    }
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      themeMeta.setAttribute("content", on ? THEME_COLOR_BEAUTY : THEME_COLOR_DEFAULT);
+    }
+  }
+
   /** Safe extras: show when a real href exists unless the toggle is explicitly false. */
   function extraLinkOn(toggles, key, href) {
     if (!isUsableHref(href)) return false;
@@ -629,6 +648,7 @@
     const toggles = resolveToggles(shop, enrichment);
     const name = shop.name || "Shop";
     const demo = isDemoShop(shop);
+    applyBeautyTheme(demo);
     document.title = (demo ? "DEMO — " : "") + name + " — Blades of Grass";
     nameEl.textContent = name;
 
@@ -891,6 +911,7 @@
   }
 
   const query = params();
+  applyBeautyTheme(query.id === 12 || query.slug === "11-fingers-and-toe");
   activeLocale = query.lang || readStoredLocale() || "en";
   persistLocale(activeLocale);
   if (query.id == null && !query.slug) {
