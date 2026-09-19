@@ -8,6 +8,7 @@
   "hours": null,
   "oneLiner": "After 6 services, enjoy 20% off your 7th visit.",
   "offer": "After 6 services, enjoy 20% off your 7th visit.",
+  "loyalty": true,
   "walkIns": "Walk-ins welcome / appointment recommended",
   "textFirst": false,
   "isDemo": false,
