@@ -33,7 +33,10 @@
   const storyHeadingEl = document.getElementById("shop-story-heading");
   const servicesHeadingEl = document.getElementById("shop-services-heading");
 
-  const LOCALES = ["en", "vi", "es"];
+  const LOCALES =
+    window.BogPhrases && Array.isArray(window.BogPhrases.LOCALES)
+      ? window.BogPhrases.LOCALES.slice()
+      : ["en", "vi", "es", "zh", "ko", "th"];
   let currentListing = null;
   let currentEnrichment = null;
   let activeLocale = "en";
@@ -90,10 +93,10 @@
   /**
    * Canonical model (source of truth):
    * 1. Card snap = basics (name, phone, directions, hours).
-   * 2. Shop page always shows EN|VI|ES switch (skeletons included). Chrome
-   *    and action labels come from i18n/phrases.js via t(key). Story/vibe
-   *    body is never machine-translated. Missing VI/ES falls back to EN
-   *    for that key only.
+   * 2. Shop page always shows EN|VI|ES|ZH|KO|TH switch (skeletons included).
+   *    Chrome and action labels come from i18n/phrases.js via t(key).
+   *    Story/vibe body is never machine-translated. Missing locale falls
+   *    back to EN for that key only.
    * 3. Interview unlocks story + confirmed links; empty slots stay hidden.
    * 4. Action row (real hrefs only): Call, Text (textFirst prefers Text),
    *    Directions, Reviews on Google, Share, then Website/IG/FB/TikTok/
@@ -200,7 +203,7 @@
     document.documentElement.lang = locale;
   }
 
-  /** Strings are English source. Objects may key en/vi/es. Never invent a translation. */
+  /** Strings are English source. Objects may key en/vi/es/zh/ko/th. Never invent a translation. */
   function localeBundle(value, locale) {
     if (value == null) return { text: "", fallback: false };
     if (typeof value === "object" && !Array.isArray(value)) {
@@ -214,9 +217,16 @@
   }
 
   function localeNote(locale) {
-    if (locale === "vi") return "Showing English — Vietnamese isn’t on this page yet. We don’t guess a translation.";
-    if (locale === "es") return "Showing English — Spanish isn’t on this page yet. We don’t guess a translation.";
-    return "";
+    const names = {
+      vi: "Vietnamese",
+      es: "Spanish",
+      zh: "Simplified Chinese",
+      ko: "Korean",
+      th: "Thai",
+    };
+    const label = names[locale];
+    if (!label) return "";
+    return "Showing English — " + label + " isn’t on this page yet. We don’t guess a translation.";
   }
 
   function applyChrome() {
