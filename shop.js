@@ -24,9 +24,14 @@
   const reviewsSection = document.getElementById("shop-reviews");
   const reviewList = document.getElementById("shop-review-list");
   const demoBannerEl = document.getElementById("shop-demo-banner");
+  const demoBannerLabelEl = document.getElementById("shop-demo-banner-label");
   const langSwitchEl = document.getElementById("shop-lang");
   const localeNoteEl = document.getElementById("shop-locale-note");
   const demoNoteEl = document.getElementById("shop-demo-note");
+  const backLinkEl = document.getElementById("shop-back-link");
+  const footerBackEl = document.getElementById("shop-footer-back");
+  const storyHeadingEl = document.getElementById("shop-story-heading");
+  const servicesHeadingEl = document.getElementById("shop-services-heading");
 
   const LOCALES = ["en", "vi", "es"];
   let currentListing = null;
@@ -85,7 +90,10 @@
   /**
    * Canonical model (source of truth):
    * 1. Card snap = basics (name, phone, directions, hours).
-   * 2. Shop page always shows EN|VI|ES switch — never a guessed translation.
+   * 2. Shop page always shows EN|VI|ES switch (skeletons included). Chrome
+   *    and action labels come from i18n/phrases.js via t(key). Story/vibe
+   *    body is never machine-translated. Missing VI/ES falls back to EN
+   *    for that key only.
    * 3. Interview unlocks story + confirmed links; empty slots stay hidden.
    * 4. Action row (real hrefs only): Call, Text (textFirst prefers Text),
    *    Directions, Reviews on Google, Share, then Website/IG/FB/TikTok/
@@ -156,7 +164,18 @@
     return toggles[key] === true;
   }
 
+  function t(key) {
+    if (window.BogPhrases && typeof window.BogPhrases.t === "function") {
+      return window.BogPhrases.t(key, activeLocale);
+    }
+    return "";
+  }
+
   function readStoredLocale() {
+    try {
+      const stored = localStorage.getItem("bog-shop-lang");
+      if (LOCALES.indexOf(stored) !== -1) return stored;
+    } catch (err) {}
     try {
       const stored = sessionStorage.getItem("bog-shop-lang");
       if (LOCALES.indexOf(stored) !== -1) return stored;
@@ -165,6 +184,9 @@
   }
 
   function persistLocale(locale) {
+    try {
+      localStorage.setItem("bog-shop-lang", locale);
+    } catch (err) {}
     try {
       sessionStorage.setItem("bog-shop-lang", locale);
     } catch (err) {}
@@ -197,6 +219,17 @@
     return "";
   }
 
+  function applyChrome() {
+    if (backLinkEl) backLinkEl.textContent = "← " + t("backToDirectory");
+    if (footerBackEl) footerBackEl.textContent = t("backToDirectory");
+    if (langSwitchEl) langSwitchEl.setAttribute("aria-label", t("language"));
+    if (verifiedEl) verifiedEl.textContent = t("verifiedByBog");
+    if (storyHeadingEl) storyHeadingEl.textContent = t("story");
+    if (servicesHeadingEl) servicesHeadingEl.textContent = t("services");
+    if (demoBannerLabelEl) demoBannerLabelEl.textContent = t("demoTemplate");
+    renderLangSwitch(activeLocale);
+  }
+
   function renderLangSwitch(active) {
     if (!langSwitchEl) return;
     langSwitchEl.innerHTML = "";
@@ -210,6 +243,7 @@
       btn.addEventListener("click", function () {
         activeLocale = loc;
         persistLocale(loc);
+        applyChrome();
         if (currentListing) render(currentListing, currentEnrichment || emptyEnrichment());
       });
       langSwitchEl.appendChild(btn);
@@ -670,7 +704,7 @@
     hideEl(localeNoteEl);
     if (ratingEl) ratingEl.innerHTML = "";
 
-    renderLangSwitch(activeLocale);
+    applyChrome();
 
     if (demoBannerEl) {
       if (demo) demoBannerEl.classList.remove("hidden");
@@ -679,7 +713,7 @@
 
     badgesEl.innerHTML = "";
     if (demo) {
-      appendBadge("DEMO / TEMPLATE", "demo-badge");
+      appendBadge(t("demoTemplate"), "demo-badge");
     }
     if (shop.category) {
       appendBadge(shop.category, "cat-badge");
@@ -700,7 +734,7 @@
       offerEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "offer-label";
-      lab.textContent = "Offer";
+      lab.textContent = shop.loyalty === true ? t("loyalty") : t("offer");
       offerEl.appendChild(lab);
       offerEl.appendChild(document.createTextNode(offer.text));
       offerEl.classList.remove("hidden");
@@ -744,7 +778,12 @@
 
     const walkIns = localeBundle(shop.walkIns, activeLocale);
     if (walkInsEl && hasValue(walkIns.text)) {
-      walkInsEl.textContent = walkIns.text;
+      walkInsEl.innerHTML = "";
+      const lab = document.createElement("span");
+      lab.className = "owner-label";
+      lab.textContent = t("walkIns") + ": ";
+      walkInsEl.appendChild(lab);
+      walkInsEl.appendChild(document.createTextNode(walkIns.text));
       walkInsEl.classList.remove("hidden");
     }
 
@@ -753,7 +792,7 @@
       hoursEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "owner-label";
-      lab.textContent = "Hours: ";
+      lab.textContent = t("hours") + ": ";
       hoursEl.appendChild(lab);
       hoursEl.appendChild(document.createTextNode(hours.text));
       hoursEl.classList.remove("hidden");
@@ -788,23 +827,22 @@
       if (tel) {
         const callHref = "tel:" + tel;
         const textHref = "sms:" + tel;
-        const callLabel = "Call " + formatPhone(shop.phone);
         if (shop.textFirst === true) {
-          appendAction(textHref, "Text", "btn-primary");
-          appendAction(callHref, callLabel, "btn-secondary");
+          appendAction(textHref, t("text"), "btn-primary");
+          appendAction(callHref, t("call"), "btn-secondary");
         } else {
-          appendAction(callHref, callLabel, "btn-primary");
-          appendAction(textHref, "Text", "btn-secondary");
+          appendAction(callHref, t("call"), "btn-primary");
+          appendAction(textHref, t("text"), "btn-secondary");
         }
       }
     }
-    appendAction(mapHref(shop), "Directions", "btn-secondary", { external: true });
-    appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-primary btn-reviews", {
+    appendAction(mapHref(shop), t("directions"), "btn-secondary", { external: true });
+    appendAction(googleReviewsHref(shop), t("reviewsOnGoogle"), "btn-primary btn-reviews", {
       external: true,
     });
 
     const shareUrl = canonicalShopUrl(shop);
-    appendAction(shareUrl, "Share", "btn-secondary", {
+    appendAction(shareUrl, t("share"), "btn-secondary", {
       onClick: function (event) {
         shareShop(event, shareUrl, name);
       },
@@ -813,17 +851,17 @@
     const websiteHref = httpHref(shop.website);
     const bookingHref = httpHref(shop.bookingUrl) || (toggleOn(toggles, "showBooking") ? websiteHref : "");
     if (toggleOn(toggles, "showBooking")) {
-      appendAction(bookingHref, "Book", "btn-primary", { external: true });
+      appendAction(bookingHref, t("book"), "btn-primary", { external: true });
     }
     if (
       toggleOn(toggles, "showWebsite") &&
       websiteHref &&
       !(toggleOn(toggles, "showBooking") && websiteHref === bookingHref)
     ) {
-      appendAction(websiteHref, "Website", "btn-secondary", { external: true });
+      appendAction(websiteHref, t("website"), "btn-secondary", { external: true });
     }
     if (socialToggleOn(toggles, ["showInstagram", "showIg"])) {
-      appendAction(socialHref(shop.instagram, "instagram"), "Instagram", "btn-secondary", {
+      appendAction(socialHref(shop.instagram, "instagram"), t("instagram"), "btn-secondary", {
         external: true,
       });
     }
@@ -935,6 +973,7 @@
   applyBeautyTheme(query.id === 12 || query.slug === "11-fingers-and-toe");
   activeLocale = query.lang || readStoredLocale() || "en";
   persistLocale(activeLocale);
+  applyChrome();
   if (query.id == null && !query.slug) {
     fail("Add ?id= or ?slug= to open a shop page.");
     return;
