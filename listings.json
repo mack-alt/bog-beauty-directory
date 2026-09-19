@@ -110,8 +110,14 @@
     "bookingUrl": "https://app.squareup.com/appointments/book/34ffvwtlczxga4/LMY6NZTWSV9B9/start",
     "status": "live",
     "confirmed": true,
+    "verifiedByBog": true,
     "showHours": true,
     "showOneLiner": true,
-    "showIg": true
+    "showIg": false,
+    "showInstagram": false,
+    "showBooking": false,
+    "showWebsite": false,
+    "showRating": false,
+    "showGoogle": false
   }
 ]

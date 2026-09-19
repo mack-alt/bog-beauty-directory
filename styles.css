@@ -370,7 +370,7 @@ body {
   color: var(--muted);
   padding: 2rem 1rem;
 }
-.hidden { display: none; }
+.hidden { display: none !important; }
 
 .site-footer {
   text-align: center;

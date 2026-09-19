@@ -69,9 +69,40 @@
     return !!item.confirmed;
   }
 
+  const SHELF_TOGGLE_KEYS = [
+    "showStory",
+    "showReviews",
+    "showReel",
+    "showGoogle",
+    "showRating",
+    "showPhotos",
+    "showServices",
+    "showBooking",
+    "showWebsite",
+    "showInstagram",
+    "showIg",
+    "showTiktok",
+    "showTikTok",
+    "showLanguages",
+    "showKnownFor",
+  ];
+
+  /** Shelf-safe: contested sections render only when the toggle is explicitly true. */
   function toggleOn(toggles, key) {
-    if (!toggles || toggles[key] === undefined) return true;
-    return toggles[key] !== false;
+    if (!toggles || toggles[key] === undefined || toggles[key] === null) return false;
+    return toggles[key] === true;
+  }
+
+  function socialToggleOn(toggles, keys) {
+    return keys.some((key) => toggleOn(toggles, key));
+  }
+
+  function resolveToggles(shop, enrichment) {
+    const fromListing = {};
+    SHELF_TOGGLE_KEYS.forEach((key) => {
+      if (shop && shop[key] !== undefined) fromListing[key] = shop[key];
+    });
+    return Object.assign({}, fromListing, (enrichment && enrichment.toggles) || {});
   }
 
   function starLabel(rating) {
@@ -364,7 +395,7 @@
 
   function render(listing, enrichment) {
     const shop = Object.assign({}, listing, enrichment);
-    const toggles = enrichment.toggles || {};
+    const toggles = resolveToggles(shop, enrichment);
     const name = shop.name || "Shop";
     document.title = name + " — Blades of Grass";
     nameEl.textContent = name;
@@ -378,19 +409,20 @@
     } else {
       appendBadge("Pending confirm", "status-badge status-pending");
     }
-    if (shop.verifiedByBog === true || isLive(shop)) {
+    if (shop.verifiedByBog === true) {
       verifiedEl.classList.remove("hidden");
     } else {
       verifiedEl.classList.add("hidden");
     }
 
     const oneLiner = (shop.oneLiner || shop.blurb || "").trim();
-    if (hasValue(oneLiner) && shop.showOneLiner !== false) {
+    if (hasValue(oneLiner)) {
       oneLinerEl.textContent = oneLiner;
       oneLinerEl.classList.remove("hidden");
     }
 
-    const showGoogle = toggleOn(toggles, "showGoogle") && toggleOn(toggles, "showRating");
+    const showGoogle =
+      socialToggleOn(toggles, ["showGoogle", "showRating"]);
     const rating = typeof shop.googleRating === "number" ? shop.googleRating : null;
     const reviewCount = shop.reviewCount != null ? shop.reviewCount : shop.googleReviewCount;
     if (rating != null && showGoogle) {
@@ -419,7 +451,7 @@
       addressEl.classList.remove("hidden");
     }
 
-    if (hasValue(shop.hours) && shop.showHours !== false) {
+    if (hasValue(shop.hours)) {
       hoursEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "owner-label";
@@ -447,7 +479,7 @@
       actionsEl.appendChild(map);
     }
     const booking = (shop.bookingUrl || shop.website || "").trim();
-    if (booking && shop.showBooking !== false) {
+    if (booking && toggleOn(toggles, "showBooking")) {
       const book = actionLink(booking, "Book", "btn-primary");
       book.target = "_blank";
       book.rel = "noopener noreferrer";
@@ -460,13 +492,23 @@
     socialsEl.innerHTML = "";
     socialsEl.classList.add("hidden");
     const socials = [];
-    if (hasValue(shop.instagram) && shop.showIg !== false) {
+    if (
+      hasValue(shop.instagram) &&
+      socialToggleOn(toggles, ["showInstagram", "showIg"])
+    ) {
       socials.push({ href: socialHref(shop.instagram, "instagram"), label: "Instagram" });
     }
-    if (hasValue(shop.tiktok)) {
+    if (
+      hasValue(shop.tiktok) &&
+      socialToggleOn(toggles, ["showTiktok", "showTikTok"])
+    ) {
       socials.push({ href: socialHref(shop.tiktok, "tiktok"), label: "TikTok" });
     }
-    if (hasValue(shop.website) && shop.website !== shop.bookingUrl) {
+    if (
+      hasValue(shop.website) &&
+      shop.website !== shop.bookingUrl &&
+      toggleOn(toggles, "showWebsite")
+    ) {
       socials.push({ href: String(shop.website).trim(), label: "Website" });
     }
     if (socials.length) {

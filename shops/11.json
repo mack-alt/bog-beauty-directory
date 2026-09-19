@@ -26,7 +26,20 @@
     "https://static.wixstatic.com/media/006ba0_745ead96b6b94506938826dd86e19559~mv2.png",
     "https://www.stop4nailsrenton.com/gallery"
   ],
-  "toggles": {"showStory": true, "showReviews": true, "showReel": true, "showGoogle": false},
+  "toggles": {
+    "showStory": false,
+    "showReviews": false,
+    "showReel": false,
+    "showGoogle": false,
+    "showRating": false,
+    "showPhotos": false,
+    "showServices": false,
+    "showBooking": false,
+    "showWebsite": false,
+    "showInstagram": false,
+    "showIg": false,
+    "showTiktok": false
+  },
   "reelStoryboard": [
     {"sec": 5, "quoteIndex": 0},
     {"sec": 5, "quoteIndex": 1},
