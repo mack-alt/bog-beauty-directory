@@ -9,6 +9,8 @@
   const addressEl = document.getElementById("shop-address");
   const hoursEl = document.getElementById("shop-hours");
   const actionsEl = document.getElementById("shop-actions");
+  const socialsEl = document.getElementById("shop-socials");
+  const aggregateNoteEl = document.getElementById("shop-aggregate-note");
   const storySection = document.getElementById("shop-story");
   const storyText = document.getElementById("shop-story-text");
   const servicesSection = document.getElementById("shop-services");
@@ -127,14 +129,34 @@
     return hasValue(name) ? String(name).trim() : "";
   }
 
+  function reviewStars(review) {
+    if (!review || typeof review !== "object") return null;
+    if (typeof review.stars === "number") return review.stars;
+    if (typeof review.rating === "number") return review.rating;
+    return null;
+  }
+
   function reviewHasContent(review) {
     if (!review || typeof review !== "object") return false;
     return (
       hasValue(reviewText(review)) ||
       hasValue(reviewAuthor(review)) ||
-      typeof review.rating === "number" ||
+      reviewStars(review) != null ||
       hasValue(review.photo || review.photoUrl)
     );
+  }
+
+  function isImageUrl(url) {
+    return /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(String(url || ""));
+  }
+
+  function socialHref(value, kind) {
+    const v = String(value || "").trim();
+    if (!v) return "";
+    if (/^https?:\/\//i.test(v)) return v;
+    if (kind === "instagram") return "https://instagram.com/" + v.replace(/^@/, "");
+    if (kind === "tiktok") return "https://www.tiktok.com/@" + v.replace(/^@/, "");
+    return v;
   }
 
   function photoSrc(photo) {
@@ -181,7 +203,7 @@
 
     const author = reviewAuthor(review);
     const text = reviewText(review);
-    const rating = typeof review.rating === "number" ? review.rating : null;
+    const rating = reviewStars(review);
     const photo = photoSrc(review.photo || review.photoUrl);
 
     if (rating != null) {
@@ -213,6 +235,13 @@
       card.appendChild(by);
     }
 
+    if (hasValue(review.source)) {
+      const src = document.createElement("p");
+      src.className = "review-source";
+      src.textContent = String(review.source).trim();
+      card.appendChild(src);
+    }
+
     if (photo) {
       const img = document.createElement("img");
       img.src = photo;
@@ -224,20 +253,39 @@
     return card;
   }
 
-  function renderReel(reviews) {
+  function renderReel(reviews, storyboard, shopName) {
     reelEl.innerHTML = "";
+    const steps =
+      Array.isArray(storyboard) && storyboard.length
+        ? storyboard
+        : reviews.map((_, quoteIndex) => ({ quoteIndex: quoteIndex, sec: 5 }));
+
     const viewport = document.createElement("div");
     viewport.className = "reel-viewport";
 
     const track = document.createElement("div");
     track.className = "reel-track";
 
-    reviews.forEach((review) => {
+    const slides = [];
+    steps.forEach((step) => {
       const slide = document.createElement("div");
       slide.className = "reel-slide";
-      slide.appendChild(renderReviewCard(review));
-      track.appendChild(slide);
+      if (step && step.endCard) {
+        const end = document.createElement("article");
+        end.className = "review-card reel-end-card";
+        const heading = document.createElement("p");
+        heading.className = "reel-end-name";
+        heading.textContent = shopName;
+        end.appendChild(heading);
+        slide.appendChild(end);
+        slides.push(slide);
+      } else if (step && Number.isInteger(step.quoteIndex) && reviews[step.quoteIndex]) {
+        slide.appendChild(renderReviewCard(reviews[step.quoteIndex]));
+        slides.push(slide);
+      }
+      if (slide.childNodes.length) track.appendChild(slide);
     });
+    if (!slides.length) return;
     viewport.appendChild(track);
 
     const controls = document.createElement("div");
@@ -260,15 +308,35 @@
     dots.setAttribute("role", "tablist");
 
     let index = 0;
+    let timer = null;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function clearTimer() {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    }
+
+    function schedule() {
+      clearTimer();
+      if (reduceMotion || slides.length < 2) return;
+      const step = steps[index] || {};
+      const sec = Number(step.sec);
+      const wait = Number.isFinite(sec) && sec > 0 ? sec * 1000 : 5000;
+      timer = setTimeout(() => go(index + 1), wait);
+    }
+
     function go(i) {
-      index = (i + reviews.length) % reviews.length;
+      index = (i + slides.length) % slides.length;
       track.style.transform = "translateX(-" + index * 100 + "%)";
       Array.from(dots.children).forEach((dot, n) => {
         dot.setAttribute("aria-selected", n === index ? "true" : "false");
       });
+      schedule();
     }
 
-    reviews.forEach((_, n) => {
+    slides.forEach((_, n) => {
       const dot = document.createElement("button");
       dot.type = "button";
       dot.className = "reel-dot";
@@ -295,38 +363,37 @@
   }
 
   function render(listing, enrichment) {
+    const shop = Object.assign({}, listing, enrichment);
     const toggles = enrichment.toggles || {};
-    const name = listing.name || "Shop";
+    const name = shop.name || "Shop";
     document.title = name + " — Blades of Grass";
     nameEl.textContent = name;
 
     badgesEl.innerHTML = "";
-    if (listing.category) {
-      appendBadge(listing.category, "cat-badge");
+    if (shop.category) {
+      appendBadge(shop.category, "cat-badge");
     }
-    if (isLive(listing)) {
+    if (isLive(shop)) {
       appendBadge("Live", "status-badge status-live");
-      verifiedEl.classList.remove("hidden");
     } else {
       appendBadge("Pending confirm", "status-badge status-pending");
+    }
+    if (shop.verifiedByBog === true || isLive(shop)) {
+      verifiedEl.classList.remove("hidden");
+    } else {
       verifiedEl.classList.add("hidden");
     }
 
-    const oneLiner = (listing.oneLiner || listing.blurb || "").trim();
-    if (hasValue(oneLiner) && listing.showOneLiner !== false) {
+    const oneLiner = (shop.oneLiner || shop.blurb || "").trim();
+    if (hasValue(oneLiner) && shop.showOneLiner !== false) {
       oneLinerEl.textContent = oneLiner;
       oneLinerEl.classList.remove("hidden");
     }
 
-    const rating =
-      typeof enrichment.googleRating === "number"
-        ? enrichment.googleRating
-        : typeof listing.googleRating === "number"
-          ? listing.googleRating
-          : null;
-    const reviewCount =
-      enrichment.reviewCount != null ? enrichment.reviewCount : listing.googleReviewCount;
-    if (rating != null && toggleOn(toggles, "showRating")) {
+    const showGoogle = toggleOn(toggles, "showGoogle") && toggleOn(toggles, "showRating");
+    const rating = typeof shop.googleRating === "number" ? shop.googleRating : null;
+    const reviewCount = shop.reviewCount != null ? shop.reviewCount : shop.googleReviewCount;
+    if (rating != null && showGoogle) {
       ratingEl.innerHTML = "";
       const stars = document.createElement("span");
       stars.className = "stars";
@@ -347,31 +414,31 @@
       ratingEl.classList.remove("hidden");
     }
 
-    if (hasValue(listing.address)) {
-      addressEl.textContent = listing.address;
+    if (hasValue(shop.address)) {
+      addressEl.textContent = shop.address;
       addressEl.classList.remove("hidden");
     }
 
-    if (hasValue(listing.hours) && listing.showHours !== false) {
+    if (hasValue(shop.hours) && shop.showHours !== false) {
       hoursEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "owner-label";
       lab.textContent = "Hours: ";
       hoursEl.appendChild(lab);
-      hoursEl.appendChild(document.createTextNode(String(listing.hours).trim()));
+      hoursEl.appendChild(document.createTextNode(String(shop.hours).trim()));
       hoursEl.classList.remove("hidden");
     }
 
     actionsEl.innerHTML = "";
     actionsEl.classList.remove("hidden");
-    if (hasValue(listing.phone)) {
-      const tel = normalizePhone(listing.phone);
-      actionsEl.appendChild(actionLink("tel:" + tel, "Call " + formatPhone(listing.phone), "btn-primary"));
+    if (hasValue(shop.phone)) {
+      const tel = normalizePhone(shop.phone);
+      actionsEl.appendChild(actionLink("tel:" + tel, "Call " + formatPhone(shop.phone), "btn-primary"));
       actionsEl.appendChild(actionLink("sms:" + tel, "Text", "btn-secondary"));
     }
-    if (hasValue(listing.address)) {
+    if (hasValue(shop.address)) {
       const map = actionLink(
-        "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(listing.address),
+        "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(shop.address),
         "Map",
         "btn-secondary"
       );
@@ -379,8 +446,8 @@
       map.rel = "noopener noreferrer";
       actionsEl.appendChild(map);
     }
-    const booking = (listing.bookingUrl || listing.website || "").trim();
-    if (booking && listing.showBooking !== false) {
+    const booking = (shop.bookingUrl || shop.website || "").trim();
+    if (booking && shop.showBooking !== false) {
       const book = actionLink(booking, "Book", "btn-primary");
       book.target = "_blank";
       book.rel = "noopener noreferrer";
@@ -388,6 +455,30 @@
     }
     if (!actionsEl.children.length) {
       actionsEl.classList.add("hidden");
+    }
+
+    socialsEl.innerHTML = "";
+    socialsEl.classList.add("hidden");
+    const socials = [];
+    if (hasValue(shop.instagram) && shop.showIg !== false) {
+      socials.push({ href: socialHref(shop.instagram, "instagram"), label: "Instagram" });
+    }
+    if (hasValue(shop.tiktok)) {
+      socials.push({ href: socialHref(shop.tiktok, "tiktok"), label: "TikTok" });
+    }
+    if (hasValue(shop.website) && shop.website !== shop.bookingUrl) {
+      socials.push({ href: String(shop.website).trim(), label: "Website" });
+    }
+    if (socials.length) {
+      socials.forEach((item) => {
+        const a = document.createElement("a");
+        a.href = item.href;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = item.label;
+        socialsEl.appendChild(a);
+      });
+      socialsEl.classList.remove("hidden");
     }
 
     const story = hasValue(enrichment.story) ? String(enrichment.story).trim() : "";
@@ -416,19 +507,30 @@
     if (photos.length && toggleOn(toggles, "showPhotos")) {
       photoFeed.innerHTML = "";
       photos.forEach((photo) => {
-        const fig = document.createElement("figure");
-        fig.className = "photo-item";
-        const img = document.createElement("img");
-        img.src = photoSrc(photo);
-        img.alt = photoAlt(photo, name);
-        img.loading = "lazy";
-        fig.appendChild(img);
-        if (photo && typeof photo === "object" && hasValue(photo.caption)) {
-          const cap = document.createElement("figcaption");
-          cap.textContent = String(photo.caption).trim();
-          fig.appendChild(cap);
+        const src = photoSrc(photo);
+        if (isImageUrl(src)) {
+          const fig = document.createElement("figure");
+          fig.className = "photo-item";
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = photoAlt(photo, name);
+          img.loading = "lazy";
+          fig.appendChild(img);
+          if (photo && typeof photo === "object" && hasValue(photo.caption)) {
+            const cap = document.createElement("figcaption");
+            cap.textContent = String(photo.caption).trim();
+            fig.appendChild(cap);
+          }
+          photoFeed.appendChild(fig);
+        } else {
+          const a = document.createElement("a");
+          a.className = "gallery-link";
+          a.href = src;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "Gallery";
+          photoFeed.appendChild(a);
         }
-        photoFeed.appendChild(fig);
       });
       photosSection.classList.remove("hidden");
     }
@@ -440,11 +542,15 @@
     const showReel = toggleOn(toggles, "showReel");
 
     if (showReel && reviews.length >= 3) {
-      renderReel(reviews);
+      renderReel(reviews, enrichment.reelStoryboard, name);
       reelSection.classList.remove("hidden");
     }
 
     if (showReviews && reviews.length >= 1) {
+      if (hasValue(enrichment.aggregateNote)) {
+        aggregateNoteEl.textContent = String(enrichment.aggregateNote).trim();
+        aggregateNoteEl.classList.remove("hidden");
+      }
       reviewList.innerHTML = "";
       reviews.forEach((review) => reviewList.appendChild(renderReviewCard(review)));
       reviewsSection.classList.remove("hidden");

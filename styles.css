@@ -445,6 +445,67 @@ body {
   margin: 1rem 0 0;
 }
 
+.shop-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin: 0.75rem 0 0;
+}
+
+.shop-socials a {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+.shop-socials a:hover { text-decoration: underline; }
+
+.aggregate-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.review-source {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.gallery-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid var(--border);
+}
+.gallery-link:hover { background: #d7e6dc; }
+
+.reel-end-card {
+  min-height: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(160deg, var(--brand) 0%, #244f38 100%);
+  color: #f4faf6;
+  border: none;
+}
+
+.reel-end-name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
 .shop-section {
   margin-top: 1.25rem;
   background: var(--surface);

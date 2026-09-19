@@ -1,22 +1,38 @@
 {
   "id": 11,
-  "slug": "ladies-and-gentlemen-hair-salon",
-  "story": null,
-  "photos": [],
-  "services": [],
-  "reviews": [],
+  "slug": "stop-4-nails",
+  "name": "Stop 4 Nails",
+  "category": "Nail Salon",
+  "address": "212 SW 43rd St, Renton WA 98057",
+  "phone": "425-254-3554",
+  "hours": "Mon-Sat 10-7 / Sun 10-5",
+  "oneLiner": "Walk-ins welcome",
+  "website": "https://www.stop4nailsrenton.com/",
+  "instagram": "https://www.instagram.com/stop4nailsrenton/",
+  "tiktok": "https://www.tiktok.com/@stop4nailsrenton",
+  "bookingUrl": "https://app.squareup.com/appointments/book/34ffvwtlczxga4/LMY6NZTWSV9B9/start",
+  "services": ["Manicure", "Pedicure", "Gel / Shellac", "Full sets", "Eyelashes", "Waxing"],
+  "story": "Stop 4 Nails is a neighborhood nail salon in Renton’s East Valley Business Park at 212 SW 43rd Street. Open seven days—weekdays and Saturdays 10 to 7, Sundays 10 to 5—with walk-ins welcome when they can fit you in. Menu covers manicures and pedicures (classic to spa), lashes, waxing, and full-set work with shellac and gel options. Book online or call (425) 254-3554. Follow @stop4nailsrenton on Instagram.",
   "googleRating": null,
   "reviewCount": null,
-  "toggles": {
-    "showStory": true,
-    "showReviews": true,
-    "showReel": true,
-    "showServices": true,
-    "showPhotos": true,
-    "showRating": true
-  },
-  "reel": {
-    "mode": "stills-slideshow",
-    "note": "Dry-run: embed only when >=3 real matched reviews exist. No invented quotes."
-  }
+  "reviews": [
+    {"stars": null, "text": "I stopped by Stop 4 Nails as a walk-in… They welcomed me in and were able to get me in quickly.", "author": "Inna M.", "source": "Yelp (via Yahoo Local)"},
+    {"stars": null, "text": "They have always done a great job on my nails (acrylic with gel polish)… Prices are fair.", "author": "Stefanie G.", "source": "Yelp (via Yahoo Local)"},
+    {"stars": null, "text": "They do a very good pedicure here… We come with my wife together, always.", "author": "Andrew S.", "source": "Yelp (via Yahoo Local)"},
+    {"stars": null, "text": "I loved me nails fall colors I'm recommending this place !! Very good job!!", "author": "Virginia C.", "source": "Yelp (via Yahoo Local)"}
+  ],
+  "aggregateNote": "~4.0 ★ · 147 reviews attributed to Yelp on Yahoo Local — not confirmed Google Maps",
+  "photos": [
+    "https://static.wixstatic.com/media/006ba0_745ead96b6b94506938826dd86e19559~mv2.png",
+    "https://www.stop4nailsrenton.com/gallery"
+  ],
+  "toggles": {"showStory": true, "showReviews": true, "showReel": true, "showGoogle": false},
+  "reelStoryboard": [
+    {"sec": 5, "quoteIndex": 0},
+    {"sec": 5, "quoteIndex": 1},
+    {"sec": 4, "quoteIndex": 2},
+    {"sec": 3, "quoteIndex": 3},
+    {"sec": 3, "endCard": true}
+  ],
+  "verifiedByBog": true
 }

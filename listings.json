@@ -98,16 +98,20 @@
   },
   {
     "id": 11,
-    "slug": "ladies-and-gentlemen-hair-salon",
-    "name": "Ladies & Gentlemen Hair Salon",
-    "category": "Hair Salon",
+    "slug": "stop-4-nails",
+    "name": "Stop 4 Nails",
+    "category": "Nail Salon",
     "address": "212 SW 43rd St, Renton WA 98057",
     "phone": "425-254-3554",
+    "hours": "Mon-Sat 10-7 / Sun 10-5",
+    "oneLiner": "Walk-ins welcome",
+    "website": "https://www.stop4nailsrenton.com/",
+    "instagram": "https://www.instagram.com/stop4nailsrenton/",
+    "bookingUrl": "https://app.squareup.com/appointments/book/34ffvwtlczxga4/LMY6NZTWSV9B9/start",
     "status": "live",
     "confirmed": true,
-    "hours": "Mon-Sat 10-7 / Sun 10:30-5",
-    "oneLiner": "Walk-ins welcome",
     "showHours": true,
-    "showOneLiner": true
+    "showOneLiner": true,
+    "showIg": true
   }
 ]
