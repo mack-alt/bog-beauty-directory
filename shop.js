@@ -236,28 +236,36 @@
   const PAGES_SHOP = "https://mack-alt.github.io/bog-beauty-directory/shop.html";
 
   function canonicalShopUrl(shop) {
-    let base = PAGES_SHOP;
-    if (window.location && /^https?:$/i.test(window.location.protocol)) {
-      try {
+    const fallbackQuery =
+      shop && shop.id != null && shop.id !== ""
+        ? "id=" + encodeURIComponent(shop.id)
+        : shop && hasValue(shop.slug)
+          ? "slug=" + encodeURIComponent(String(shop.slug).trim())
+          : "";
+    const fallback = fallbackQuery ? PAGES_SHOP + "?" + fallbackQuery : PAGES_SHOP;
+    try {
+      let base = PAGES_SHOP;
+      const protocol = window.location && window.location.protocol;
+      if (protocol === "http:" || protocol === "https:") {
         const loc = new URL(window.location.href);
         if (/shop\.html$/i.test(loc.pathname)) {
           base = loc.origin + loc.pathname;
         } else {
           base = loc.origin + loc.pathname.replace(/[^/]*$/, "") + "shop.html";
         }
-      } catch (err) {
-        base = PAGES_SHOP;
       }
+      const url = new URL(base);
+      url.search = "";
+      url.hash = "";
+      if (shop && shop.id != null && shop.id !== "") {
+        url.searchParams.set("id", String(shop.id));
+      } else if (shop && hasValue(shop.slug)) {
+        url.searchParams.set("slug", String(shop.slug).trim());
+      }
+      return url.toString();
+    } catch (err) {
+      return fallback;
     }
-    const url = new URL(base);
-    url.search = "";
-    url.hash = "";
-    if (shop && shop.id != null && shop.id !== "") {
-      url.searchParams.set("id", String(shop.id));
-    } else if (shop && hasValue(shop.slug)) {
-      url.searchParams.set("slug", String(shop.slug).trim());
-    }
-    return url.toString();
   }
 
   function mapHref(shop) {
