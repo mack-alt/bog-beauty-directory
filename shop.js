@@ -21,15 +21,26 @@
   const reelEl = document.getElementById("shop-reel-slideshow");
   const reviewsSection = document.getElementById("shop-reviews");
   const reviewList = document.getElementById("shop-review-list");
+  const demoBannerEl = document.getElementById("shop-demo-banner");
+  const langSwitchEl = document.getElementById("shop-lang");
+  const localeNoteEl = document.getElementById("shop-locale-note");
+  const demoNoteEl = document.getElementById("shop-demo-note");
+
+  const LOCALES = ["en", "vi", "es"];
+  let currentListing = null;
+  let currentEnrichment = null;
+  let activeLocale = "en";
 
   function params() {
     const q = new URLSearchParams(window.location.search);
     const idRaw = (q.get("id") || "").trim();
     const slug = (q.get("slug") || "").trim().toLowerCase();
     const id = idRaw === "" ? null : Number(idRaw);
+    const lang = (q.get("lang") || "").trim().toLowerCase();
     return {
       id: Number.isFinite(id) ? id : null,
       slug,
+      lang: LOCALES.indexOf(lang) !== -1 ? lang : "",
     };
   }
 
@@ -70,12 +81,17 @@
   }
 
   /**
-   * Optional shop link roster (null/absent = do not render; never invent URLs).
-   * Basics (no SHELF toggle): phone, address, googlePlaceId / googleMapsUrl /
-   * googleReviewsUrl, Share (canonical shop page URL).
-   * SHELF / unlock: website, instagram, facebook, tiktok, email, bookingUrl.
-   * Safe extras (link-out when URL present): yelpUrl, appleMapsUrl.
-   * Schema hooks only (no UI yet): languages, pageLocale, translateUrl.
+   * Canonical model (source of truth):
+   * 1. Card snap = basics (name, phone, directions, hours).
+   * 2. Shop page always shows EN|VI|ES switch — never a guessed translation.
+   * 3. Interview unlocks story + confirmed links; empty slots stay hidden.
+   * 4. Action row (real hrefs only): Call, Text (textFirst prefers Text),
+   *    Directions, Reviews on Google, Share, then Website/IG/FB/TikTok/
+   *    Email/Booking/Yelp when filled + unlocked.
+   * 5. SHELF: contested enrichment hidden until a toggle is explicitly true.
+   * 6. Owner point cards (VI/ES) are a separate product — not this site.
+   *
+   * Optional roster (null/absent = do not render; never invent URLs on real shops).
    */
   const SHELF_TOGGLE_KEYS = [
     "showStory",
@@ -93,6 +109,7 @@
     "showTikTok",
     "showFacebook",
     "showEmail",
+    "showYelp",
     "showLanguages",
     "showKnownFor",
   ];
@@ -105,6 +122,77 @@
 
   function socialToggleOn(toggles, keys) {
     return keys.some((key) => toggleOn(toggles, key));
+  }
+
+  function isDemoShop(shop) {
+    return !!(shop && (shop.isDemo === true || shop.demo === true));
+  }
+
+  /** Safe extras: show when a real href exists unless the toggle is explicitly false. */
+  function extraLinkOn(toggles, key, href) {
+    if (!isUsableHref(href)) return false;
+    if (!toggles || toggles[key] === undefined || toggles[key] === null) return true;
+    return toggles[key] === true;
+  }
+
+  function readStoredLocale() {
+    try {
+      const stored = sessionStorage.getItem("bog-shop-lang");
+      if (LOCALES.indexOf(stored) !== -1) return stored;
+    } catch (err) {}
+    return "";
+  }
+
+  function persistLocale(locale) {
+    try {
+      sessionStorage.setItem("bog-shop-lang", locale);
+    } catch (err) {}
+    if (window.history && window.history.replaceState) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", locale);
+        window.history.replaceState({}, "", url);
+      } catch (err) {}
+    }
+    document.documentElement.lang = locale;
+  }
+
+  /** Strings are English source. Objects may key en/vi/es. Never invent a translation. */
+  function localeBundle(value, locale) {
+    if (value == null) return { text: "", fallback: false };
+    if (typeof value === "object" && !Array.isArray(value)) {
+      const hit = hasValue(value[locale]) ? String(value[locale]).trim() : "";
+      if (hit) return { text: hit, fallback: false };
+      const en = hasValue(value.en) ? String(value.en).trim() : "";
+      return { text: en, fallback: locale !== "en" && !!en };
+    }
+    const text = hasValue(value) ? String(value).trim() : "";
+    return { text: text, fallback: locale !== "en" && !!text };
+  }
+
+  function localeNote(locale) {
+    if (locale === "vi") return "Showing English — Vietnamese isn’t on this page yet. We don’t guess a translation.";
+    if (locale === "es") return "Showing English — Spanish isn’t on this page yet. We don’t guess a translation.";
+    return "";
+  }
+
+  function renderLangSwitch(active) {
+    if (!langSwitchEl) return;
+    langSwitchEl.innerHTML = "";
+    langSwitchEl.classList.remove("hidden");
+    LOCALES.forEach((loc) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "lang-btn";
+      btn.textContent = loc.toUpperCase();
+      btn.setAttribute("aria-pressed", loc === active ? "true" : "false");
+      btn.addEventListener("click", function () {
+        activeLocale = loc;
+        persistLocale(loc);
+        if (currentListing) render(currentListing, currentEnrichment || emptyEnrichment());
+      });
+      langSwitchEl.appendChild(btn);
+    });
   }
 
   function resolveToggles(shop, enrichment) {
@@ -153,6 +241,10 @@
       languages: null,
       pageLocale: null,
       translateUrl: null,
+      textFirst: false,
+      isDemo: false,
+      demo: false,
+      demoNote: null,
       toggles: {},
       reel: {},
     };
@@ -525,14 +617,46 @@
     shopEl.classList.add("hidden");
   }
 
+  function hideEl(el) {
+    if (!el) return;
+    el.classList.add("hidden");
+  }
+
   function render(listing, enrichment) {
+    currentListing = listing;
+    currentEnrichment = enrichment;
     const shop = Object.assign({}, listing, enrichment);
     const toggles = resolveToggles(shop, enrichment);
     const name = shop.name || "Shop";
-    document.title = name + " — Blades of Grass";
+    const demo = isDemoShop(shop);
+    document.title = (demo ? "DEMO — " : "") + name + " — Blades of Grass";
     nameEl.textContent = name;
 
+    hideEl(oneLinerEl);
+    hideEl(ratingEl);
+    hideEl(addressEl);
+    hideEl(hoursEl);
+    hideEl(storySection);
+    hideEl(servicesSection);
+    hideEl(photosSection);
+    hideEl(reelSection);
+    hideEl(reviewsSection);
+    hideEl(aggregateNoteEl);
+    hideEl(demoNoteEl);
+    hideEl(localeNoteEl);
+    if (ratingEl) ratingEl.innerHTML = "";
+
+    renderLangSwitch(activeLocale);
+
+    if (demoBannerEl) {
+      if (demo) demoBannerEl.classList.remove("hidden");
+      else hideEl(demoBannerEl);
+    }
+
     badgesEl.innerHTML = "";
+    if (demo) {
+      appendBadge("DEMO / TEMPLATE", "demo-badge");
+    }
     if (shop.category) {
       appendBadge(shop.category, "cat-badge");
     }
@@ -547,9 +671,9 @@
       verifiedEl.classList.add("hidden");
     }
 
-    const oneLiner = (shop.oneLiner || shop.blurb || "").trim();
-    if (hasValue(oneLiner)) {
-      oneLinerEl.textContent = oneLiner;
+    const oneLiner = localeBundle(shop.oneLiner || shop.blurb, activeLocale);
+    if (hasValue(oneLiner.text)) {
+      oneLinerEl.textContent = oneLiner.text;
       oneLinerEl.classList.remove("hidden");
     }
 
@@ -583,14 +707,20 @@
       addressEl.classList.remove("hidden");
     }
 
-    if (hasValue(shop.hours)) {
+    const hours = localeBundle(shop.hours, activeLocale);
+    if (hasValue(hours.text)) {
       hoursEl.innerHTML = "";
       const lab = document.createElement("span");
       lab.className = "owner-label";
       lab.textContent = "Hours: ";
       hoursEl.appendChild(lab);
-      hoursEl.appendChild(document.createTextNode(String(shop.hours).trim()));
+      hoursEl.appendChild(document.createTextNode(hours.text));
       hoursEl.classList.remove("hidden");
+    }
+
+    if (demo && hasValue(shop.demoNote) && demoNoteEl) {
+      demoNoteEl.textContent = String(shop.demoNote).trim();
+      demoNoteEl.classList.remove("hidden");
     }
 
     actionsEl.innerHTML = "";
@@ -615,11 +745,19 @@
     if (hasValue(shop.phone)) {
       const tel = normalizePhone(shop.phone);
       if (tel) {
-        appendAction("tel:" + tel, "Call " + formatPhone(shop.phone), "btn-primary");
-        appendAction("sms:" + tel, "Text", "btn-secondary");
+        const callHref = "tel:" + tel;
+        const textHref = "sms:" + tel;
+        const callLabel = "Call " + formatPhone(shop.phone);
+        if (shop.textFirst === true) {
+          appendAction(textHref, "Text", "btn-primary");
+          appendAction(callHref, callLabel, "btn-secondary");
+        } else {
+          appendAction(callHref, callLabel, "btn-primary");
+          appendAction(textHref, "Text", "btn-secondary");
+        }
       }
     }
-    appendAction(mapHref(shop), "Map", "btn-secondary", { external: true });
+    appendAction(mapHref(shop), "Directions", "btn-secondary", { external: true });
     appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-secondary", { external: true });
 
     const shareUrl = canonicalShopUrl(shop);
@@ -655,17 +793,26 @@
     if (toggleOn(toggles, "showEmail")) {
       appendAction(mailtoHref(shop.email), "Email", "btn-secondary");
     }
-    appendAction(httpHref(shop.yelpUrl), "Yelp", "btn-secondary", { external: true });
+    const yelpHref = httpHref(shop.yelpUrl);
+    if (extraLinkOn(toggles, "showYelp", yelpHref)) {
+      appendAction(yelpHref, "Yelp", "btn-secondary", { external: true });
+    }
     appendAction(httpHref(shop.appleMapsUrl), "Apple Maps", "btn-secondary", { external: true });
 
     if (!actionsEl.children.length) {
       actionsEl.classList.add("hidden");
     }
 
-    const story = hasValue(enrichment.story) ? String(enrichment.story).trim() : "";
-    if (story && toggleOn(toggles, "showStory")) {
-      storyText.textContent = story;
+    const story = localeBundle(enrichment.story, activeLocale);
+    if (story.text && toggleOn(toggles, "showStory")) {
+      storyText.textContent = story.text;
       storySection.classList.remove("hidden");
+    }
+
+    const usedFallback = oneLiner.fallback || hours.fallback || story.fallback;
+    if (localeNoteEl && usedFallback) {
+      localeNoteEl.textContent = localeNote(activeLocale);
+      localeNoteEl.classList.remove("hidden");
     }
 
     const services = Array.isArray(enrichment.services)
@@ -742,6 +889,8 @@
   }
 
   const query = params();
+  activeLocale = query.lang || readStoredLocale() || "en";
+  persistLocale(activeLocale);
   if (query.id == null && !query.slug) {
     fail("Add ?id= or ?slug= to open a shop page.");
     return;

@@ -177,6 +177,12 @@
       status.className = "status-badge status-pending";
       status.textContent = "Pending confirm";
     }
+    if (item.isDemo === true || item.demo === true) {
+      const demo = document.createElement("span");
+      demo.className = "demo-badge";
+      demo.textContent = "DEMO / TEMPLATE";
+      badges.appendChild(demo);
+    }
     badges.appendChild(status);
     top.appendChild(badges);
     body.appendChild(top);
@@ -314,11 +320,32 @@
       actions.appendChild(a);
     }
     if (item.phone) {
+      const tel = normalizePhone(item.phone);
+      if (item.textFirst === true) {
+        const textBtn = document.createElement("a");
+        textBtn.className = "btn btn-secondary";
+        textBtn.href = "sms:" + tel;
+        textBtn.textContent = "Text";
+        actions.appendChild(textBtn);
+      }
       const call = document.createElement("a");
       call.className = "btn btn-secondary";
-      call.href = "tel:" + normalizePhone(item.phone);
+      call.href = "tel:" + tel;
       call.textContent = "Call";
       actions.appendChild(call);
+    }
+    const mapQuery = item.googleMapsUrl || item.googleReviewsUrl ||
+      (item.address
+        ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(item.address)
+        : "");
+    if (mapQuery && /^https?:\/\//i.test(String(mapQuery).trim())) {
+      const map = document.createElement("a");
+      map.className = "btn btn-secondary";
+      map.href = String(mapQuery).trim();
+      map.target = "_blank";
+      map.rel = "noopener noreferrer";
+      map.textContent = "Directions";
+      actions.appendChild(map);
     }
     body.appendChild(actions);
 

@@ -7,6 +7,9 @@
   "phone": "425-254-3554",
   "hours": "Mon-Sat 10-7 / Sun 10-5",
   "oneLiner": "Walk-ins welcome",
+  "textFirst": false,
+  "isDemo": false,
+  "demo": false,
   "website": "https://www.stop4nailsrenton.com/",
   "instagram": "https://www.instagram.com/stop4nailsrenton/",
   "tiktok": "https://www.tiktok.com/@stop4nailsrenton",
@@ -20,8 +23,8 @@
   "googleReviewsUrl": "https://www.google.com/maps/search/?api=1&query=Stop%204%20Nails&query_place_id=ChIJ5_sEMgNdkFQRukSzxsG25Qs",
   "yelpUrl": null,
   "appleMapsUrl": null,
-  "languages": null,
-  "pageLocale": null,
+  "languages": ["en"],
+  "pageLocale": "en",
   "translateUrl": null,
   "googleRating": null,
   "reviewCount": null,
@@ -51,6 +54,7 @@
     "showTiktok": false,
     "showFacebook": false,
     "showEmail": false,
+    "showYelp": false,
     "showLanguages": false
   },
   "reelStoryboard": [
