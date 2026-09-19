@@ -69,6 +69,14 @@
     return !!item.confirmed;
   }
 
+  /**
+   * Optional shop link roster (null/absent = do not render; never invent URLs).
+   * Basics (no SHELF toggle): phone, address, googlePlaceId / googleMapsUrl /
+   * googleReviewsUrl, Share (canonical shop page URL).
+   * SHELF / unlock: website, instagram, facebook, tiktok, email, bookingUrl.
+   * Safe extras (link-out when URL present): yelpUrl, appleMapsUrl.
+   * Schema hooks only (no UI yet): languages, pageLocale, translateUrl.
+   */
   const SHELF_TOGGLE_KEYS = [
     "showStory",
     "showReviews",
@@ -83,6 +91,8 @@
     "showIg",
     "showTiktok",
     "showTikTok",
+    "showFacebook",
+    "showEmail",
     "showLanguages",
     "showKnownFor",
   ];
@@ -133,6 +143,16 @@
       reviews: [],
       googleRating: null,
       reviewCount: null,
+      googlePlaceId: null,
+      googleMapsUrl: null,
+      googleReviewsUrl: null,
+      facebook: null,
+      email: null,
+      yelpUrl: null,
+      appleMapsUrl: null,
+      languages: null,
+      pageLocale: null,
+      translateUrl: null,
       toggles: {},
       reel: {},
     };
@@ -181,13 +201,81 @@
     return /\.(png|jpe?g|gif|webp|avif|svg)(\?|#|$)/i.test(String(url || ""));
   }
 
+  function httpHref(value) {
+    if (!hasValue(value)) return "";
+    const v = String(value).trim();
+    return /^https?:\/\//i.test(v) ? v : "";
+  }
+
+  function mailtoHref(value) {
+    if (!hasValue(value)) return "";
+    const v = String(value).trim();
+    if (/^mailto:/i.test(v)) return v;
+    if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return "mailto:" + v;
+    return "";
+  }
+
+  function isUsableHref(href) {
+    if (!hasValue(href)) return false;
+    return /^(https?:\/\/|tel:|sms:|mailto:)/i.test(String(href).trim());
+  }
+
   function socialHref(value, kind) {
     const v = String(value || "").trim();
     if (!v) return "";
     if (/^https?:\/\//i.test(v)) return v;
-    if (kind === "instagram") return "https://instagram.com/" + v.replace(/^@/, "");
-    if (kind === "tiktok") return "https://www.tiktok.com/@" + v.replace(/^@/, "");
-    return v;
+    if (kind === "instagram" && /^@?[A-Za-z0-9._]+$/.test(v)) {
+      return "https://instagram.com/" + v.replace(/^@/, "");
+    }
+    if (kind === "tiktok" && /^@?[A-Za-z0-9._]+$/.test(v)) {
+      return "https://www.tiktok.com/@" + v.replace(/^@/, "");
+    }
+    return "";
+  }
+
+  const PAGES_SHOP = "https://mack-alt.github.io/bog-beauty-directory/shop.html";
+
+  function canonicalShopUrl(shop) {
+    let base = PAGES_SHOP;
+    if (window.location && /^https?:$/i.test(window.location.protocol)) {
+      try {
+        const loc = new URL(window.location.href);
+        if (/shop\.html$/i.test(loc.pathname)) {
+          base = loc.origin + loc.pathname;
+        } else {
+          base = loc.origin + loc.pathname.replace(/[^/]*$/, "") + "shop.html";
+        }
+      } catch (err) {
+        base = PAGES_SHOP;
+      }
+    }
+    const url = new URL(base);
+    url.search = "";
+    url.hash = "";
+    if (shop && shop.id != null && shop.id !== "") {
+      url.searchParams.set("id", String(shop.id));
+    } else if (shop && hasValue(shop.slug)) {
+      url.searchParams.set("slug", String(shop.slug).trim());
+    }
+    return url.toString();
+  }
+
+  function mapHref(shop) {
+    const explicit = httpHref(shop && shop.googleMapsUrl);
+    if (explicit) return explicit;
+    if (shop && hasValue(shop.googlePlaceId)) {
+      const query = encodeURIComponent(shop.name || shop.address || "place");
+      return (
+        "https://www.google.com/maps/search/?api=1&query=" +
+        query +
+        "&query_place_id=" +
+        encodeURIComponent(String(shop.googlePlaceId).trim())
+      );
+    }
+    if (shop && hasValue(shop.address)) {
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(shop.address);
+    }
+    return "";
   }
 
   function photoSrc(photo) {
@@ -230,8 +318,8 @@
 
   /** Basics-safe link-out. Not a SHELF toggle — show when place id or URL is present. */
   function googleReviewsHref(shop) {
-    const explicit = shop && shop.googleReviewsUrl;
-    if (hasValue(explicit)) return String(explicit).trim();
+    const explicit = httpHref(shop && shop.googleReviewsUrl) || httpHref(shop && shop.googleMapsUrl);
+    if (explicit) return explicit;
     const placeId = shop && shop.googlePlaceId;
     if (!hasValue(placeId)) return "";
     const query = encodeURIComponent(shop.name || shop.address || "place");
@@ -241,6 +329,27 @@
       "&query_place_id=" +
       encodeURIComponent(String(placeId).trim())
     );
+  }
+
+  function shareShop(event, url, title) {
+    if (!url) return;
+    if (navigator.share) {
+      event.preventDefault();
+      navigator.share({ title: title, text: title, url: url }).catch(function () {});
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      event.preventDefault();
+      navigator.clipboard.writeText(url).then(function () {
+        const el = event.currentTarget;
+        if (!el) return;
+        const prev = el.textContent;
+        el.textContent = "Link copied";
+        window.setTimeout(function () {
+          el.textContent = prev;
+        }, 1600);
+      }).catch(function () {});
+    }
   }
 
   function renderReviewCard(review) {
@@ -478,71 +587,71 @@
 
     actionsEl.innerHTML = "";
     actionsEl.classList.remove("hidden");
-    if (hasValue(shop.phone)) {
-      const tel = normalizePhone(shop.phone);
-      actionsEl.appendChild(actionLink("tel:" + tel, "Call " + formatPhone(shop.phone), "btn-primary"));
-      actionsEl.appendChild(actionLink("sms:" + tel, "Text", "btn-secondary"));
-    }
-    if (hasValue(shop.address)) {
-      const map = actionLink(
-        "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(shop.address),
-        "Map",
-        "btn-secondary"
-      );
-      map.target = "_blank";
-      map.rel = "noopener noreferrer";
-      actionsEl.appendChild(map);
-    }
-    const reviewsUrl = googleReviewsHref(shop);
-    if (reviewsUrl) {
-      const reviews = actionLink(reviewsUrl, "Reviews on Google", "btn-secondary");
-      reviews.target = "_blank";
-      reviews.rel = "noopener noreferrer";
-      actionsEl.appendChild(reviews);
-    }
-    const booking = (shop.bookingUrl || shop.website || "").trim();
-    if (booking && toggleOn(toggles, "showBooking")) {
-      const book = actionLink(booking, "Book", "btn-primary");
-      book.target = "_blank";
-      book.rel = "noopener noreferrer";
-      actionsEl.appendChild(book);
-    }
-    if (!actionsEl.children.length) {
-      actionsEl.classList.add("hidden");
-    }
-
     socialsEl.innerHTML = "";
     socialsEl.classList.add("hidden");
-    const socials = [];
-    if (
-      hasValue(shop.instagram) &&
-      socialToggleOn(toggles, ["showInstagram", "showIg"])
-    ) {
-      socials.push({ href: socialHref(shop.instagram, "instagram"), label: "Instagram" });
-    }
-    if (
-      hasValue(shop.tiktok) &&
-      socialToggleOn(toggles, ["showTiktok", "showTikTok"])
-    ) {
-      socials.push({ href: socialHref(shop.tiktok, "tiktok"), label: "TikTok" });
-    }
-    if (
-      hasValue(shop.website) &&
-      shop.website !== shop.bookingUrl &&
-      toggleOn(toggles, "showWebsite")
-    ) {
-      socials.push({ href: String(shop.website).trim(), label: "Website" });
-    }
-    if (socials.length) {
-      socials.forEach((item) => {
-        const a = document.createElement("a");
-        a.href = item.href;
+
+    function appendAction(href, label, extraClass, opts) {
+      if (!isUsableHref(href)) return;
+      const a = actionLink(href, label, extraClass);
+      const o = opts || {};
+      if (o.external) {
         a.target = "_blank";
         a.rel = "noopener noreferrer";
-        a.textContent = item.label;
-        socialsEl.appendChild(a);
+      }
+      if (typeof o.onClick === "function") {
+        a.addEventListener("click", o.onClick);
+      }
+      actionsEl.appendChild(a);
+    }
+
+    if (hasValue(shop.phone)) {
+      const tel = normalizePhone(shop.phone);
+      if (tel) {
+        appendAction("tel:" + tel, "Call " + formatPhone(shop.phone), "btn-primary");
+        appendAction("sms:" + tel, "Text", "btn-secondary");
+      }
+    }
+    appendAction(mapHref(shop), "Map", "btn-secondary", { external: true });
+    appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-secondary", { external: true });
+
+    const shareUrl = canonicalShopUrl(shop);
+    appendAction(shareUrl, "Share", "btn-secondary", {
+      onClick: function (event) {
+        shareShop(event, shareUrl, name);
+      },
+    });
+
+    const websiteHref = httpHref(shop.website);
+    const bookingHref = httpHref(shop.bookingUrl) || (toggleOn(toggles, "showBooking") ? websiteHref : "");
+    if (toggleOn(toggles, "showBooking")) {
+      appendAction(bookingHref, "Book", "btn-primary", { external: true });
+    }
+    if (
+      toggleOn(toggles, "showWebsite") &&
+      websiteHref &&
+      !(toggleOn(toggles, "showBooking") && websiteHref === bookingHref)
+    ) {
+      appendAction(websiteHref, "Website", "btn-secondary", { external: true });
+    }
+    if (socialToggleOn(toggles, ["showInstagram", "showIg"])) {
+      appendAction(socialHref(shop.instagram, "instagram"), "Instagram", "btn-secondary", {
+        external: true,
       });
-      socialsEl.classList.remove("hidden");
+    }
+    if (toggleOn(toggles, "showFacebook")) {
+      appendAction(httpHref(shop.facebook), "Facebook", "btn-secondary", { external: true });
+    }
+    if (socialToggleOn(toggles, ["showTiktok", "showTikTok"])) {
+      appendAction(socialHref(shop.tiktok, "tiktok"), "TikTok", "btn-secondary", { external: true });
+    }
+    if (toggleOn(toggles, "showEmail")) {
+      appendAction(mailtoHref(shop.email), "Email", "btn-secondary");
+    }
+    appendAction(httpHref(shop.yelpUrl), "Yelp", "btn-secondary", { external: true });
+    appendAction(httpHref(shop.appleMapsUrl), "Apple Maps", "btn-secondary", { external: true });
+
+    if (!actionsEl.children.length) {
+      actionsEl.classList.add("hidden");
     }
 
     const story = hasValue(enrichment.story) ? String(enrichment.story).trim() : "";
