@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Blades of Grass — shop page for a local beauty business." />
+  <meta name="theme-color" content="#1a3a2a" />
+  <title>Shop — Blades of Grass</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="shop-page">
+  <header class="site-header shop-header">
+    <div class="brand">
+      <a class="back-link" href="index.html">← Directory</a>
+      <p class="brand-mark">Blades of Grass</p>
+      <p class="tagline">Local shop page</p>
+    </div>
+  </header>
+
+  <main class="wrap shop-wrap">
+    <p id="shop-status" class="count" aria-live="polite">Loading…</p>
+
+    <article id="shop" class="shop hidden">
+      <header class="shop-hero">
+        <div class="shop-hero-top">
+          <h1 id="shop-name" class="shop-name"></h1>
+          <div id="shop-badges" class="badges"></div>
+        </div>
+        <p id="shop-verified" class="verified hidden">Verified by BoG</p>
+        <p id="shop-oneliner" class="blurb hidden"></p>
+        <p id="shop-rating" class="rating hidden"></p>
+        <p id="shop-address" class="meta hidden"></p>
+        <p id="shop-hours" class="owner-block hidden"></p>
+      </header>
+
+      <nav id="shop-actions" class="shop-actions" aria-label="Contact and directions"></nav>
+
+      <section id="shop-story" class="shop-section hidden">
+        <h3>Story</h3>
+        <p id="shop-story-text" class="shop-story-text"></p>
+      </section>
+
+      <section id="shop-services" class="shop-section hidden">
+        <h3>Services</h3>
+        <div id="shop-service-chips" class="service-chips"></div>
+      </section>
+
+      <section id="shop-photos" class="shop-section hidden">
+        <h3>Photos</h3>
+        <div id="shop-photo-feed" class="photo-feed"></div>
+      </section>
+
+      <section id="shop-reel" class="shop-section hidden">
+        <h3>Highlights</h3>
+        <div id="shop-reel-slideshow" class="reel" aria-roledescription="carousel"></div>
+      </section>
+
+      <section id="shop-reviews" class="shop-section hidden">
+        <h3>Reviews</h3>
+        <div id="shop-review-list" class="review-list"></div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p><a href="index.html">Back to the directory</a></p>
+    <p>Blades of Grass · Renton / South King County</p>
+    <p class="fine">Only confirmed listing details and owner-supplied enrichment are shown. No invented reviews or photos.</p>
+  </footer>
+
+  <script src="shop.js"></script>
+</body>
+</html>

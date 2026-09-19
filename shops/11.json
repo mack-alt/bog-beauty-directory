@@ -1,0 +1,22 @@
+{
+  "id": 11,
+  "slug": "ladies-and-gentlemen-hair-salon",
+  "story": null,
+  "photos": [],
+  "services": [],
+  "reviews": [],
+  "googleRating": null,
+  "reviewCount": null,
+  "toggles": {
+    "showStory": true,
+    "showReviews": true,
+    "showReel": true,
+    "showServices": true,
+    "showPhotos": true,
+    "showRating": true
+  },
+  "reel": {
+    "mode": "stills-slideshow",
+    "note": "Dry-run: embed only when >=3 real matched reviews exist. No invented quotes."
+  }
+}

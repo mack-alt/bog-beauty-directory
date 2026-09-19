@@ -65,6 +65,16 @@
     return null;
   }
 
+  function shopHref(item) {
+    if (item.id != null && item.id !== "") {
+      return "shop.html?id=" + encodeURIComponent(item.id);
+    }
+    if (item.slug) {
+      return "shop.html?slug=" + encodeURIComponent(item.slug);
+    }
+    return "shop.html";
+  }
+
   function starLabel(rating) {
     const n = Number(rating);
     if (Number.isNaN(n)) return "";
@@ -119,6 +129,11 @@
   function renderCard(item) {
     const card = document.createElement("article");
     card.className = "card";
+    const href = shopHref(item);
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("a, button")) return;
+      window.location.href = href;
+    });
 
     const media = document.createElement("div");
     media.className = "card-media";
@@ -144,7 +159,11 @@
     top.className = "card-top";
 
     const h2 = document.createElement("h2");
-    h2.textContent = item.name;
+    const nameLink = document.createElement("a");
+    nameLink.className = "card-name-link";
+    nameLink.href = href;
+    nameLink.textContent = item.name;
+    h2.appendChild(nameLink);
     top.appendChild(h2);
 
     const badges = document.createElement("div");
@@ -283,6 +302,13 @@
       soon.className = "btn btn-soon";
       soon.textContent = "Booking soon";
       actions.appendChild(soon);
+    }
+    if (item.phone && (!book || book.external)) {
+      const call = document.createElement("a");
+      call.className = "btn btn-secondary";
+      call.href = "tel:" + normalizePhone(item.phone);
+      call.textContent = "Call";
+      actions.appendChild(call);
     }
     body.appendChild(actions);
 
