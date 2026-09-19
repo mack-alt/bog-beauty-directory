@@ -105,13 +105,44 @@
     });
   }
 
+  function isDemoListing(item) {
+    return !!(item && (item.isDemo === true || item.demo === true));
+  }
+
+  function httpHref(value) {
+    if (!hasValue(value)) return "";
+    const v = String(value).trim();
+    return /^https?:\/\//i.test(v) ? v : "";
+  }
+
+  /** Basics-safe link-out. Show when a reviews URL or Google place id is present. */
+  function googleReviewsHref(item) {
+    const explicit = httpHref(item && item.googleReviewsUrl);
+    if (explicit) return explicit;
+    if (item && hasValue(item.googlePlaceId)) {
+      const q = encodeURIComponent(item.name || item.address || "place");
+      return (
+        "https://www.google.com/maps/search/?api=1&query=" +
+        q +
+        "&query_place_id=" +
+        encodeURIComponent(String(item.googlePlaceId).trim())
+      );
+    }
+    return "";
+  }
+
   function filtered() {
     const q = query.trim().toLowerCase();
-    return listings.filter((item) => {
-      if (activeCategory !== "All" && item.category !== activeCategory) return false;
-      if (q && !(item.name || "").toLowerCase().includes(q)) return false;
-      return true;
-    });
+    return listings
+      .filter((item) => {
+        if (activeCategory !== "All" && item.category !== activeCategory) return false;
+        if (q && !(item.name || "").toLowerCase().includes(q)) return false;
+        return true;
+      })
+      .slice()
+      .sort(function (a, b) {
+        return Number(isDemoListing(b)) - Number(isDemoListing(a));
+      });
   }
 
   function appendOwnerBlock(parent, label, text) {
@@ -162,6 +193,13 @@
     const badges = document.createElement("div");
     badges.className = "badges";
 
+    if (isDemoListing(item)) {
+      const demo = document.createElement("span");
+      demo.className = "demo-badge";
+      demo.textContent = "DEMO / TEMPLATE";
+      badges.appendChild(demo);
+    }
+
     if (item.category) {
       const cat = document.createElement("span");
       cat.className = "cat-badge";
@@ -176,12 +214,6 @@
     } else {
       status.className = "status-badge status-pending";
       status.textContent = "Pending confirm";
-    }
-    if (item.isDemo === true || item.demo === true) {
-      const demo = document.createElement("span");
-      demo.className = "demo-badge";
-      demo.textContent = "DEMO / TEMPLATE";
-      badges.appendChild(demo);
     }
     badges.appendChild(status);
     top.appendChild(badges);
@@ -347,6 +379,16 @@
       map.textContent = "Directions";
       actions.appendChild(map);
     }
+    const reviewsHref = googleReviewsHref(item);
+    if (reviewsHref) {
+      const reviews = document.createElement("a");
+      reviews.className = "btn btn-primary btn-reviews";
+      reviews.href = reviewsHref;
+      reviews.target = "_blank";
+      reviews.rel = "noopener noreferrer";
+      reviews.textContent = "Reviews on Google";
+      actions.appendChild(reviews);
+    }
     body.appendChild(actions);
 
     card.appendChild(body);
@@ -357,10 +399,12 @@
     const items = filtered();
     listingsEl.innerHTML = "";
     items.forEach((item) => listingsEl.appendChild(renderCard(item)));
+    const demoPinned = items.some(isDemoListing);
     countEl.textContent =
-      items.length === listings.length
+      (items.length === listings.length
         ? `${items.length} listing${items.length === 1 ? "" : "s"}`
-        : `${items.length} of ${listings.length} listings`;
+        : `${items.length} of ${listings.length} listings`) +
+      (demoPinned ? " · DEMO template pinned at top" : "");
     emptyEl.classList.toggle("hidden", items.length > 0);
   }
 
