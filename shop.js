@@ -228,6 +228,21 @@
     return a;
   }
 
+  /** Basics-safe link-out. Not a SHELF toggle — show when place id or URL is present. */
+  function googleReviewsHref(shop) {
+    const explicit = shop && shop.googleReviewsUrl;
+    if (hasValue(explicit)) return String(explicit).trim();
+    const placeId = shop && shop.googlePlaceId;
+    if (!hasValue(placeId)) return "";
+    const query = encodeURIComponent(shop.name || shop.address || "place");
+    return (
+      "https://www.google.com/maps/search/?api=1&query=" +
+      query +
+      "&query_place_id=" +
+      encodeURIComponent(String(placeId).trim())
+    );
+  }
+
   function renderReviewCard(review) {
     const card = document.createElement("article");
     card.className = "review-card";
@@ -477,6 +492,13 @@
       map.target = "_blank";
       map.rel = "noopener noreferrer";
       actionsEl.appendChild(map);
+    }
+    const reviewsUrl = googleReviewsHref(shop);
+    if (reviewsUrl) {
+      const reviews = actionLink(reviewsUrl, "Reviews on Google", "btn-secondary");
+      reviews.target = "_blank";
+      reviews.rel = "noopener noreferrer";
+      actionsEl.appendChild(reviews);
     }
     const booking = (shop.bookingUrl || shop.website || "").trim();
     if (booking && toggleOn(toggles, "showBooking")) {
