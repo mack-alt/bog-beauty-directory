@@ -227,6 +227,18 @@
       body.appendChild(verified);
     }
 
+    const offerText = (item.offer || item.offerHighlight || "").trim();
+    if (offerText) {
+      const offer = document.createElement("p");
+      offer.className = "offer-highlight";
+      const lab = document.createElement("span");
+      lab.className = "offer-label";
+      lab.textContent = "Offer";
+      offer.appendChild(lab);
+      offer.appendChild(document.createTextNode(offerText));
+      body.appendChild(offer);
+    }
+
     if (
       showField(item, "googleRating", ["showRating", "showGoogle"]) &&
       typeof item.googleRating === "number"
@@ -276,11 +288,18 @@
     }
 
     const lineText = (item.oneLiner || item.blurb || "").trim();
-    if (lineText) {
+    if (lineText && lineText !== offerText) {
       const line = document.createElement("p");
       line.className = "blurb";
       line.textContent = lineText;
       body.appendChild(line);
+    }
+
+    if (hasValue(item.walkIns)) {
+      const walk = document.createElement("p");
+      walk.className = "meta walkins";
+      walk.textContent = String(item.walkIns).trim();
+      body.appendChild(walk);
     }
 
     if (showField(item, "knownFor", "showKnownFor")) {
