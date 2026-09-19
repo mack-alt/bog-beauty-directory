@@ -758,7 +758,9 @@
       }
     }
     appendAction(mapHref(shop), "Directions", "btn-secondary", { external: true });
-    appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-secondary", { external: true });
+    appendAction(googleReviewsHref(shop), "Reviews on Google", "btn-primary btn-reviews", {
+      external: true,
+    });
 
     const shareUrl = canonicalShopUrl(shop);
     appendAction(shareUrl, "Share", "btn-secondary", {
