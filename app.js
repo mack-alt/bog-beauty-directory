@@ -8,6 +8,7 @@
     "Brows / Lashes",
     "Makeup",
     "Skincare",
+    "Beauty Salon",
     "Wellness / Other",
   ];
 
