@@ -1,0 +1,36 @@
+# South Seattle beauty directory
+
+Blades of Grass lists beauty shops around South Seattle. Names, addresses, and phone numbers below are the public listings. The hidden demo listing is not included.
+
+Home: https://mack-alt.github.io/bog-beauty-directory/
+
+## Shops
+
+- [Hair Nation LLC](https://mack-alt.github.io/bog-beauty-directory/shop/hair-nation-llc/): Hair Salon. Renton, WA. 17800 Talbot Road South, Renton, WA 98055. (206) 437-8661.
+- [Moda Organic Salon & Spa](https://mack-alt.github.io/bog-beauty-directory/shop/moda-organic-salon-and-spa/): Spa / Esthetics. Renton, WA. 5335 Northeast 4th Street, Renton, WA 98059. (425) 228-6222.
+- [Method + Madness Salon](https://mack-alt.github.io/bog-beauty-directory/shop/method-madness-salon/): Hair Salon. Renton, WA. 231 Wells Avenue S, Renton, WA 98057. (425) 282-5046.
+- [Salon Fifty 7](https://mack-alt.github.io/bog-beauty-directory/shop/salon-fifty-7/): Hair Salon. Renton, WA. 415 S 3rd St, Renton, WA 98057. (253) 905-6029.
+- [Salon 44](https://mack-alt.github.io/bog-beauty-directory/shop/salon-44/): Hair Salon. Renton, WA. 1717 NE 44th St, Renton, WA 98056.
+- [Gene Juarez Salon & Spa — Southcenter](https://mack-alt.github.io/bog-beauty-directory/shop/gene-juarez-salon-and-spa-southcenter/): Spa / Esthetics. Tukwila, WA. 17100 Southcenter Pkwy Suite N150, Tukwila, WA 98188. (206) 431-8888.
+- [Thi's Salon Services](https://mack-alt.github.io/bog-beauty-directory/shop/thi-s-salon-services/): Hair Salon. Tukwila, WA. 14401 51st Ave S, Tukwila, WA 98168. (206) 241-9984.
+- [Sacred Hair Co.](https://mack-alt.github.io/bog-beauty-directory/shop/sacred-hair-co/): Hair Salon. Kent, WA. 6632 S 191st Pl Suite E107, Kent, WA 98032. (425) 902-8112.
+- [Pro Fade Barber & Beauty Salon](https://mack-alt.github.io/bog-beauty-directory/shop/pro-fade-barber-and-beauty-salon/): Barber Shop. Kent, WA. 25250 Pacific Hwy S Suite B114, Kent, WA 98032. (206) 608-3979.
+- [Cindy Soung Hair Studio](https://mack-alt.github.io/bog-beauty-directory/shop/cindy-soung-hair-studio/): Hair Salon. Kent, WA. 24860 Pacific Highway S Suite 202, Kent, WA 98032. (206) 799-7604.
+- [Stop 4 Nails](https://mack-alt.github.io/bog-beauty-directory/shop/stop-4-nails/): Nail Salon. Renton, WA. 212 SW 43rd St, Renton WA 98057. (425) 254-3554.
+- [My Nail Area](https://mack-alt.github.io/bog-beauty-directory/shop/my-nail-area/): Nail Salon. Renton, WA. 275 SW 41st St, Renton, WA 98057. (253) 765-8036.
+- [Jun Yi Spa](https://mack-alt.github.io/bog-beauty-directory/shop/jun-yi-spa/): Spa / Esthetics. Renton, WA. 330 SW 43rd St, Suite N, Renton, WA 98057. (206) 480-7666.
+- [Kim's Lashes Beauty Salon](https://mack-alt.github.io/bog-beauty-directory/shop/kims-lashes-beauty-salon/): Brows / Lashes. Renton, WA. 17707 108th Ave SE #010, Renton, WA 98055. (425) 572-6271.
+- [Jerry's Barbershop](https://mack-alt.github.io/bog-beauty-directory/shop/jerrys-barbershop/): Barber Shop. Renton, WA. 17921 108th Ave SE, Renton, WA 98055. (425) 235-6917.
+- [Fancy Nails](https://mack-alt.github.io/bog-beauty-directory/shop/fancy-nails/): Nail Salon. Renton, WA. 17919 108th Ave SE, Renton, WA 98055. (425) 235-8526.
+- [Grace Beauty Salon](https://mack-alt.github.io/bog-beauty-directory/shop/grace-beauty-salon/): Brows / Lashes. Renton, WA. 720 Lind Avenue, Suite #101, Renton, WA 98057. (425) 687-5040.
+- [Queenie Nails & Spa](https://mack-alt.github.io/bog-beauty-directory/shop/queenie-nails-and-spa/): Nail Salon. Tukwila, WA. 648 Strander Blvd, Tukwila, WA 98188. (425) 227-0954.
+- [HT Nail Bar](https://mack-alt.github.io/bog-beauty-directory/shop/ht-nail-bar/): Nail Salon. Tukwila, WA. 331 Strander Blvd, Tukwila, WA 98188. (206) 420-1479.
+- [Nail Bar & Spa](https://mack-alt.github.io/bog-beauty-directory/shop/nail-bar-and-spa/): Nail Salon. Tukwila, WA. 17250 Southcenter Pkwy, Suite 140, Tukwila, WA 98188-3240. (206) 397-3959.
+- [7 Stars Barbershop](https://mack-alt.github.io/bog-beauty-directory/shop/7-stars-barbershop/): Barber Shop. Kent, WA. Central Ave, Kent, WA. (206) 472-8131.
+- [UV Nails](https://mack-alt.github.io/bog-beauty-directory/shop/uv-nails/): Nail Salon. Kent, WA. 21232 84th Ave S, Kent, WA 98032. (253) 872-0468.
+- [Mayela Beauty Salon](https://mack-alt.github.io/bog-beauty-directory/shop/mayela-beauty-salon/): Beauty Salon. Kent, WA. SE 256th St, Kent, WA. (253) 394-2746.
+- [Posh Nail & Spa](https://mack-alt.github.io/bog-beauty-directory/shop/posh-nail-and-spa/): Nail Salon. Kent, WA. 10216 SE 256th St #101, Kent, WA 98030. (253) 277-3706.
+- [Kent East Hill Hair Salon](https://mack-alt.github.io/bog-beauty-directory/shop/kent-east-hill-hair-salon/): Hair Salon. Kent, WA. 25823 104th Ave SE, Kent, WA 98030. (253) 854-3440.
+- [Luxe Nails & Waxing](https://mack-alt.github.io/bog-beauty-directory/shop/luxe-nails-and-waxing/): Nail Salon. Kent, WA. 10612 SE Kent-Kangley Rd #101, Kent, WA 98030. (253) 852-5923.
+- [Emily Barber & Salon](https://mack-alt.github.io/bog-beauty-directory/shop/emily-barber-and-salon/): Barber Shop. Kent, WA. 25632 102nd Pl SE, Kent, WA 98030. (253) 639-7838.
+- [Diamond Beauty & Hair Salon](https://mack-alt.github.io/bog-beauty-directory/shop/diamond-beauty-and-hair-salon/): Beauty Salon. Kent, WA. 10601 SE 240th St, Kent, WA 98031. (253) 981-4943.

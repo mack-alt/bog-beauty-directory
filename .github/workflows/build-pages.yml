@@ -1,0 +1,35 @@
+name: Rebuild crawlable pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Generate shop pages, sitemap, and robots.txt
+        run: node scripts/build-pages.js
+      - name: Commit generated pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- index.html shop.html sitemap.xml robots.txt llms.txt shop
+          if git diff --cached --quiet; then
+            echo "Generated pages already match listings."
+          else
+            git commit -m "Rebuild crawlable shop pages from listings.json"
+            git push
+          fi
