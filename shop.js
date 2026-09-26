@@ -141,6 +141,10 @@
     return !!(shop && (shop.isDemo === true || shop.demo === true));
   }
 
+  function isHiddenFromPublic(shop) {
+    return !!(shop && (shop.hidden === true || isDemoShop(shop)));
+  }
+
   const THEME_COLOR_DEFAULT = "#1a3a2a";
   const THEME_COLOR_BEAUTY = "#f4eee6";
 
@@ -980,7 +984,11 @@
   }
 
   const query = params();
-  applyBeautyTheme(query.id === 12 || query.slug === "11-fingers-and-toe");
+  if (query.id === 12 || query.slug === "11-fingers-and-toe") {
+    window.location.replace("index.html");
+    return;
+  }
+  applyBeautyTheme(false);
   activeLocale = query.lang || readStoredLocale() || "en";
   persistLocale(activeLocale);
   applyChrome();
@@ -997,8 +1005,8 @@
     .then((data) => {
       const listings = Array.isArray(data) ? data : [];
       const listing = findListing(listings, query);
-      if (!listing) {
-        fail("No listing matches that id or slug.");
+      if (!listing || isHiddenFromPublic(listing)) {
+        window.location.replace("index.html");
         return null;
       }
       return loadEnrichment(listing.id).then((enrichment) => {

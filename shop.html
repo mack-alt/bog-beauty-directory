@@ -13,9 +13,7 @@
         var id = q.get("id");
         var slug = (q.get("slug") || "").toLowerCase();
         if (id === "12" || slug === "11-fingers-and-toe") {
-          document.documentElement.setAttribute("data-theme", "beauty");
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", "#f4eee6");
+          window.location.replace("index.html");
         }
       } catch (e) {}
     })();
@@ -95,6 +93,6 @@
   </footer>
 
   <script src="i18n/phrases.js?v=20260919g"></script>
-  <script src="shop.js?v=20260919g"></script>
+  <script src="shop.js?v=20260926h"></script>
 </body>
 </html>

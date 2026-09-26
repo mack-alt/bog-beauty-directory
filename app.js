@@ -110,6 +110,11 @@
     return !!(item && (item.isDemo === true || item.demo === true));
   }
 
+  /** Template/demo rows stay in the data files but are not part of the public directory. */
+  function isHiddenFromPublic(item) {
+    return !!(item && (item.hidden === true || isDemoListing(item)));
+  }
+
   function httpHref(value) {
     if (!hasValue(value)) return "";
     const v = String(value).trim();
@@ -435,7 +440,9 @@
       return r.json();
     })
     .then((data) => {
-      listings = Array.isArray(data) ? data : [];
+      listings = (Array.isArray(data) ? data : []).filter(function (item) {
+        return !isHiddenFromPublic(item);
+      });
       renderChips(presentCategories(listings));
       renderList();
     })
