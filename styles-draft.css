@@ -319,6 +319,23 @@ html[data-style] .look-card:not(.reveal):active { transform: scale(0.985); }
 /* Shop sheet + sticky bar */
 html[data-style] body.shop-page .site-header { display: none; }
 
+html.js .shop-static { display: none !important; }
+html:not(.js) #shop-status { display: none; }
+
+html:not(.js) .shop-static {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+  color: #1c1916;
+}
+html:not(.js) .shop-static h1 {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+html:not(.js) .shop-static p { margin: 0.35rem 0; }
+html:not(.js) .shop-static a { color: #1f6b4a; }
+
 html[data-style] body.shop-page {
   background: var(--paper, #f6f5f2);
 }

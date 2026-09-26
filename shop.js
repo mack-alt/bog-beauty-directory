@@ -47,9 +47,12 @@
     const slug = (q.get("slug") || "").trim().toLowerCase();
     const id = idRaw === "" ? null : Number(idRaw);
     const lang = (q.get("lang") || "").trim().toLowerCase();
+    const pageIdRaw = (document.documentElement.getAttribute("data-shop-id") || "").trim();
+    const pageSlug = (document.documentElement.getAttribute("data-shop-slug") || "").trim().toLowerCase();
+    const pageId = pageIdRaw === "" ? null : Number(pageIdRaw);
     return {
-      id: Number.isFinite(id) ? id : null,
-      slug,
+      id: Number.isFinite(id) ? id : Number.isFinite(pageId) ? pageId : null,
+      slug: slug || pageSlug,
       lang: LOCALES.indexOf(lang) !== -1 ? lang : "",
     };
   }
@@ -404,39 +407,48 @@
     return "";
   }
 
-  const PAGES_SHOP = "https://mack-alt.github.io/bog-beauty-directory/shop.html";
+  const PAGES_ROOT = "https://mack-alt.github.io/bog-beauty-directory/";
+
+  function shopPath(shop) {
+    const slug =
+      shop && hasValue(shop.slug)
+        ? String(shop.slug).trim().toLowerCase()
+        : slugify(shop && shop.name);
+    return "shop/" + slug + "/";
+  }
+
+  function siteRootHref() {
+    const base = document.querySelector("base");
+    if (base && base.getAttribute("href")) {
+      return new URL(base.getAttribute("href"), window.location.href).href;
+    }
+    const loc = new URL(window.location.href);
+    if (/\/shop\.html$/i.test(loc.pathname)) return new URL("./", loc).href;
+    if (/\/shop\/[^/]+\/(?:index\.html)?$/.test(loc.pathname)) return new URL("../../", loc).href;
+    return new URL("./", loc).href;
+  }
 
   function canonicalShopUrl(shop) {
-    const fallbackQuery =
-      shop && shop.id != null && shop.id !== ""
-        ? "id=" + encodeURIComponent(shop.id)
-        : shop && hasValue(shop.slug)
-          ? "slug=" + encodeURIComponent(String(shop.slug).trim())
-          : "";
-    const fallback = fallbackQuery ? PAGES_SHOP + "?" + fallbackQuery : PAGES_SHOP;
+    const path = shopPath(shop);
     try {
-      let base = PAGES_SHOP;
-      const protocol = window.location && window.location.protocol;
-      if (protocol === "http:" || protocol === "https:") {
-        const loc = new URL(window.location.href);
-        if (/shop\.html$/i.test(loc.pathname)) {
-          base = loc.origin + loc.pathname;
-        } else {
-          base = loc.origin + loc.pathname.replace(/[^/]*$/, "") + "shop.html";
-        }
-      }
-      const url = new URL(base);
-      url.search = "";
-      url.hash = "";
-      if (shop && shop.id != null && shop.id !== "") {
-        url.searchParams.set("id", String(shop.id));
-      } else if (shop && hasValue(shop.slug)) {
-        url.searchParams.set("slug", String(shop.slug).trim());
-      }
-      return url.toString();
+      return new URL(path, siteRootHref()).href;
     } catch (err) {
-      return fallback;
+      return PAGES_ROOT + path;
     }
+  }
+
+  function cityFromAddress(address) {
+    const text = String(address || "").trim();
+    if (!text) return "";
+    if (window.BogLooks && window.BogLooks.placeLabel) {
+      const place = window.BogLooks.placeLabel(text);
+      if (place && place !== text && place.indexOf(",") !== -1) return place.split(",")[0].trim();
+    }
+    const paired = text.match(/,\s*([^,]+?),\s*([A-Z]{2})\b/);
+    if (paired) return paired[1].trim();
+    const loose = text.match(/,\s*([^,]+?)\s+([A-Z]{2})\b/);
+    if (loose) return loose[1].trim();
+    return "";
   }
 
   function mapHref(shop) {
@@ -706,6 +718,8 @@
   }
 
   function render(listing, enrichment) {
+    const staticBlock = document.getElementById("shop-static");
+    if (staticBlock) staticBlock.remove();
     currentListing = listing;
     currentEnrichment = enrichment;
     const shop = Object.assign({}, listing, enrichment);
@@ -714,12 +728,19 @@
     const demo = isDemoShop(shop);
     const lookOn = !!document.documentElement.getAttribute("data-look");
     applyBeautyTheme(demo && !lookOn);
-    document.title = (demo ? "DEMO — " : "") + name + " — South Seattle beauty directory";
+    const city = cityFromAddress(shop.address);
+    const pageTitle = city
+      ? name + " in " + city + " | South Seattle beauty directory"
+      : name + " | South Seattle beauty directory";
+    document.title = (demo ? "DEMO — " : "") + pageTitle;
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDesc = document.querySelector('meta[property="og:description"]');
-    const pageTitle = name + " — South Seattle beauty directory";
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
     if (ogTitle) ogTitle.setAttribute("content", pageTitle);
-    if (ogDesc) ogDesc.setAttribute("content", name + " on the South Seattle beauty directory.");
+    if (twTitle) twTitle.setAttribute("content", pageTitle);
+    if (ogDesc && !ogDesc.getAttribute("content")) {
+      ogDesc.setAttribute("content", name + " on the South Seattle beauty directory.");
+    }
     nameEl.textContent = name;
 
     hideEl(oneLinerEl);

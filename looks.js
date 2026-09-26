@@ -292,11 +292,28 @@
     return "Sample photo";
   }
 
+  function slugifyName(name) {
+    return String(name || "")
+      .toLowerCase()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  function shopSlug(item) {
+    if (item && item.slug) {
+      var given = String(item.slug).trim().toLowerCase();
+      if (given) return given;
+    }
+    return slugifyName(item && item.name);
+  }
+
   function withLook(href) {
     if (!href) return href;
+    var baseHref = (root.document && root.document.baseURI) || root.location.href;
     var url;
     try {
-      url = new URL(href, root.location.href);
+      url = new URL(href, baseHref);
     } catch (err) {
       return href;
     }
@@ -304,8 +321,11 @@
     url.searchParams.delete("bare");
     url.searchParams.delete("style");
     url.searchParams.set("lang", currentLang());
-    var file = url.pathname.split("/").pop() || "index.html";
-    return file + url.search + url.hash;
+    var base = new URL(baseHref);
+    var rootDir = /\/$/.test(base.pathname) ? base.pathname : base.pathname.replace(/[^/]*$/, "");
+    var path = url.pathname.indexOf(rootDir) === 0 ? url.pathname.slice(rootDir.length) : url.pathname.replace(/^\//, "");
+    if (!path) path = "index.html";
+    return path + url.search + url.hash;
   }
 
   function trustBadge(item) {
@@ -372,6 +392,7 @@
     bubbleFor: bubbleFor,
     mountSlot: mountSlot,
     currentLang: currentLang,
+    shopSlug: shopSlug,
     withLook: withLook,
     trustBadge: trustBadge,
     placeLabel: placeLabel,

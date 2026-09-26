@@ -148,12 +148,15 @@
 
   function shopHref(item) {
     let href = "shop.html";
-    if (item.id != null && item.id !== "") {
+    if (window.BogLooks && window.BogLooks.shopSlug) {
+      const slug = window.BogLooks.shopSlug(item);
+      if (slug) href = "shop/" + slug + "/";
+    } else if (item.id != null && item.id !== "") {
       href = "shop.html?id=" + encodeURIComponent(item.id);
     } else if (item.slug) {
       href = "shop.html?slug=" + encodeURIComponent(item.slug);
     }
-    if (look && window.BogLooks) return window.BogLooks.withLook(href);
+    if (look && window.BogLooks && window.BogLooks.withLook) return window.BogLooks.withLook(href);
     return href;
   }
 
