@@ -413,6 +413,10 @@
     return !!(item && (item.isDemo === true || item.demo === true));
   }
 
+  function isHiddenFromPublic(item) {
+    return !!(item && (item.hidden === true || isDemoListing(item)));
+  }
+
   function httpHref(value) {
     if (!hasValue(value)) return "";
     const v = String(value).trim();
@@ -765,7 +769,9 @@
       return r.json();
     })
     .then((data) => {
-      listings = Array.isArray(data) ? data : [];
+      listings = (Array.isArray(data) ? data : []).filter(function (item) {
+        return !isHiddenFromPublic(item);
+      });
       renderChips(presentCategories(listings));
       renderList();
     })

@@ -11,6 +11,17 @@
       try {
         var q = new URLSearchParams(location.search);
         var look = q.get("look");
+        var id = q.get("id");
+        var slug = (q.get("slug") || "").toLowerCase();
+        if (id === "12" || slug === "11-fingers-and-toe") {
+          var back = "index.html";
+          if (look === "1" || look === "2" || look === "3") {
+            back += "?look=" + look;
+            if (q.get("bare") === "1") back += "&bare=1";
+          }
+          window.location.replace(back);
+          return;
+        }
         if (look === "1" || look === "2" || look === "3") {
           document.documentElement.setAttribute("data-look", look);
           if (q.get("bare") === "1") document.documentElement.setAttribute("data-bare", "1");
@@ -19,13 +30,6 @@
           fonts.href = "https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,560&family=Outfit:wght@400;500;600;700&display=swap";
           document.head.appendChild(fonts);
           return;
-        }
-        var id = q.get("id");
-        var slug = (q.get("slug") || "").toLowerCase();
-        if (id === "12" || slug === "11-fingers-and-toe") {
-          document.documentElement.setAttribute("data-theme", "beauty");
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", "#f4eee6");
         }
       } catch (e) {}
     })();

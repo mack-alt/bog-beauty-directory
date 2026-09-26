@@ -141,6 +141,20 @@
     return !!(shop && (shop.isDemo === true || shop.demo === true));
   }
 
+  function isHiddenFromPublic(shop) {
+    return !!(shop && (shop.hidden === true || isDemoShop(shop)));
+  }
+
+  function directoryHref() {
+    if (window.BogLooks && window.BogLooks.withLook) return window.BogLooks.withLook("index.html");
+    const look = document.documentElement.getAttribute("data-look");
+    if (look === "1" || look === "2" || look === "3") {
+      const bare = document.documentElement.getAttribute("data-bare") === "1" ? "&bare=1" : "";
+      return "index.html?look=" + look + bare;
+    }
+    return "index.html";
+  }
+
   const THEME_COLOR_DEFAULT = "#1a3a2a";
   const THEME_COLOR_BEAUTY = "#f4eee6";
 
@@ -1180,8 +1194,12 @@
   }
 
   const query = params();
+  if (query.id === 12 || query.slug === "11-fingers-and-toe") {
+    window.location.replace(directoryHref());
+    return;
+  }
   const lookOnLoad = !!document.documentElement.getAttribute("data-look");
-  applyBeautyTheme((query.id === 12 || query.slug === "11-fingers-and-toe") && !lookOnLoad);
+  applyBeautyTheme(false);
   if (lookOnLoad && window.BogLooks) {
     if (backLinkEl) backLinkEl.href = window.BogLooks.withLook("index.html");
     if (footerBackEl) footerBackEl.href = window.BogLooks.withLook("index.html");
@@ -1202,8 +1220,8 @@
     .then((data) => {
       const listings = Array.isArray(data) ? data : [];
       const listing = findListing(listings, query);
-      if (!listing) {
-        fail("No listing matches that id or slug.");
+      if (!listing || isHiddenFromPublic(listing)) {
+        window.location.replace(directoryHref());
         return null;
       }
       return loadEnrichment(listing.id).then((enrichment) => {

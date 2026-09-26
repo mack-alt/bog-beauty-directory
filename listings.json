@@ -142,6 +142,7 @@
     "textFirst": true,
     "isDemo": true,
     "demo": true,
+    "hidden": true,
     "status": "live",
     "confirmed": true,
     "verifiedByBog": true,
