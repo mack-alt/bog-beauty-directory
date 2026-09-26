@@ -509,7 +509,11 @@
     if (!url) return;
     if (navigator.share) {
       event.preventDefault();
-      navigator.share({ title: title, text: title, url: url }).catch(function () {});
+      navigator.share({
+        title: title,
+        text: title + " — South Seattle beauty directory",
+        url: url,
+      }).catch(function () {});
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -705,7 +709,12 @@
     const demo = isDemoShop(shop);
     const lookOn = !!document.documentElement.getAttribute("data-look");
     applyBeautyTheme(demo && !lookOn);
-    document.title = (demo ? "DEMO — " : "") + name + " — Blades of Grass";
+    document.title = (demo ? "DEMO — " : "") + name + " — South Seattle beauty directory";
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const pageTitle = name + " — South Seattle beauty directory";
+    if (ogTitle) ogTitle.setAttribute("content", pageTitle);
+    if (ogDesc) ogDesc.setAttribute("content", name + " on the South Seattle beauty directory.");
     nameEl.textContent = name;
 
     hideEl(oneLinerEl);

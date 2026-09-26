@@ -1,5 +1,5 @@
-/* Photo drafts. Only active with ?style=a, ?style=b, or ?style=c.
-   The live directory (no style param) is unchanged.
+/* Bright directory look. Pages set html[data-style="a"].
+   Old ?style= and ?look= links are ignored and still show this look.
    Patterns borrowed from current booking apps: frosted search,
    round photo categories, large photo cards, and a sticky shop bar. */
 
@@ -233,15 +233,21 @@ html[data-style] .icon-btn {
 html[data-style] .icon-btn svg { width: 18px; height: 18px; }
 html[data-style] .icon-btn:active { transform: scale(0.94); }
 
-html[data-style] .look-card.reveal {
+html[data-style] .look-card.reveal:not(.is-in) {
   opacity: 0;
   transform: translateY(16px);
+  animation: reveal-unstick 0.45s ease 1.2s forwards;
 }
 
 html[data-style] .look-card.reveal.is-in {
   opacity: 1;
   transform: none;
-  transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.28s ease;
+  animation: none;
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.28s ease;
+}
+
+@keyframes reveal-unstick {
+  to { opacity: 1; transform: none; }
 }
 
 html[data-style] .listings-1 .look-card:nth-child(2).reveal.is-in { transition-delay: 50ms; }
@@ -441,236 +447,10 @@ html[data-style="a"] .cat-tag {
 
 html[data-style="a"] .look-sheet { background: #fff; }
 
-/* --------------------------------------------------------------------------
-   B — warm luxury, serif display
-   -------------------------------------------------------------------------- */
-html[data-style="b"] {
-  --paper: #f3eee6;
-  --ink: #1a1714;
-  --muted: #6a5e52;
-  --line: #e4d8c8;
-  --green: #14382c;
-  --green-ink: #14382c;
-  --display: "Fraunces", Georgia, serif;
-  --gold: #a68556;
-}
-
-html[data-style="b"] body {
-  background: #f3eee6;
-  color: var(--ink);
-}
-
-html[data-style="b"] body:not(.shop-page) .site-header {
-  min-height: 560px;
-  padding-bottom: 3.6rem;
-  background: #1a2820;
-}
-
-html[data-style="b"] .hero-frame img { object-position: center 48%; }
-
-html[data-style="b"] .hero-scrim {
-  background: linear-gradient(
-    180deg,
-    rgba(28, 18, 8, 0.22) 0%,
-    rgba(28, 18, 8, 0.08) 34%,
-    rgba(22, 14, 8, 0.62) 100%
-  );
-}
-
-html[data-style="b"] body:not(.shop-page) .brand-mark {
-  color: #f0d7a8;
-  letter-spacing: 0.22em;
-}
-
-html[data-style="b"] body:not(.shop-page) .site-header h1 {
-  font-weight: 560;
-  font-size: clamp(2.45rem, 8.6vw, 4.8rem);
-  letter-spacing: -0.03em;
-}
-
-html[data-style="b"] body:not(.shop-page) .tagline {
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 520;
-  font-size: 18px;
-}
-
-html[data-style="b"] #search {
-  background-color: rgba(255, 248, 238, 0.74);
-  border-color: rgba(255, 236, 210, 0.5);
-}
-
-html[data-style="b"] .story-row .chip[aria-pressed="true"] .story-ring {
-  background: linear-gradient(140deg, #14382c 0%, #c4a46a 55%, #f0d7a8 100%);
-}
-
-html[data-style="b"] .wrap { padding-top: 1.35rem; }
-
-html[data-style="b"] .listings-1 { gap: 24px; }
-
-html[data-style="b"] .look-card {
-  background: #fbf7f1;
-  border-radius: 24px;
-  box-shadow: 0 10px 28px rgba(48, 32, 12, 0.06);
-}
-
-html[data-style="b"] .card-media {
-  aspect-ratio: 1 / 1;
-  background: #e7dfd3;
-}
-
-html[data-style="b"] .look-card h2 {
-  font-weight: 560;
-  font-size: 1.45rem;
-  letter-spacing: -0.02em;
-  line-height: 1.12;
-}
-
-html[data-style="b"] .place-line { color: #6d6256; }
-
-html[data-style="b"] .cat-tag {
-  background: transparent;
-  color: #8a6a3b;
-  border: 1px solid #d9c4a0;
-  letter-spacing: 0.03em;
-}
-
-html[data-style="b"] .icon-btn {
-  border-color: #d9c4a0;
-  color: #14382c;
-  background: #fffaf3;
-}
-
-html[data-style="b"] .look-sheet { background: #fbf7f1; }
-
-html[data-style="b"] .shop-name { font-weight: 560; letter-spacing: -0.03em; }
-
-html[data-style="b"] .dock-btn-fill,
-html[data-style="b"] .look-primary .btn-primary {
-  background: #14382c;
-}
-
-html[data-style="b"] .lang-btn[aria-pressed="true"] {
-  background: #14382c;
-  border-color: #14382c;
-  color: #f6ecd9;
-}
-
-html[data-style="b"] .shop-dock { background: rgba(251, 247, 241, 0.84); }
-
-/* --------------------------------------------------------------------------
-   C — bold local type, same card anatomy
-   -------------------------------------------------------------------------- */
-html[data-style="c"] {
-  --paper: #eceae6;
-  --ink: #141414;
-  --green: #111;
-}
-
-html[data-style="c"] body { background: #eceae6; }
-
-html[data-style="c"] body:not(.shop-page) .site-header {
-  min-height: min(72vh, 640px);
-  padding: 1.25rem 1.15rem 4rem;
-  text-align: left;
-}
-
-html[data-style="c"] .hero-frame img { object-position: center 42%; }
-
-html[data-style="c"] .hero-scrim {
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.28) 0%,
-    rgba(0, 0, 0, 0.05) 36%,
-    rgba(0, 0, 0, 0.62) 100%
-  );
-}
-
-html[data-style="c"] body:not(.shop-page) .brand,
-html[data-style="c"] .hero-search {
-  width: min(640px, 100%);
-  margin-left: 0;
-  margin-right: auto;
-  text-align: left;
-}
-
-html[data-style="c"] body:not(.shop-page) .site-header h1 {
-  max-width: 11ch;
-  margin-left: 0;
-  font-size: clamp(2.7rem, 11vw, 5.1rem);
-  letter-spacing: -0.06em;
-  line-height: 0.9;
-}
-
-html[data-style="c"] body:not(.shop-page) .tagline {
-  margin-left: 0;
-  max-width: 26ch;
-  font-size: 17px;
-}
-
-html[data-style="c"] .story-row .chip[aria-pressed="true"] .story-ring {
-  background: linear-gradient(140deg, #111 0%, #6b6b6b 50%, #111 100%);
-}
-
-html[data-style="c"] .wrap {
-  width: min(1140px, 100%);
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-top: 1rem;
-}
-
-html[data-style="c"] .listings-1 { gap: 14px; }
-
-html[data-style="c"] .look-card {
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-html[data-style="c"] .look-card h2 {
-  font-weight: 800;
-  letter-spacing: -0.045em;
-}
-
-html[data-style="c"] .cat-tag {
-  background: #141414;
-  color: #fff;
-  border: 0;
-}
-
-html[data-style="c"] .icon-btn {
-  background: #141414;
-  border-color: #141414;
-  color: #fff;
-}
-
-html[data-style="c"] .look-sheet { background: #f7f6f4; }
-
-html[data-style="c"] .dock-btn-fill,
-html[data-style="c"] .look-primary .btn-primary,
-html[data-style="c"] .float-contact { background: #111; }
-
-html[data-style="c"] .shop-dock { background: rgba(247, 246, 244, 0.86); }
-
 @media (min-width: 800px) {
-  html[data-style="a"] .listings-1,
-  html[data-style="b"] .listings-1,
-  html[data-style="c"] .listings-1 {
+  html[data-style="a"] .listings-1 {
     padding-left: 0;
     padding-right: 0;
-  }
-  html[data-style="c"] body:not(.shop-page) .site-header {
-    min-height: 620px;
-    text-align: center;
-  }
-  html[data-style="c"] body:not(.shop-page) .brand,
-  html[data-style="c"] .hero-search {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-  }
-  html[data-style="c"] body:not(.shop-page) .site-header h1,
-  html[data-style="c"] body:not(.shop-page) .tagline {
-    margin-left: auto;
-    margin-right: auto;
   }
 }
 
@@ -678,6 +458,7 @@ html[data-style="c"] .shop-dock { background: rgba(247, 246, 244, 0.86); }
   html[data-style] .look-card,
   html[data-style] .look-card.reveal,
   html[data-style] .look-card.reveal.is-in,
+  html[data-style] .look-card.reveal:not(.is-in),
   html[data-style] .icon-btn,
   html[data-style] .dock-btn,
   html[data-style] .story-bubble,
@@ -688,5 +469,6 @@ html[data-style="c"] .shop-dock { background: rgba(247, 246, 244, 0.86); }
     transition: none !important;
     transform: none !important;
   }
-  html[data-style] .look-card.reveal { opacity: 1; }
+  html[data-style] .look-card.reveal,
+  html[data-style] .look-card.reveal:not(.is-in) { opacity: 1; }
 }

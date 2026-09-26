@@ -395,30 +395,69 @@
     emptyEl.classList.toggle("hidden", items.length > 0);
   }
 
+  function markCardIn(card) {
+    card.classList.add("is-in");
+  }
+
   function revealCards(root) {
-    const cards = root.querySelectorAll(".look-card");
+    const cards = Array.from(root.querySelectorAll(".look-card"));
     if (!draftStyleOn()) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || !("IntersectionObserver" in window)) {
-      cards.forEach((card) => card.classList.add("is-in"));
-      return;
+    const viewBottom = (window.innerHeight || 800) + 8;
+    cards.forEach((card) => {
+      const top = card.getBoundingClientRect().top;
+      if (reduce || top < viewBottom) {
+        card.classList.remove("reveal");
+        markCardIn(card);
+      } else {
+        card.classList.add("reveal");
+      }
+    });
+
+    const hidden = () => root.querySelectorAll(".look-card.reveal:not(.is-in)");
+    if (!hidden().length) return;
+
+    function sweep() {
+      hidden().forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < (window.innerHeight || 800) + 48) markCardIn(card);
+      });
     }
-    if (!revealCards.observer) {
+
+    if (!revealCards.observer && "IntersectionObserver" in window) {
       revealCards.observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
-            entry.target.classList.add("is-in");
+            markCardIn(entry.target);
             revealCards.observer.unobserve(entry.target);
           });
         },
-        { threshold: 0.08, rootMargin: "0px 0px 80px 0px" }
+        { threshold: 0, rootMargin: "0px 0px 140px 0px" }
       );
     }
-    cards.forEach((card) => {
-      card.classList.add("reveal");
-      revealCards.observer.observe(card);
-    });
+    if (revealCards.observer) hidden().forEach((card) => revealCards.observer.observe(card));
+    else {
+      hidden().forEach(markCardIn);
+      return;
+    }
+
+    revealCards.sweep = sweep;
+    if (!revealCards.bound) {
+      revealCards.bound = true;
+      const onMove = () => {
+        if (revealCards.sweep) revealCards.sweep();
+      };
+      window.addEventListener("scroll", onMove, { passive: true });
+      window.addEventListener("resize", onMove, { passive: true });
+    }
+    sweep();
+
+    const gen = (revealCards.gen = (revealCards.gen || 0) + 1);
+    window.setTimeout(() => {
+      if (revealCards.gen !== gen) return;
+      hidden().forEach(markCardIn);
+    }, 1200);
   }
 
   mountPhotoHero();

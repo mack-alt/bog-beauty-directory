@@ -1,16 +1,12 @@
 # Photo credits
 
-Draft styles (`?style=a`, `?style=b`, `?style=c`) use photos from Pexels only. Every file below is free to use under the [Pexels License](https://www.pexels.com/license/), including commercial use. Nothing here is from Google Maps, Yelp, Instagram, a shop website, or another copyrighted source.
+The South Seattle beauty directory uses photos from Pexels only. Every file below is free to use under the [Pexels License](https://www.pexels.com/license/), including commercial use. Nothing here is from Google Maps, Yelp, Instagram, a shop website, or another copyrighted source.
 
-All three draft heroes are the Seattle skyline. The headline stays “Renton / South King County beauty directory.” The live directory (no `style` parameter) still uses the existing Wikimedia Commons hero and is not part of this credit list.
+## Hero
 
-## Heroes
-
-| Style | File | What it shows | Photographer | Source | License |
-| --- | --- | --- | --- | --- | --- |
-| A | `images/styles/hero-seattle-skyline-blue.jpg` | Seattle skyline, Space Needle, and Mount Rainier under a clear blue sky | Aarav Chopra | https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/ | [Pexels License](https://www.pexels.com/license/) |
-| B | `images/styles/hero-seattle-skyline-golden.jpg` | Seattle skyline and the Space Needle at golden hour | Sergei A | https://www.pexels.com/photo/photo-of-seattle-skyline-2539374/ | [Pexels License](https://www.pexels.com/license/) |
-| C | `images/styles/hero-seattle-skyline-sunset.jpg` | Seattle skyline and the Space Needle against an orange sunset | Bryan Dickerson | https://www.pexels.com/photo/seattle-skyline-at-sunset-with-space-needle-28495691/ | [Pexels License](https://www.pexels.com/license/) |
+| File | What it shows | Photographer | Source | License |
+| --- | --- | --- | --- | --- |
+| `images/styles/hero-seattle-skyline-blue.jpg` | Seattle skyline, Space Needle, and Mount Rainier under a clear blue sky | Aarav Chopra | https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/ | [Pexels License](https://www.pexels.com/license/) |
 
 ## Category sample photos
 

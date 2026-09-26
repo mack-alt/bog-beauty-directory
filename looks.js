@@ -27,14 +27,7 @@
   }
 
   function currentStyle() {
-    var s = "";
-    try {
-      s = document.documentElement.getAttribute("data-style") || "";
-      if (!s) s = new URLSearchParams(root.location.search).get("style") || "";
-    } catch (err) {
-      s = "";
-    }
-    return s === "a" || s === "b" || s === "c" ? s : "";
+    return "a";
   }
 
   var SAMPLES = {
@@ -277,9 +270,7 @@
     }
     url.searchParams.delete("look");
     url.searchParams.delete("bare");
-    var style = currentStyle();
-    if (style) url.searchParams.set("style", style);
-    else url.searchParams.delete("style");
+    url.searchParams.delete("style");
     var file = url.pathname.split("/").pop() || "index.html";
     return file + url.search + url.hash;
   }
@@ -317,48 +308,17 @@
   }
 
   var HERO = {
-    src: "images/gene-coulon-pavilion.jpg",
-    alt: "Pavilion and the Boeing Renton plant across Lake Washington at Gene Coulon Memorial Beach Park",
-    author: "Maddiewsu",
-    fileUrl: "https://commons.wikimedia.org/wiki/File:View_of_pavilion_and_Boeing_Plant.jpg",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-  };
-
-  var PEXELS = "https://www.pexels.com/license/";
-  var STYLE_HEROES = {
-    a: {
-      src: "images/styles/hero-seattle-skyline-blue.jpg",
-      alt: "Seattle skyline with the Space Needle and Mount Rainier under a clear blue sky",
-      author: "Aarav Chopra",
-      fileUrl: "https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/",
-      license: "Pexels License",
-      licenseUrl: PEXELS,
-      subtle: true,
-    },
-    b: {
-      src: "images/styles/hero-seattle-skyline-golden.jpg",
-      alt: "Seattle skyline and the Space Needle at golden hour",
-      author: "Sergei A",
-      fileUrl: "https://www.pexels.com/photo/photo-of-seattle-skyline-2539374/",
-      license: "Pexels License",
-      licenseUrl: PEXELS,
-      subtle: true,
-    },
-    c: {
-      src: "images/styles/hero-seattle-skyline-sunset.jpg",
-      alt: "Seattle skyline and the Space Needle against an orange sunset",
-      author: "Bryan Dickerson",
-      fileUrl: "https://www.pexels.com/photo/seattle-skyline-at-sunset-with-space-needle-28495691/",
-      license: "Pexels License",
-      licenseUrl: PEXELS,
-      subtle: true,
-    },
+    src: "images/styles/hero-seattle-skyline-blue.jpg",
+    alt: "Seattle skyline with the Space Needle and Mount Rainier under a clear blue sky",
+    author: "Aarav Chopra",
+    fileUrl: "https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/",
+    license: "Pexels License",
+    licenseUrl: "https://www.pexels.com/license/",
+    subtle: true,
   };
 
   function heroFor() {
-    var style = currentStyle();
-    return style && STYLE_HEROES[style] ? STYLE_HEROES[style] : HERO;
+    return HERO;
   }
 
   function boot() {
