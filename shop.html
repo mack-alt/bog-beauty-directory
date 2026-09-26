@@ -8,37 +8,22 @@
   <title>Shop — Blades of Grass</title>
   <script>
     (function () {
+      document.documentElement.setAttribute("data-look", "1");
       try {
         var q = new URLSearchParams(location.search);
-        var look = q.get("look");
         var id = q.get("id");
         var slug = (q.get("slug") || "").toLowerCase();
         if (id === "12" || slug === "11-fingers-and-toe") {
-          var back = "index.html";
-          if (look === "1" || look === "2" || look === "3") {
-            back += "?look=" + look;
-            if (q.get("bare") === "1") back += "&bare=1";
-          }
-          window.location.replace(back);
-          return;
-        }
-        if (look === "1" || look === "2" || look === "3") {
-          document.documentElement.setAttribute("data-look", look);
-          if (q.get("bare") === "1") document.documentElement.setAttribute("data-bare", "1");
-          var fonts = document.createElement("link");
-          fonts.rel = "stylesheet";
-          fonts.href = "https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,560&family=Outfit:wght@400;500;600;700&display=swap";
-          document.head.appendChild(fonts);
-          return;
+          window.location.replace("index.html");
         }
       } catch (e) {}
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919g" />
-  <link rel="stylesheet" href="looks.css?v=20260926b" />
+  <link rel="stylesheet" href="looks.css?v=20260926i" />
 </head>
 <body class="shop-page">
   <header class="site-header shop-header">
@@ -109,8 +94,8 @@
     <p class="fine">Only confirmed listing details and owner-supplied enrichment are shown. No invented reviews or photos.</p>
   </footer>
 
-  <script src="looks.js?v=20260926b"></script>
+  <script src="looks.js?v=20260926i"></script>
   <script src="i18n/phrases.js?v=20260919g"></script>
-  <script src="shop.js?v=20260926b"></script>
+  <script src="shop.js?v=20260926i"></script>
 </body>
 </html>

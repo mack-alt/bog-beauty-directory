@@ -147,11 +147,6 @@
 
   function directoryHref() {
     if (window.BogLooks && window.BogLooks.withLook) return window.BogLooks.withLook("index.html");
-    const look = document.documentElement.getAttribute("data-look");
-    if (look === "1" || look === "2" || look === "3") {
-      const bare = document.documentElement.getAttribute("data-bare") === "1" ? "&bare=1" : "";
-      return "index.html?look=" + look + bare;
-    }
     return "index.html";
   }
 
@@ -1089,7 +1084,7 @@
     } else {
       const slide = document.createElement("div");
       slide.className = "look-slide";
-      const mode = look === "3" ? "cover" : look === "2" ? "icon" : "hero";
+      const mode = "hero";
       window.BogLooks.mountSlot(slide, shop, mode);
       gallery.appendChild(slide);
     }

@@ -1,13 +1,11 @@
 /**
- * Visual drafts for the Blades of Grass directory.
- * Active only when the page URL has ?look=1, ?look=2, or ?look=3.
- * The live home page (no look param) does not use this.
+ * Photo-first directory helpers. Pages always render this look.
+ * Old ?look= query params are ignored.
  *
  * Image slots call mountSlot(). A real shop photo replaces the
  * category art when listing.photoUrl (or shop.photoUrl) is set.
  */
 (function (root) {
-  var LOOKS = { "1": true, "2": true, "3": true };
 
   var CATS = {
     "Hair Salon": { key: "hair", label: "Hair", color: "#1f6b4a", soft: "#e4f1ea", ink: "#143d2c" },
@@ -25,20 +23,7 @@
   var FALLBACK = { key: "other", label: "Shop", color: "#3d5348", soft: "#e7eee9", ink: "#24362d" };
 
   function currentLook() {
-    try {
-      var q = new URLSearchParams(root.location.search).get("look");
-      return LOOKS[q] ? q : "";
-    } catch (err) {
-      return "";
-    }
-  }
-
-  function isBare() {
-    try {
-      return new URLSearchParams(root.location.search).get("bare") === "1";
-    } catch (err) {
-      return false;
-    }
+    return "";
   }
 
   function categoryMeta(category) {
@@ -204,7 +189,6 @@
   }
 
   function withLook(href) {
-    var look = currentLook();
     if (!href) return href;
     var url;
     try {
@@ -212,19 +196,10 @@
     } catch (err) {
       return href;
     }
-    if (look) url.searchParams.set("look", look);
-    else url.searchParams.delete("look");
-    if (isBare()) url.searchParams.set("bare", "1");
+    url.searchParams.delete("look");
+    url.searchParams.delete("bare");
     var file = url.pathname.split("/").pop() || "index.html";
     return file + url.search + url.hash;
-  }
-
-  function pageHref(file, look) {
-    var params = new URLSearchParams(root.location.search);
-    params.set("look", look);
-    params.delete("bare");
-    var name = file || (root.location.pathname.split("/").pop() || "index.html");
-    return name + "?" + params.toString();
   }
 
   function trustBadge(item) {
@@ -260,57 +235,16 @@
   }
 
   var HERO = {
-    src: "images/renton-cedar-river.jpg",
-    alt: "Looking downstream on the Cedar River from the Renton Public Library",
-    author: "Joe Mabel",
-    fileUrl: "https://commons.wikimedia.org/wiki/File:Looking_downstream_on_Cedar_River_from_Renton,_WA_public_library.jpg",
-    license: "CC BY-SA 3.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+    src: "images/gene-coulon-pavilion.jpg",
+    alt: "Pavilion and the Boeing Renton plant across Lake Washington at Gene Coulon Memorial Beach Park",
+    author: "Maddiewsu",
+    fileUrl: "https://commons.wikimedia.org/wiki/File:View_of_pavilion_and_Boeing_Plant.jpg",
+    license: "CC BY-SA 4.0",
+    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
   };
 
-  function mountSwitcher() {
-    if (!currentLook() || isBare()) return;
-    if (document.getElementById("look-switcher")) return;
-    var bar = document.createElement("nav");
-    bar.id = "look-switcher";
-    bar.className = "look-switcher";
-    bar.setAttribute("aria-label", "Design drafts");
-
-    var label = document.createElement("span");
-    label.className = "look-switcher-label";
-    label.textContent = "Draft";
-    bar.appendChild(label);
-
-    var names = [
-      ["1", "Warm"],
-      ["2", "App"],
-      ["3", "Magazine"],
-    ];
-    var file = root.location.pathname.split("/").pop() || "index.html";
-    names.forEach(function (pair) {
-      var a = document.createElement("a");
-      a.href = pageHref(file, pair[0]);
-      a.textContent = pair[1];
-      if (pair[0] === currentLook()) a.setAttribute("aria-current", "page");
-      bar.appendChild(a);
-    });
-
-    var all = document.createElement("a");
-    all.href = "looks.html";
-    all.textContent = "Compare";
-    all.className = "look-switcher-compare";
-    bar.appendChild(all);
-
-    if (document.body.firstChild) document.body.insertBefore(bar, document.body.firstChild);
-    else document.body.appendChild(bar);
-    document.body.classList.add("has-look-switcher");
-  }
-
   function boot() {
-    var look = currentLook();
-    if (look) document.documentElement.setAttribute("data-look", look);
-    if (isBare()) document.documentElement.setAttribute("data-bare", "1");
-    mountSwitcher();
+    document.documentElement.setAttribute("data-look", "1");
   }
 
   if (document.readyState === "loading") {
@@ -321,7 +255,6 @@
 
   root.BogLooks = {
     currentLook: currentLook,
-    isBare: isBare,
     categoryMeta: categoryMeta,
     mountSlot: mountSlot,
     withLook: withLook,
