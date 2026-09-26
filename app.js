@@ -275,6 +275,7 @@
     return !!(item && (item.isDemo === true || item.demo === true));
   }
 
+  /** Template/demo rows stay in the data files but are not part of the public directory. */
   function isHiddenFromPublic(item) {
     return !!(item && (item.hidden === true || isDemoListing(item)));
   }
