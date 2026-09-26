@@ -1,17 +1,33 @@
 /* Photo drafts. Only active with ?style=a, ?style=b, or ?style=c.
-   The live directory (no style param) is unchanged. */
+   The live directory (no style param) is unchanged.
+   Patterns borrowed from current booking apps: frosted search,
+   round photo categories, large photo cards, and a sticky shop bar. */
+
+html[data-style] {
+  --sans: "Plus Jakarta Sans", "Manrope", system-ui, sans-serif;
+  --display: "Plus Jakarta Sans", "Manrope", system-ui, sans-serif;
+}
+
+html[data-style] body {
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+}
 
 html[data-style] .sample-tag {
-  left: 10px;
-  bottom: 10px;
-  padding: 3px 8px;
+  left: 12px;
+  bottom: 12px;
+  padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.86);
   color: #2a2622;
+  font-family: var(--sans);
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.01em;
   text-transform: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 1px 4px rgba(20, 16, 12, 0.12);
 }
 
@@ -24,109 +40,423 @@ html[data-style] .hero-credit {
 html[data-style] .hero-scrim {
   background: linear-gradient(
     180deg,
-    rgba(12, 18, 16, 0.18) 0%,
-    rgba(12, 18, 16, 0.12) 28%,
-    rgba(12, 18, 16, 0.55) 62%,
-    rgba(8, 14, 12, 0.82) 100%
+    rgba(12, 18, 16, 0.28) 0%,
+    rgba(12, 18, 16, 0.08) 32%,
+    rgba(12, 18, 16, 0.28) 58%,
+    rgba(8, 14, 12, 0.72) 100%
   );
 }
 
 html[data-style] body:not(.shop-page) .site-header h1,
 html[data-style] body:not(.shop-page) .tagline {
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+}
+
+html[data-style] body:not(.shop-page) .site-header h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.98;
+  font-size: clamp(2.6rem, 9.4vw, 5rem);
+}
+
+html[data-style] body:not(.shop-page) .tagline {
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+/* Frosted search floating on the skyline */
+html[data-style] #search {
+  height: 56px;
+  padding: 0 16px 0 46px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  color: #1c1916;
+  font-family: var(--sans);
+  font-size: 17px;
+  background-color: rgba(255, 255, 255, 0.72);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235e584f' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16.5 20 20.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 16px 50%;
+  background-size: 18px 18px;
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+html[data-style] #search::placeholder { color: #5e584f; opacity: 1; }
+
+html[data-style] #search:focus {
+  border-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.18),
+    0 0 0 3px rgba(255, 255, 255, 0.35);
+}
+
+/* Story-bubble categories */
+html[data-style] .story-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 2px 10px;
+  scrollbar-width: none;
+}
+
+html[data-style] .story-row::-webkit-scrollbar { display: none; }
+
+html[data-style] .story-row .chip {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 78px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+html[data-style] .story-ring {
+  width: 72px;
+  height: 72px;
+  padding: 2px;
+  border-radius: 999px;
+  background: #e4dfd8;
+  display: grid;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+html[data-style] .story-photo {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background: #eceae6;
+  display: block;
+}
+
+html[data-style] .story-label {
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+html[data-style] .story-row .chip[aria-pressed="true"] {
+  background: transparent;
+  color: inherit;
+  border: 0;
+}
+
+html[data-style] .story-row .chip[aria-pressed="true"] .story-ring {
+  padding: 3px;
+  background: linear-gradient(140deg, #1f6b4a 0%, #7dcea0 48%, #d4b06a 100%);
+}
+
+html[data-style] .story-bubble:active .story-ring { transform: scale(0.94); }
+
+/* Shared photo cards */
+html[data-style] .listings-1 { gap: 20px; }
+
+html[data-style] .look-card {
+  border: 0;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(20, 18, 16, 0.04), 0 12px 32px rgba(20, 18, 16, 0.08);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+html[data-style] .card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: #eceae6;
+}
+
+html[data-style] .card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html[data-style] .look-card .card-body {
+  position: static;
+  padding: 14px 16px 16px;
+  background: transparent;
+  color: inherit;
+}
+
+html[data-style] .look-card h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+html[data-style] .look-card h2 a,
+html[data-style] .place-line { color: inherit; }
+
+html[data-style] .place-line { font-size: 16px; }
+
+html[data-style] .cat-tag {
+  min-height: 26px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+html[data-style] .icon-btn {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+html[data-style] .icon-btn svg { width: 18px; height: 18px; }
+html[data-style] .icon-btn:active { transform: scale(0.94); }
+
+html[data-style] .look-card.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+html[data-style] .look-card.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.28s ease;
+}
+
+html[data-style] .listings-1 .look-card:nth-child(2).reveal.is-in { transition-delay: 50ms; }
+html[data-style] .listings-1 .look-card:nth-child(3).reveal.is-in { transition-delay: 90ms; }
+html[data-style] .listings-1 .look-card:nth-child(4).reveal.is-in { transition-delay: 130ms; }
+
+@media (hover: hover) {
+  html[data-style] .look-card.is-in:hover,
+  html[data-style] .look-card:not(.reveal):hover {
+    transform: scale(1.018);
+    box-shadow: 0 14px 36px rgba(20, 18, 16, 0.12);
+  }
+}
+
+html[data-style] .look-card.is-in:active,
+html[data-style] .look-card:not(.reveal):active { transform: scale(0.985); }
+
+/* Shop sheet + sticky bar */
+html[data-style] body.shop-page .site-header { display: none; }
+
+html[data-style] body.shop-page {
+  background: var(--paper, #f6f5f2);
+}
+
+html[data-style] .shop-wrap {
+  width: min(760px, 100%);
+  padding: 0 0 7rem;
+}
+
+html[data-style] #shop {
+  display: block;
+  background: transparent;
+}
+
+html[data-style] #look-gallery,
+html[data-style] .look-gallery {
+  position: relative;
+  width: 100%;
+  max-height: none;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  border-radius: 0;
+  overflow: hidden;
+  background: #ddd;
+}
+
+html[data-style] .look-gallery .photo-slot,
+html[data-style] .look-slide { height: 100%; }
+
+html[data-style] .shop-back-fab {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  left: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.78);
+  color: #1c1916;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+html[data-style] .shop-back-fab svg { width: 22px; height: 22px; display: block; }
+html[data-style] .shop-back-fab:active { transform: scale(0.94); }
+
+html[data-style] .look-sheet {
+  position: relative;
+  z-index: 2;
+  margin-top: -28px;
+  border-radius: 28px 28px 0 0;
+  padding: 18px 18px 12px;
+  background: #fff;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.08);
+}
+
+html[data-style] body.shop-page .lang-switch {
+  position: static;
+  background: transparent;
+  margin: 0 0 8px;
+  padding: 2px 0 8px;
+}
+
+html[data-style] .shop-name {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  font-size: clamp(1.85rem, 7vw, 2.5rem);
+  line-height: 1.08;
+}
+
+html[data-style] .sheet-row {
+  margin: 0;
+  padding: 14px 0 4px;
+  border-top: 1px solid rgba(28, 25, 22, 0.08);
+  background: transparent;
+}
+
+html[data-style] .look-map iframe {
+  height: 168px;
+  border-radius: 16px;
+}
+
+html[data-style] body.has-shop-dock .contact-phone { display: none; }
+
+html[data-style] .look-contact:not(:has(p:not(.contact-phone))) { display: none; }
+
+html[data-style] body.has-shop-dock .look-primary,
+html[data-style] body.shop-page .look-more { display: none; }
+
+html[data-style] .shop-dock {
+  position: fixed;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.82);
+  border-top: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.08);
+  animation: dock-in 0.4s ease;
+}
+
+html[data-style] .dock-btn {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 16px;
+  border: 1px solid rgba(28, 25, 22, 0.1);
+  background: #fff;
+  color: #1c1916;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+html[data-style] .dock-btn-fill {
+  background: #1f6b4a;
+  color: #fff;
+  border-color: transparent;
+}
+
+html[data-style] .dock-btn:active { transform: scale(0.97); }
+
+@keyframes dock-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (min-width: 800px) {
+  html[data-style] .shop-dock { display: none; }
+  html[data-style] body.has-shop-dock .look-primary { display: grid; }
+  html[data-style] body.shop-page .look-more { display: block; }
+  html[data-style] body.shop-page { padding-bottom: 0; }
 }
 
 /* --------------------------------------------------------------------------
    A — bright and airy
    -------------------------------------------------------------------------- */
 html[data-style="a"] {
-  --paper: #f7f6f3;
+  --paper: #f6f5f2;
   --ink: #1c1a17;
   --muted: #5c574f;
   --green: #1f6b4a;
-  background: #f7f6f3;
+  background: #f6f5f2;
 }
 
-html[data-style="a"] body {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  background: #f7f6f3;
-}
+html[data-style="a"] body { background: #f6f5f2; }
 
 html[data-style="a"] body:not(.shop-page) .site-header {
-  min-height: 500px;
-  padding-bottom: 3.4rem;
+  min-height: 540px;
+  padding-bottom: 3.5rem;
 }
 
-html[data-style="a"] .hero-frame img { object-position: center 62%; }
+html[data-style="a"] .hero-frame img { object-position: center 58%; }
 
-html[data-style="a"] body:not(.shop-page) .site-header h1 {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  font-weight: 750;
-  letter-spacing: -0.045em;
-}
-
-html[data-style="a"] .wrap { padding-top: 1.15rem; }
-
-html[data-style="a"] .listings-1 {
-  gap: 18px;
-}
-
-html[data-style="a"] .look-card {
-  background: #fff;
-  border: 0;
-  border-radius: 22px;
-  box-shadow: 0 10px 28px rgba(28, 36, 32, 0.08);
-  overflow: hidden;
-}
-
-html[data-style="a"] .card-media {
-  aspect-ratio: 5 / 4;
-  background: #eceae6;
-}
-
-html[data-style="a"] .look-card .card-body { padding: 14px 16px 16px; }
-
-html[data-style="a"] .look-card h2 {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  font-weight: 750;
-  letter-spacing: -0.03em;
-  font-size: 1.2rem;
-}
+html[data-style="a"] .wrap { padding-top: 1.25rem; }
 
 html[data-style="a"] .cat-tag {
   background: #eef6f1;
   color: #1b4f3a;
 }
 
-html[data-style="a"] .look-gallery {
-  border-radius: 22px;
-  margin: 0 0 0.8rem;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-}
-
-html[data-style="a"] .shop-name {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  font-weight: 750;
-}
+html[data-style="a"] .look-sheet { background: #fff; }
 
 /* --------------------------------------------------------------------------
-   B — warm luxury
+   B — warm luxury, serif display
    -------------------------------------------------------------------------- */
 html[data-style="b"] {
-  --paper: #f4efe6;
+  --paper: #f3eee6;
   --ink: #1a1714;
   --muted: #6a5e52;
   --line: #e4d8c8;
   --green: #14382c;
   --green-ink: #14382c;
+  --display: "Fraunces", Georgia, serif;
   --gold: #a68556;
 }
 
 html[data-style="b"] body {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  background: #f4efe6;
+  background: #f3eee6;
   color: var(--ink);
 }
 
@@ -141,9 +471,9 @@ html[data-style="b"] .hero-frame img { object-position: center 48%; }
 html[data-style="b"] .hero-scrim {
   background: linear-gradient(
     180deg,
-    rgba(28, 18, 8, 0.15) 0%,
-    rgba(28, 18, 8, 0.2) 36%,
-    rgba(22, 14, 8, 0.72) 100%
+    rgba(28, 18, 8, 0.22) 0%,
+    rgba(28, 18, 8, 0.08) 34%,
+    rgba(22, 14, 8, 0.62) 100%
   );
 }
 
@@ -153,55 +483,46 @@ html[data-style="b"] body:not(.shop-page) .brand-mark {
 }
 
 html[data-style="b"] body:not(.shop-page) .site-header h1 {
-  font-family: "Fraunces", "Times New Roman", serif;
   font-weight: 560;
-  font-size: clamp(2.35rem, 8.4vw, 4.8rem);
+  font-size: clamp(2.45rem, 8.6vw, 4.8rem);
   letter-spacing: -0.03em;
-  line-height: 0.98;
 }
 
 html[data-style="b"] body:not(.shop-page) .tagline {
   font-family: "Fraunces", Georgia, serif;
-  font-weight: 500;
+  font-weight: 520;
   font-size: 18px;
 }
 
-html[data-style="b"] .wrap { padding-top: 1.25rem; }
-
-html[data-style="b"] .chip {
-  border-color: #e3d5c2;
-  background: transparent;
+html[data-style="b"] #search {
+  background-color: rgba(255, 248, 238, 0.74);
+  border-color: rgba(255, 236, 210, 0.5);
 }
 
-html[data-style="b"] .chip[aria-pressed="true"] {
-  background: #14382c;
-  color: #f6ecd9;
-  border-color: #14382c;
+html[data-style="b"] .story-row .chip[aria-pressed="true"] .story-ring {
+  background: linear-gradient(140deg, #14382c 0%, #c4a46a 55%, #f0d7a8 100%);
 }
 
-html[data-style="b"] .listings-1 { gap: 22px; }
+html[data-style="b"] .wrap { padding-top: 1.35rem; }
+
+html[data-style="b"] .listings-1 { gap: 24px; }
 
 html[data-style="b"] .look-card {
   background: #fbf7f1;
-  border: 1px solid #eadfce;
-  border-radius: 8px;
-  box-shadow: none;
-  overflow: hidden;
+  border-radius: 24px;
+  box-shadow: 0 10px 28px rgba(48, 32, 12, 0.06);
 }
 
 html[data-style="b"] .card-media {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   background: #e7dfd3;
 }
 
-html[data-style="b"] .look-card .card-body { padding: 16px 16px 14px; }
-
 html[data-style="b"] .look-card h2 {
-  font-family: "Fraunces", Georgia, serif;
   font-weight: 560;
   font-size: 1.45rem;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.12;
 }
 
 html[data-style="b"] .place-line { color: #6d6256; }
@@ -210,7 +531,7 @@ html[data-style="b"] .cat-tag {
   background: transparent;
   color: #8a6a3b;
   border: 1px solid #d9c4a0;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
 }
 
 html[data-style="b"] .icon-btn {
@@ -219,25 +540,12 @@ html[data-style="b"] .icon-btn {
   background: #fffaf3;
 }
 
-html[data-style="b"] .look-gallery {
-  aspect-ratio: 3 / 4;
-  max-height: 520px;
-  border-radius: 4px;
-  margin: 0 0 1rem;
-  width: 100%;
-  overflow: hidden;
-}
+html[data-style="b"] .look-sheet { background: #fbf7f1; }
 
-html[data-style="b"] .shop-name {
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 560;
-  letter-spacing: -0.03em;
-}
+html[data-style="b"] .shop-name { font-weight: 560; letter-spacing: -0.03em; }
 
-html[data-style="b"] body.shop-page .back-link { color: #14382c; }
-
-html[data-style="b"] .look-primary .btn-primary,
-html[data-style="b"] .float-contact {
+html[data-style="b"] .dock-btn-fill,
+html[data-style="b"] .look-primary .btn-primary {
   background: #14382c;
 }
 
@@ -247,34 +555,33 @@ html[data-style="b"] .lang-btn[aria-pressed="true"] {
   color: #f6ecd9;
 }
 
+html[data-style="b"] .shop-dock { background: rgba(251, 247, 241, 0.84); }
+
 /* --------------------------------------------------------------------------
-   C — bold local, name on the photo
+   C — bold local type, same card anatomy
    -------------------------------------------------------------------------- */
 html[data-style="c"] {
-  --paper: #f3f1ee;
+  --paper: #eceae6;
   --ink: #141414;
   --green: #111;
 }
 
-html[data-style="c"] body {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  background: #f3f1ee;
-}
+html[data-style="c"] body { background: #eceae6; }
 
 html[data-style="c"] body:not(.shop-page) .site-header {
-  min-height: 78vh;
-  padding: 1.2rem 1.1rem 4.2rem;
+  min-height: min(72vh, 640px);
+  padding: 1.25rem 1.15rem 4rem;
   text-align: left;
 }
 
-html[data-style="c"] .hero-frame img { object-position: center 45%; }
+html[data-style="c"] .hero-frame img { object-position: center 42%; }
 
 html[data-style="c"] .hero-scrim {
   background: linear-gradient(
     180deg,
-    rgba(0, 0, 0, 0.18) 0%,
-    rgba(0, 0, 0, 0.08) 30%,
-    rgba(0, 0, 0, 0.78) 100%
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.05) 36%,
+    rgba(0, 0, 0, 0.62) 100%
   );
 }
 
@@ -282,143 +589,78 @@ html[data-style="c"] body:not(.shop-page) .brand,
 html[data-style="c"] .hero-search {
   width: min(640px, 100%);
   margin-left: 0;
-  margin-right: 0;
+  margin-right: auto;
   text-align: left;
 }
 
 html[data-style="c"] body:not(.shop-page) .site-header h1 {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(2.6rem, 11vw, 5.2rem);
-  max-width: 12ch;
+  max-width: 11ch;
   margin-left: 0;
-  letter-spacing: -0.055em;
-  line-height: 0.92;
+  font-size: clamp(2.7rem, 11vw, 5.1rem);
+  letter-spacing: -0.06em;
+  line-height: 0.9;
 }
 
 html[data-style="c"] body:not(.shop-page) .tagline {
   margin-left: 0;
-  max-width: 28ch;
-  font-size: 18px;
+  max-width: 26ch;
+  font-size: 17px;
 }
 
-html[data-style="c"] #search { border-radius: 14px; }
+html[data-style="c"] .story-row .chip[aria-pressed="true"] .story-ring {
+  background: linear-gradient(140deg, #111 0%, #6b6b6b 50%, #111 100%);
+}
 
 html[data-style="c"] .wrap {
-  width: min(1180px, 100%);
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 0;
+  width: min(1140px, 100%);
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 1rem;
 }
 
-html[data-style="c"] .controls {
-  padding: 0.85rem 1rem 0.2rem;
-}
-
-html[data-style="c"] .count,
-html[data-style="c"] .site-footer { padding-left: 1rem; padding-right: 1rem; }
-
-html[data-style="c"] .listings-1 {
-  gap: 2px;
-}
+html[data-style="c"] .listings-1 { gap: 14px; }
 
 html[data-style="c"] .look-card {
-  position: relative;
-  border: 0;
-  border-radius: 0;
-  background: #111;
-  box-shadow: none;
-  overflow: hidden;
-}
-
-html[data-style="c"] .card-media-link { display: block; }
-
-html[data-style="c"] .card-media {
-  aspect-ratio: 4 / 5;
-  background: #222;
-}
-
-html[data-style="c"] .look-card .card-body {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  padding: 3.2rem 16px 16px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.78) 55%, rgba(0, 0, 0, 0.88) 100%);
-  color: #fff;
-}
-
-html[data-style="c"] .look-card h2,
-html[data-style="c"] .look-card h2 a,
-html[data-style="c"] .place-line {
-  color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 html[data-style="c"] .look-card h2 {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
   font-weight: 800;
-  font-size: clamp(1.45rem, 6vw, 2rem);
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  letter-spacing: -0.045em;
 }
 
-html[data-style="c"] .place-line { opacity: 0.9; font-size: 16px; }
-
 html[data-style="c"] .cat-tag {
-  background: rgba(255, 255, 255, 0.16);
+  background: #141414;
   color: #fff;
   border: 0;
 }
 
 html[data-style="c"] .icon-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: transparent;
-  color: #111;
-}
-
-html[data-style="c"] .sample-tag {
-  top: 12px;
-  bottom: auto;
-  left: auto;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.45);
+  background: #141414;
+  border-color: #141414;
   color: #fff;
-  box-shadow: none;
 }
 
-html[data-style="c"] .media-badge { background: #fff; }
+html[data-style="c"] .look-sheet { background: #f7f6f4; }
 
-html[data-style="c"] .look-gallery {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  aspect-ratio: 4 / 5;
-  max-height: 78vh;
-  border-radius: 0;
-  overflow: hidden;
-}
-
-html[data-style="c"] .shop-wrap { width: min(760px, 100%); }
-
-html[data-style="c"] .shop-name {
-  font-family: "Manrope", "Outfit", system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.045em;
-}
-
+html[data-style="c"] .dock-btn-fill,
+html[data-style="c"] .look-primary .btn-primary,
 html[data-style="c"] .float-contact { background: #111; }
+
+html[data-style="c"] .shop-dock { background: rgba(247, 246, 244, 0.86); }
 
 @media (min-width: 800px) {
   html[data-style="a"] .listings-1,
   html[data-style="b"] .listings-1,
   html[data-style="c"] .listings-1 {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0;
+    padding-right: 0;
   }
-  html[data-style="c"] .listings-1 { gap: 8px; }
-  html[data-style="c"] .look-card { border-radius: 18px; }
-  html[data-style="c"] body:not(.shop-page) .site-header { min-height: 640px; }
+  html[data-style="c"] body:not(.shop-page) .site-header {
+    min-height: 620px;
+    text-align: center;
+  }
   html[data-style="c"] body:not(.shop-page) .brand,
   html[data-style="c"] .hero-search {
     margin-left: auto;
@@ -430,4 +672,21 @@ html[data-style="c"] .float-contact { background: #111; }
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-style] .look-card,
+  html[data-style] .look-card.reveal,
+  html[data-style] .look-card.reveal.is-in,
+  html[data-style] .icon-btn,
+  html[data-style] .dock-btn,
+  html[data-style] .story-bubble,
+  html[data-style] .story-ring,
+  html[data-style] .shop-dock,
+  html[data-style] .shop-back-fab {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  html[data-style] .look-card.reveal { opacity: 1; }
 }

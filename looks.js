@@ -83,6 +83,12 @@
     return pool[Math.abs(id) % pool.length];
   }
 
+  function bubbleFor(category) {
+    var meta = categoryMeta(category);
+    var pool = SAMPLES[meta.key] || SAMPLES.beauty;
+    return pool[0];
+  }
+
   function categoryMeta(category) {
     if (category && CATS[category]) return CATS[category];
     var copy = {
@@ -227,6 +233,7 @@
       sampleImg.src = sample.src;
       sampleImg.alt = sample.alt;
       sampleImg.loading = "lazy";
+      sampleImg.decoding = "async";
       el.appendChild(sampleImg);
       el.classList.add("has-sample");
       var tag = document.createElement("span");
@@ -369,6 +376,7 @@
     currentStyle: currentStyle,
     heroFor: heroFor,
     categoryMeta: categoryMeta,
+    bubbleFor: bubbleFor,
     mountSlot: mountSlot,
     withLook: withLook,
     trustBadge: trustBadge,

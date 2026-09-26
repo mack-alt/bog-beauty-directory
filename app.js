@@ -119,6 +119,10 @@
     const img = document.createElement("img");
     img.src = hero.src;
     img.alt = hero.alt;
+    img.decoding = "async";
+    if (window.BogLooks.currentStyle && window.BogLooks.currentStyle()) {
+      img.setAttribute("fetchpriority", "high");
+    }
     frame.appendChild(img);
     const scrim = document.createElement("div");
     scrim.className = "hero-scrim";
@@ -208,7 +212,7 @@
     if (item.category) {
       const tag = document.createElement("span");
       tag.className = "cat-tag";
-      tag.textContent = item.category;
+      tag.textContent = categoryChipLabel(item.category);
       foot.appendChild(tag);
     } else {
       foot.appendChild(document.createElement("span"));
@@ -249,25 +253,62 @@
     return ["All"].concat(ALL_CATEGORIES.filter((c) => present.has(c)));
   }
 
+  function draftStyleOn() {
+    return !!(window.BogLooks && window.BogLooks.currentStyle && window.BogLooks.currentStyle());
+  }
+
+  function categoryChipLabel(cat) {
+    if (!draftStyleOn() || !window.BogLooks) return cat;
+    const meta = window.BogLooks.categoryMeta(cat);
+    if (meta.key === "brows") return "Brows/Lashes";
+    return meta.label || cat;
+  }
+
   function renderChips(categories) {
     chipsEl.innerHTML = "";
+    const styled = draftStyleOn();
+    chipsEl.classList.toggle("story-row", styled);
     categories.forEach((cat) => {
+      if (styled && cat === "All") return;
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "chip";
-      btn.textContent = cat;
+      btn.className = styled ? "chip story-bubble" : "chip";
+      btn.setAttribute("data-category", cat);
       btn.setAttribute("aria-pressed", cat === activeCategory ? "true" : "false");
-      if (look && window.BogLooks && cat !== "All") {
-        const meta = window.BogLooks.categoryMeta(cat);
-        btn.setAttribute("data-cat", meta.key);
-        btn.style.setProperty("--chip-cat", meta.color);
-        btn.style.setProperty("--chip-soft", meta.soft);
-        btn.style.setProperty("--chip-ink", meta.ink);
+      if (styled && window.BogLooks && window.BogLooks.bubbleFor) {
+        const photo = window.BogLooks.bubbleFor(cat);
+        const ring = document.createElement("span");
+        ring.className = "story-ring";
+        const img = document.createElement("img");
+        img.className = "story-photo";
+        img.src = photo.src;
+        img.alt = "";
+        img.width = 72;
+        img.height = 72;
+        img.loading = "lazy";
+        img.decoding = "async";
+        ring.appendChild(img);
+        const label = document.createElement("span");
+        label.className = "story-label";
+        label.textContent = categoryChipLabel(cat);
+        btn.appendChild(ring);
+        btn.appendChild(label);
+      } else {
+        btn.textContent = cat;
+        if (look && window.BogLooks && cat !== "All") {
+          const meta = window.BogLooks.categoryMeta(cat);
+          btn.setAttribute("data-cat", meta.key);
+          btn.style.setProperty("--chip-cat", meta.color);
+          btn.style.setProperty("--chip-soft", meta.soft);
+          btn.style.setProperty("--chip-ink", meta.ink);
+        }
       }
       btn.addEventListener("click", () => {
-        activeCategory = cat;
+        if (styled && activeCategory === cat) activeCategory = "All";
+        else activeCategory = cat;
         Array.from(chipsEl.children).forEach((c) => {
-          c.setAttribute("aria-pressed", c.textContent === activeCategory ? "true" : "false");
+          const name = c.getAttribute("data-category") || c.textContent;
+          c.setAttribute("aria-pressed", name === activeCategory ? "true" : "false");
         });
         renderList();
       });
@@ -344,6 +385,7 @@
     if (oldHeading) oldHeading.remove();
     listingsEl.classList.add("listings-1");
     items.forEach((item) => listingsEl.appendChild(renderCard(item)));
+    revealCards(listingsEl);
     const demoPinned = items.some(isDemoListing);
     countEl.textContent =
       (items.length === listings.length
@@ -351,6 +393,32 @@
         : `${items.length} of ${listings.length} listings`) +
       (demoPinned ? " · DEMO template pinned at top" : "");
     emptyEl.classList.toggle("hidden", items.length > 0);
+  }
+
+  function revealCards(root) {
+    const cards = root.querySelectorAll(".look-card");
+    if (!draftStyleOn()) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !("IntersectionObserver" in window)) {
+      cards.forEach((card) => card.classList.add("is-in"));
+      return;
+    }
+    if (!revealCards.observer) {
+      revealCards.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("is-in");
+            revealCards.observer.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px 80px 0px" }
+      );
+    }
+    cards.forEach((card) => {
+      card.classList.add("reveal");
+      revealCards.observer.observe(card);
+    });
   }
 
   mountPhotoHero();
