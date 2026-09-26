@@ -57,7 +57,7 @@ html[data-style="a"] body:not(.shop-page) .site-header {
   padding-bottom: 3.4rem;
 }
 
-html[data-style="a"] .hero-frame img { object-position: center 42%; }
+html[data-style="a"] .hero-frame img { object-position: center 62%; }
 
 html[data-style="a"] body:not(.shop-page) .site-header h1 {
   font-family: "Manrope", "Outfit", system-ui, sans-serif;
@@ -136,7 +136,7 @@ html[data-style="b"] body:not(.shop-page) .site-header {
   background: #1a2820;
 }
 
-html[data-style="b"] .hero-frame img { object-position: center 58%; }
+html[data-style="b"] .hero-frame img { object-position: center 48%; }
 
 html[data-style="b"] .hero-scrim {
   background: linear-gradient(
@@ -267,7 +267,7 @@ html[data-style="c"] body:not(.shop-page) .site-header {
   text-align: left;
 }
 
-html[data-style="c"] .hero-frame img { object-position: center 62%; }
+html[data-style="c"] .hero-frame img { object-position: center 45%; }
 
 html[data-style="c"] .hero-scrim {
   background: linear-gradient(

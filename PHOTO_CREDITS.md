@@ -2,18 +2,15 @@
 
 Draft styles (`?style=a`, `?style=b`, `?style=c`) use photos from Pexels only. Every file below is free to use under the [Pexels License](https://www.pexels.com/license/), including commercial use. Nothing here is from Google Maps, Yelp, Instagram, a shop website, or another copyrighted source.
 
-No Unsplash or Pexels photo page verified **Gene Coulon Memorial Beach Park** or the Renton waterfront on Lake Washington. These heroes are **Maple Valley, Washington** (South King County), not Coulon and not Renton. The alt text and this file say that on purpose.
-
-The live directory (no `style` parameter) still uses the existing Wikimedia Commons hero and is not part of this credit list.
+All three draft heroes are the Seattle skyline. The headline stays “Renton / South King County beauty directory.” The live directory (no `style` parameter) still uses the existing Wikimedia Commons hero and is not part of this credit list.
 
 ## Heroes
 
 | Style | File | What it shows | Photographer | Source | License |
 | --- | --- | --- | --- | --- | --- |
-| A, and the tighter crop used on C | `images/styles/hero-maple-valley-shore.jpg`, `images/styles/hero-maple-valley-shore-bold.jpg` | Calm lake shore in Maple Valley, WA | William Jacobs | https://www.pexels.com/photo/serene-autumn-lake-in-maple-valley-wa-29112024/ | [Pexels License](https://www.pexels.com/license/) |
-| B | `images/styles/hero-maple-valley-reflections.jpg` | Autumn reflections on a lake in Maple Valley, WA | William Jacobs | https://www.pexels.com/photo/autumn-reflections-at-maple-valley-lake-29112020/ | [Pexels License](https://www.pexels.com/license/) |
-
-Style C is a crop of the same Maple Valley shore photograph as style A, credited the same way.
+| A | `images/styles/hero-seattle-skyline-blue.jpg` | Seattle skyline, Space Needle, and Mount Rainier under a clear blue sky | Aarav Chopra | https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/ | [Pexels License](https://www.pexels.com/license/) |
+| B | `images/styles/hero-seattle-skyline-golden.jpg` | Seattle skyline and the Space Needle at golden hour | Sergei A | https://www.pexels.com/photo/photo-of-seattle-skyline-2539374/ | [Pexels License](https://www.pexels.com/license/) |
+| C | `images/styles/hero-seattle-skyline-sunset.jpg` | Seattle skyline and the Space Needle against an orange sunset | Bryan Dickerson | https://www.pexels.com/photo/seattle-skyline-at-sunset-with-space-needle-28495691/ | [Pexels License](https://www.pexels.com/license/) |
 
 ## Category sample photos
 
