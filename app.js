@@ -17,11 +17,91 @@
   const countEl = document.getElementById("count");
   const emptyEl = document.getElementById("empty");
   const searchEl = document.getElementById("search");
+  const langSwitchEl = document.getElementById("home-lang");
+  const headlineEl = document.getElementById("home-headline");
+  const taglineEl = document.getElementById("home-tagline");
+  const searchLabelEl = document.getElementById("search-label");
+  const footerLineEl = document.getElementById("home-footer-line");
 
   let listings = [];
   let activeCategory = "All";
   let query = "";
+  let activeLocale = "en";
   const look = "1";
+  const LOCALES = ["en", "vi", "es", "zh", "ko", "th"];
+  const CHIP_KEYS = {
+    hair: "hair",
+    barber: "barber",
+    nails: "nails",
+    spa: "spa",
+    brows: "browsLashes",
+    beauty: "beauty",
+  };
+
+  function phrase(key) {
+    if (window.BogPhrases && typeof window.BogPhrases.t === "function") {
+      return window.BogPhrases.t(key, activeLocale) || "";
+    }
+    return "";
+  }
+
+  function fill(template, vars) {
+    return String(template || "").replace(/\{(\w+)\}/g, function (_, key) {
+      return vars && vars[key] != null ? String(vars[key]) : "";
+    });
+  }
+
+  function persistLocale(locale) {
+    try {
+      localStorage.setItem("bog-shop-lang", locale);
+    } catch (err) {}
+    try {
+      sessionStorage.setItem("bog-shop-lang", locale);
+    } catch (err) {}
+    if (window.history && window.history.replaceState) {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", locale);
+        window.history.replaceState({}, "", url);
+      } catch (err) {}
+    }
+    document.documentElement.lang = locale;
+  }
+
+  function applyChrome() {
+    if (headlineEl) headlineEl.textContent = phrase("headline") || headlineEl.textContent;
+    if (taglineEl) taglineEl.textContent = phrase("tagline") || taglineEl.textContent;
+    if (searchEl && phrase("searchPlaceholder")) searchEl.placeholder = phrase("searchPlaceholder");
+    if (searchLabelEl) searchLabelEl.textContent = phrase("searchLabel") || searchLabelEl.textContent;
+    if (chipsEl && phrase("categoryFilters")) chipsEl.setAttribute("aria-label", phrase("categoryFilters"));
+    if (emptyEl) emptyEl.textContent = phrase("emptyResults") || emptyEl.textContent;
+    if (footerLineEl) footerLineEl.textContent = phrase("footerLine") || footerLineEl.textContent;
+    if (langSwitchEl) langSwitchEl.setAttribute("aria-label", phrase("language") || "Language");
+    renderLangSwitch();
+  }
+
+  function renderLangSwitch() {
+    if (!langSwitchEl) return;
+    langSwitchEl.innerHTML = "";
+    LOCALES.forEach((loc) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "lang-btn";
+      btn.textContent = loc.toUpperCase();
+      btn.setAttribute("aria-pressed", loc === activeLocale ? "true" : "false");
+      btn.addEventListener("click", () => {
+        if (loc === activeLocale) return;
+        activeLocale = loc;
+        persistLocale(loc);
+        applyChrome();
+        if (listings.length) {
+          renderChips(presentCategories(listings));
+          renderList();
+        }
+      });
+      langSwitchEl.appendChild(btn);
+    });
+  }
 
   function normalizePhone(phone) {
     if (!phone) return "";
@@ -222,10 +302,12 @@
     if (item.phone) {
       const tel = normalizePhone(item.phone);
       const textFirst = item.textFirst === true;
+      const shopName = item.name || "shop";
       icons.appendChild(
         iconLink(
           (textFirst ? "sms:" : "tel:") + tel,
-          (textFirst ? "Text " : "Call ") + (item.name || "shop"),
+          fill(phrase(textFirst ? "textName" : "callName"), { name: shopName }) ||
+            (textFirst ? "Text " : "Call ") + shopName,
           textFirst ? ICON_TEXT : ICON_PHONE,
           false
         )
@@ -233,7 +315,15 @@
     }
     const mapHref = mapHrefFor(item);
     if (mapHref) {
-      icons.appendChild(iconLink(mapHref, "Directions to " + (item.name || "shop"), ICON_PIN, true));
+      const shopName = item.name || "shop";
+      icons.appendChild(
+        iconLink(
+          mapHref,
+          fill(phrase("directionsTo"), { name: shopName }) || "Directions to " + shopName,
+          ICON_PIN,
+          true
+        )
+      );
     }
     foot.appendChild(icons);
     body.appendChild(foot);
@@ -260,6 +350,8 @@
   function categoryChipLabel(cat) {
     if (!draftStyleOn() || !window.BogLooks) return cat;
     const meta = window.BogLooks.categoryMeta(cat);
+    const key = CHIP_KEYS[meta.key];
+    if (key && phrase(key)) return phrase(key);
     if (meta.key === "brows") return "Brows/Lashes";
     return meta.label || cat;
   }
@@ -387,10 +479,15 @@
     items.forEach((item) => listingsEl.appendChild(renderCard(item)));
     revealCards(listingsEl);
     const demoPinned = items.some(isDemoListing);
+    const countKey = items.length === listings.length
+      ? (items.length === 1 ? "listingCountOne" : "listingCount")
+      : "listingCountFiltered";
+    const countText = fill(phrase(countKey), { n: items.length, total: listings.length });
     countEl.textContent =
-      (items.length === listings.length
-        ? `${items.length} listing${items.length === 1 ? "" : "s"}`
-        : `${items.length} of ${listings.length} listings`) +
+      (countText ||
+        (items.length === listings.length
+          ? `${items.length} listing${items.length === 1 ? "" : "s"}`
+          : `${items.length} of ${listings.length} listings`)) +
       (demoPinned ? " · DEMO template pinned at top" : "");
     emptyEl.classList.toggle("hidden", items.length > 0);
   }
@@ -461,6 +558,11 @@
   }
 
   mountPhotoHero();
+
+  activeLocale =
+    (window.BogLooks && window.BogLooks.currentLang && window.BogLooks.currentLang()) || "en";
+  persistLocale(activeLocale);
+  applyChrome();
 
   fetch("listings.json")
     .then((r) => {

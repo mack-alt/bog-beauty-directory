@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919e" />
   <link rel="stylesheet" href="looks.css?v=20260926i" />
-  <link rel="stylesheet" href="styles-draft.css?v=20260926w" />
+  <link rel="stylesheet" href="styles-draft.css?v=20260926x" />
   <script>
     document.documentElement.setAttribute("data-look", "1");
     document.documentElement.setAttribute("data-style", "a");
@@ -27,17 +27,18 @@
 </head>
 <body>
   <header class="site-header">
+    <div id="home-lang" class="lang-switch hero-lang" role="group" aria-label="Language"></div>
     <div class="brand">
       <p class="brand-mark">Blades of Grass</p>
-      <h1>South Seattle beauty directory</h1>
-      <p class="tagline">Local salons, barbers, spas &amp; more — find a spot and book.</p>
+      <h1 id="home-headline">South Seattle beauty directory</h1>
+      <p id="home-tagline" class="tagline">Local salons, barbers, spas &amp; more — find a spot and book.</p>
     </div>
   </header>
 
   <main class="wrap">
     <section class="controls" aria-label="Search and filters">
       <label class="search-label" for="search">
-        <span class="sr-only">Search by name</span>
+        <span id="search-label" class="sr-only">Search by name</span>
         <input id="search" type="search" placeholder="Search by name…" autocomplete="off" enterkeyhint="search" />
       </label>
       <div id="chips" class="chips" role="group" aria-label="Category filters"></div>
@@ -49,11 +50,12 @@
   </main>
 
   <footer class="site-footer">
-    <p>Blades of Grass · South Seattle</p>
+    <p id="home-footer-line">Blades of Grass · South Seattle</p>
     <p class="fine">Community beauty directory preview. Listings may be pending confirmation.</p>
   </footer>
 
-  <script src="looks.js?v=20260926v"></script>
-  <script src="app.js?v=20260926v"></script>
+  <script src="i18n/phrases.js?v=20260926x"></script>
+  <script src="looks.js?v=20260926x"></script>
+  <script src="app.js?v=20260926x"></script>
 </body>
 </html>

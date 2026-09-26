@@ -241,6 +241,11 @@
   function applyChrome() {
     if (backLinkEl) backLinkEl.textContent = "← " + t("backToDirectory");
     if (footerBackEl) footerBackEl.textContent = t("backToDirectory");
+    if (window.BogLooks && window.BogLooks.withLook) {
+      const directory = window.BogLooks.withLook("index.html");
+      if (backLinkEl) backLinkEl.href = directory;
+      if (footerBackEl) footerBackEl.href = directory;
+    }
     if (langSwitchEl) langSwitchEl.setAttribute("aria-label", t("language"));
     if (verifiedEl) verifiedEl.textContent = t("verifiedByBog");
     if (storyHeadingEl) storyHeadingEl.textContent = t("story");
@@ -1301,12 +1306,7 @@
     window.location.replace(directoryHref());
     return;
   }
-  const lookOnLoad = !!document.documentElement.getAttribute("data-look");
   applyBeautyTheme(false);
-  if (lookOnLoad && window.BogLooks) {
-    if (backLinkEl) backLinkEl.href = window.BogLooks.withLook("index.html");
-    if (footerBackEl) footerBackEl.href = window.BogLooks.withLook("index.html");
-  }
   activeLocale = query.lang || readStoredLocale() || "en";
   persistLocale(activeLocale);
   applyChrome();

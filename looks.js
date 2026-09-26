@@ -231,7 +231,7 @@
       el.classList.add("has-sample");
       var tag = document.createElement("span");
       tag.className = "slot-note sample-tag";
-      tag.textContent = "Sample photo";
+      tag.textContent = sampleLabel();
       el.appendChild(tag);
       return;
     }
@@ -260,6 +260,38 @@
     }
   }
 
+  var LANGS = ["en", "vi", "es", "zh", "ko", "th"];
+
+  function knownLang(value) {
+    var lang = String(value || "").trim().toLowerCase();
+    return LANGS.indexOf(lang) !== -1 ? lang : "";
+  }
+
+  /** User-picked language only. URL wins, then storage. Never navigator.language. */
+  function currentLang() {
+    try {
+      var fromUrl = knownLang(new URLSearchParams(root.location.search).get("lang"));
+      if (fromUrl) return fromUrl;
+    } catch (err) {}
+    try {
+      var stored = knownLang(localStorage.getItem("bog-shop-lang"));
+      if (stored) return stored;
+    } catch (err) {}
+    try {
+      var session = knownLang(sessionStorage.getItem("bog-shop-lang"));
+      if (session) return session;
+    } catch (err) {}
+    return knownLang(document.documentElement.lang) || "en";
+  }
+
+  function sampleLabel() {
+    if (root.BogPhrases && typeof root.BogPhrases.t === "function") {
+      var label = root.BogPhrases.t("samplePhoto", currentLang());
+      if (label) return label;
+    }
+    return "Sample photo";
+  }
+
   function withLook(href) {
     if (!href) return href;
     var url;
@@ -271,6 +303,7 @@
     url.searchParams.delete("look");
     url.searchParams.delete("bare");
     url.searchParams.delete("style");
+    url.searchParams.set("lang", currentLang());
     var file = url.pathname.split("/").pop() || "index.html";
     return file + url.search + url.hash;
   }
@@ -338,6 +371,7 @@
     categoryMeta: categoryMeta,
     bubbleFor: bubbleFor,
     mountSlot: mountSlot,
+    currentLang: currentLang,
     withLook: withLook,
     trustBadge: trustBadge,
     placeLabel: placeLabel,
