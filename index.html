@@ -10,6 +10,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Figtree:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919e" />
+  <link rel="stylesheet" href="looks.css?v=20260926b" />
+  <script>
+    (function () {
+      try {
+        var look = new URLSearchParams(location.search).get("look");
+        if (look === "1" || look === "2" || look === "3") {
+          document.documentElement.setAttribute("data-look", look);
+          if (new URLSearchParams(location.search).get("bare") === "1") {
+            document.documentElement.setAttribute("data-bare", "1");
+          }
+          var fonts = document.createElement("link");
+          fonts.rel = "stylesheet";
+          fonts.href = "https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,650;1,6..72,560&family=Outfit:wght@400;500;600;700&display=swap";
+          document.head.appendChild(fonts);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
   <header class="site-header">
@@ -39,6 +57,7 @@
     <p class="fine">Community beauty directory preview. Listings may be pending confirmation.</p>
   </footer>
 
-  <script src="app.js?v=20260919e"></script>
+  <script src="looks.js?v=20260926b"></script>
+  <script src="app.js?v=20260926b"></script>
 </body>
 </html>

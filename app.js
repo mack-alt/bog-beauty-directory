@@ -21,6 +21,7 @@
   let listings = [];
   let activeCategory = "All";
   let query = "";
+  const look = window.BogLooks ? window.BogLooks.currentLook() : "";
 
   function normalizePhone(phone) {
     if (!phone) return "";
@@ -66,13 +67,308 @@
   }
 
   function shopHref(item) {
+    let href = "shop.html";
     if (item.id != null && item.id !== "") {
-      return "shop.html?id=" + encodeURIComponent(item.id);
+      href = "shop.html?id=" + encodeURIComponent(item.id);
+    } else if (item.slug) {
+      href = "shop.html?slug=" + encodeURIComponent(item.slug);
     }
-    if (item.slug) {
-      return "shop.html?slug=" + encodeURIComponent(item.slug);
+    if (look && window.BogLooks) return window.BogLooks.withLook(href);
+    return href;
+  }
+
+  function mapHrefFor(item) {
+    if (item.googleMapsUrl && /^https?:\/\//i.test(String(item.googleMapsUrl).trim())) {
+      return String(item.googleMapsUrl).trim();
     }
-    return "shop.html";
+    if (item.address) {
+      return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(item.address);
+    }
+    return "";
+  }
+
+  function iconLink(href, label, markup, external) {
+    const a = document.createElement("a");
+    a.className = "icon-btn";
+    a.href = href;
+    a.setAttribute("aria-label", label);
+    if (external) {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    a.innerHTML =
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + markup + "</svg>";
+    return a;
+  }
+
+  const ICON_PHONE =
+    '<path d="M7 3.8h3l1.2 2.8-1.8 1.1a11 11 0 0 0 5 5l1.1-1.8 2.8 1.2v3A1.8 1.8 0 0 1 16.6 20 14.2 14.2 0 0 1 4 7.4 1.8 1.8 0 0 1 5.8 5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>';
+  const ICON_PIN =
+    '<path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="11" r="2.1" fill="currentColor"/>';
+  const ICON_TEXT =
+    '<path d="M5 6h14v8.2H9.2L5 18.2z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>';
+
+  function mountPhotoHero() {
+    if (look !== "1" || !window.BogLooks) return;
+    const header = document.querySelector(".site-header");
+    const searchLabel = document.querySelector(".search-label");
+    if (!header || !searchLabel || header.querySelector(".hero-frame")) return;
+    const hero = window.BogLooks.HERO;
+    const frame = document.createElement("div");
+    frame.className = "hero-frame";
+    const img = document.createElement("img");
+    img.src = hero.src;
+    img.alt = hero.alt;
+    frame.appendChild(img);
+    const scrim = document.createElement("div");
+    scrim.className = "hero-scrim";
+    frame.appendChild(scrim);
+    header.insertBefore(frame, header.firstChild);
+
+    const slot = document.createElement("div");
+    slot.className = "hero-search";
+    slot.appendChild(searchLabel);
+    header.appendChild(slot);
+
+    const credit = document.createElement("p");
+    credit.className = "hero-credit";
+    const author = document.createElement("a");
+    author.href = hero.fileUrl;
+    author.textContent = hero.author;
+    const license = document.createElement("a");
+    license.href = hero.licenseUrl;
+    license.textContent = hero.license;
+    credit.appendChild(document.createTextNode("Photo: "));
+    credit.appendChild(author);
+    credit.appendChild(document.createTextNode(", Wikimedia Commons, "));
+    credit.appendChild(license);
+    header.appendChild(credit);
+  }
+
+  function trustNode(item) {
+    const label = window.BogLooks && window.BogLooks.trustBadge(item);
+    if (!label) return null;
+    const badge = document.createElement("span");
+    badge.className = "trust-badge";
+    badge.textContent = label;
+    return badge;
+  }
+
+  function renderLookCard1(item) {
+    const card = document.createElement("article");
+    card.className = "look-card";
+    const href = shopHref(item);
+    card.addEventListener("click", (event) => {
+      if (event.target.closest("a, button")) return;
+      window.location.href = href;
+    });
+
+    const mediaLink = document.createElement("a");
+    mediaLink.className = "card-media-link";
+    mediaLink.href = href;
+    mediaLink.tabIndex = -1;
+    mediaLink.setAttribute("aria-hidden", "true");
+    const media = document.createElement("div");
+    media.className = "card-media";
+    if (window.BogLooks) window.BogLooks.mountSlot(media, item, "hero");
+    const trust = trustNode(item);
+    if (trust) {
+      trust.classList.add("media-badge");
+      media.appendChild(trust);
+    }
+    mediaLink.appendChild(media);
+    card.appendChild(mediaLink);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+    if (isDemoListing(item)) {
+      const flag = document.createElement("p");
+      flag.className = "template-flag";
+      flag.textContent = "Template";
+      body.appendChild(flag);
+    }
+    const h2 = document.createElement("h2");
+    const nameLink = document.createElement("a");
+    nameLink.href = href;
+    nameLink.textContent = item.name || "Shop";
+    h2.appendChild(nameLink);
+    body.appendChild(h2);
+
+    const place = document.createElement("p");
+    place.className = "place-line";
+    place.textContent = window.BogLooks ? window.BogLooks.placeLabel(item.address) : item.address || "";
+    if (place.textContent) body.appendChild(place);
+
+    const foot = document.createElement("div");
+    foot.className = "card-foot";
+    if (item.category) {
+      const tag = document.createElement("span");
+      tag.className = "cat-tag";
+      tag.textContent = item.category;
+      foot.appendChild(tag);
+    } else {
+      foot.appendChild(document.createElement("span"));
+    }
+    const icons = document.createElement("div");
+    icons.className = "icon-actions";
+    if (item.phone) {
+      const tel = normalizePhone(item.phone);
+      const textFirst = item.textFirst === true;
+      icons.appendChild(
+        iconLink(
+          (textFirst ? "sms:" : "tel:") + tel,
+          (textFirst ? "Text " : "Call ") + (item.name || "shop"),
+          textFirst ? ICON_TEXT : ICON_PHONE,
+          false
+        )
+      );
+    }
+    const mapHref = mapHrefFor(item);
+    if (mapHref) {
+      icons.appendChild(iconLink(mapHref, "Directions to " + (item.name || "shop"), ICON_PIN, true));
+    }
+    foot.appendChild(icons);
+    body.appendChild(foot);
+    card.appendChild(body);
+    return card;
+  }
+
+  function renderLookCard2(item) {
+    const row = document.createElement("article");
+    row.className = "app-row";
+    const href = shopHref(item);
+    const main = document.createElement("a");
+    main.className = "app-row-main";
+    main.href = href;
+    const icon = document.createElement("span");
+    icon.className = "app-icon";
+    const meta = window.BogLooks ? window.BogLooks.categoryMeta(item.category) : null;
+    if (meta) {
+      icon.style.background = meta.color;
+      icon.style.color = "#fff";
+    }
+    if (window.BogLooks) window.BogLooks.mountSlot(icon, item, "icon");
+    main.appendChild(icon);
+
+    const copy = document.createElement("span");
+    copy.className = "app-copy";
+    const name = document.createElement("span");
+    name.className = "app-name";
+    name.textContent = item.name || "Shop";
+    copy.appendChild(name);
+
+    const sub = document.createElement("span");
+    sub.className = "app-sub";
+    const bits = [];
+    if (item.category) bits.push(item.category);
+    const trust = window.BogLooks ? window.BogLooks.trustBadge(item) : "";
+    sub.textContent = bits.join("");
+    if (trust) {
+      if (bits.length) sub.appendChild(document.createTextNode(" · "));
+      const mark = document.createElement("span");
+      mark.className = "app-trust";
+      mark.textContent = trust;
+      sub.appendChild(mark);
+    }
+    if (isDemoListing(item)) {
+      sub.appendChild(document.createTextNode(bits.length || trust ? " · " : ""));
+      const flag = document.createElement("span");
+      flag.className = "template-flag";
+      flag.textContent = "Template";
+      sub.appendChild(flag);
+    }
+    copy.appendChild(sub);
+
+    if (item.address) {
+      const addr = document.createElement("span");
+      addr.className = "app-addr";
+      addr.textContent = item.address;
+      copy.appendChild(addr);
+    }
+    main.appendChild(copy);
+    row.appendChild(main);
+
+    if (item.phone) {
+      const tel = normalizePhone(item.phone);
+      const textFirst = item.textFirst === true;
+      const call = document.createElement("a");
+      call.className = "app-call";
+      call.href = (textFirst ? "sms:" : "tel:") + tel;
+      call.textContent = textFirst ? "Text" : "Call";
+      call.setAttribute("aria-label", (textFirst ? "Text " : "Call ") + (item.name || "shop"));
+      row.appendChild(call);
+    }
+    return row;
+  }
+
+  function renderLookCard3(item) {
+    const href = shopHref(item);
+    const meta = window.BogLooks ? window.BogLooks.categoryMeta(item.category) : null;
+    const card = document.createElement("a");
+    card.className = "mag-card";
+    card.href = href;
+    if (meta) card.style.setProperty("--cat", meta.color);
+    const h2 = document.createElement("h2");
+    h2.textContent = item.name || "Shop";
+    card.appendChild(h2);
+    const place = document.createElement("p");
+    place.className = "mag-meta";
+    const where = window.BogLooks ? window.BogLooks.placeLabel(item.address) : item.address || "";
+    const trust = window.BogLooks ? window.BogLooks.trustBadge(item) : "";
+    place.textContent = [where, trust, isDemoListing(item) ? "Template" : ""].filter(Boolean).join(" · ");
+    if (place.textContent) card.appendChild(place);
+    if (item.category) {
+      const cat = document.createElement("span");
+      cat.className = "mag-cat";
+      cat.textContent = item.category;
+      card.appendChild(cat);
+    }
+    return card;
+  }
+
+  function renderCover(item) {
+    const section = document.createElement("section");
+    section.className = "mag-cover";
+    section.id = "look-cover";
+    const kicker = document.createElement("p");
+    kicker.className = "mag-kicker";
+    kicker.textContent = "In the directory";
+    section.appendChild(kicker);
+    const meta = window.BogLooks ? window.BogLooks.categoryMeta(item.category) : null;
+    const link = document.createElement("a");
+    link.className = "mag-cover-link";
+    link.href = shopHref(item);
+    if (meta) link.style.background = meta.color;
+    if (item.category) {
+      const cat = document.createElement("span");
+      cat.className = "mag-cover-cat";
+      cat.textContent = item.category;
+      link.appendChild(cat);
+    }
+    const h2 = document.createElement("h2");
+    h2.textContent = item.name || "Shop";
+    link.appendChild(h2);
+    const place = document.createElement("p");
+    const where = window.BogLooks ? window.BogLooks.placeLabel(item.address) : item.address || "";
+    place.textContent = where;
+    if (where) link.appendChild(place);
+    const line = String(item.oneLiner || item.blurb || "").trim();
+    if (line) {
+      const lede = document.createElement("p");
+      lede.className = "mag-cover-line";
+      lede.textContent = line;
+      link.appendChild(lede);
+    }
+    const trust = trustNode(item);
+    if (trust) link.appendChild(trust);
+    if (isDemoListing(item)) {
+      const flag = document.createElement("span");
+      flag.className = "template-flag";
+      flag.textContent = "Template";
+      link.appendChild(flag);
+    }
+    section.appendChild(link);
+    return section;
   }
 
   function starLabel(rating) {
@@ -95,6 +391,13 @@
       btn.className = "chip";
       btn.textContent = cat;
       btn.setAttribute("aria-pressed", cat === activeCategory ? "true" : "false");
+      if (look && window.BogLooks && cat !== "All") {
+        const meta = window.BogLooks.categoryMeta(cat);
+        btn.setAttribute("data-cat", meta.key);
+        btn.style.setProperty("--chip-cat", meta.color);
+        btn.style.setProperty("--chip-soft", meta.soft);
+        btn.style.setProperty("--chip-ink", meta.ink);
+      }
       btn.addEventListener("click", () => {
         activeCategory = cat;
         Array.from(chipsEl.children).forEach((c) => {
@@ -158,6 +461,9 @@
   }
 
   function renderCard(item) {
+    if (look === "1") return renderLookCard1(item);
+    if (look === "2") return renderLookCard2(item);
+    if (look === "3") return renderLookCard3(item);
     const card = document.createElement("article");
     const demo = isDemoListing(item);
     card.className = demo ? "card card-demo" : "card";
@@ -419,7 +725,29 @@
   function renderList() {
     const items = filtered();
     listingsEl.innerHTML = "";
-    items.forEach((item) => listingsEl.appendChild(renderCard(item)));
+    const oldCover = document.getElementById("look-cover");
+    if (oldCover) oldCover.remove();
+    const oldHeading = document.getElementById("look-list-heading");
+    if (oldHeading) oldHeading.remove();
+    let listItems = items;
+    if (look === "3" && items.length) {
+      const coverItem =
+        items.find((item) => !isDemoListing(item) && (item.verifiedByBog === true || item.confirmed === true)) ||
+        items.find((item) => !isDemoListing(item)) ||
+        items[0];
+      const cover = renderCover(coverItem);
+      listingsEl.parentNode.insertBefore(cover, listingsEl);
+      listItems = items.filter((item) => item !== coverItem);
+      if (listItems.length) {
+        const heading = document.createElement("h2");
+        heading.id = "look-list-heading";
+        heading.className = "mag-list-heading";
+        heading.textContent = "The list";
+        listingsEl.parentNode.insertBefore(heading, listingsEl);
+      }
+    }
+    if (look) listingsEl.classList.add("listings-" + look);
+    listItems.forEach((item) => listingsEl.appendChild(renderCard(item)));
     const demoPinned = items.some(isDemoListing);
     countEl.textContent =
       (items.length === listings.length
@@ -428,6 +756,8 @@
       (demoPinned ? " · DEMO template pinned at top" : "");
     emptyEl.classList.toggle("hidden", items.length > 0);
   }
+
+  mountPhotoHero();
 
   fetch("listings.json")
     .then((r) => {
