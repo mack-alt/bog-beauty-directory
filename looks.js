@@ -26,6 +26,62 @@
     return "";
   }
 
+  function currentStyle() {
+    return "a";
+  }
+
+  var SAMPLES = {
+    hair: [
+      { src: "images/styles/cards/hair-1.jpg", alt: "Sample photo of a hair salon appointment" },
+      { src: "images/styles/cards/hair-2.jpg", alt: "Sample photo of a stylist consulting on hair color" },
+      { src: "images/styles/cards/hair-3.jpg", alt: "Sample photo of a haircut in a salon" },
+    ],
+    barber: [
+      { src: "images/styles/cards/barber-1.jpg", alt: "Sample photo of a barber styling hair" },
+      { src: "images/styles/cards/barber-2.jpg", alt: "Sample photo of a barber shop interior" },
+      { src: "images/styles/cards/barber-3.jpg", alt: "Sample photo of a barber giving a haircut" },
+    ],
+    nails: [
+      { src: "images/styles/cards/nails-1.jpg", alt: "Sample photo of a manicure" },
+      { src: "images/styles/cards/nails-2.jpg", alt: "Sample photo of nail art" },
+      { src: "images/styles/cards/nails-3.jpg", alt: "Sample photo of nail extensions" },
+    ],
+    spa: [
+      { src: "images/styles/cards/spa-1.jpg", alt: "Sample photo of a spa facial with warm stones" },
+      { src: "images/styles/cards/spa-2.jpg", alt: "Sample photo of a spa facial massage" },
+      { src: "images/styles/cards/spa-3.jpg", alt: "Sample photo of a spa eye treatment" },
+    ],
+    brows: [
+      { src: "images/styles/cards/brows-1.jpg", alt: "Sample photo of eyelash extensions" },
+      { src: "images/styles/cards/brows-2.jpg", alt: "Sample photo of an eyebrow treatment" },
+      { src: "images/styles/cards/brows-3.jpg", alt: "Sample photo of a lash appointment" },
+    ],
+    beauty: [
+      { src: "images/styles/cards/beauty-1.jpg", alt: "Sample photo of a bright beauty salon interior" },
+      { src: "images/styles/cards/beauty-2.jpg", alt: "Sample photo of a salon reception" },
+      { src: "images/styles/cards/beauty-3.jpg", alt: "Sample photo of stylists working in a salon" },
+    ],
+  };
+  SAMPLES.massage = SAMPLES.spa;
+  SAMPLES.makeup = SAMPLES.beauty;
+  SAMPLES.skin = SAMPLES.spa;
+  SAMPLES.wellness = SAMPLES.spa;
+  SAMPLES.other = SAMPLES.beauty;
+
+  function sampleFor(item) {
+    var meta = categoryMeta(item && item.category);
+    var pool = SAMPLES[meta.key] || SAMPLES.beauty;
+    var id = parseInt(item && item.id, 10);
+    if (isNaN(id)) id = 0;
+    return pool[Math.abs(id) % pool.length];
+  }
+
+  function bubbleFor(category) {
+    var meta = categoryMeta(category);
+    var pool = SAMPLES[meta.key] || SAMPLES.beauty;
+    return pool[0];
+  }
+
   function categoryMeta(category) {
     if (category && CATS[category]) return CATS[category];
     var copy = {
@@ -164,6 +220,22 @@
       return;
     }
 
+    if (currentStyle() && kind === "hero") {
+      var sample = sampleFor(item);
+      var sampleImg = document.createElement("img");
+      sampleImg.src = sample.src;
+      sampleImg.alt = sample.alt;
+      sampleImg.loading = "lazy";
+      sampleImg.decoding = "async";
+      el.appendChild(sampleImg);
+      el.classList.add("has-sample");
+      var tag = document.createElement("span");
+      tag.className = "slot-note sample-tag";
+      tag.textContent = "Sample photo";
+      el.appendChild(tag);
+      return;
+    }
+
     if (kind === "icon") {
       el.appendChild(svgEl("0 0 24 24", iconMarkup(meta.key), ""));
       return;
@@ -198,6 +270,7 @@
     }
     url.searchParams.delete("look");
     url.searchParams.delete("bare");
+    url.searchParams.delete("style");
     var file = url.pathname.split("/").pop() || "index.html";
     return file + url.search + url.hash;
   }
@@ -235,13 +308,18 @@
   }
 
   var HERO = {
-    src: "images/gene-coulon-pavilion.jpg",
-    alt: "Pavilion and the Boeing Renton plant across Lake Washington at Gene Coulon Memorial Beach Park",
-    author: "Maddiewsu",
-    fileUrl: "https://commons.wikimedia.org/wiki/File:View_of_pavilion_and_Boeing_Plant.jpg",
-    license: "CC BY-SA 4.0",
-    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+    src: "images/styles/hero-seattle-skyline-blue.jpg",
+    alt: "Seattle skyline with the Space Needle and Mount Rainier under a clear blue sky",
+    author: "Aarav Chopra",
+    fileUrl: "https://www.pexels.com/photo/seattle-skyline-with-space-needle-and-mount-rainier-34624718/",
+    license: "Pexels License",
+    licenseUrl: "https://www.pexels.com/license/",
+    subtle: true,
   };
+
+  function heroFor() {
+    return HERO;
+  }
 
   function boot() {
     document.documentElement.setAttribute("data-look", "1");
@@ -255,7 +333,10 @@
 
   root.BogLooks = {
     currentLook: currentLook,
+    currentStyle: currentStyle,
+    heroFor: heroFor,
     categoryMeta: categoryMeta,
+    bubbleFor: bubbleFor,
     mountSlot: mountSlot,
     withLook: withLook,
     trustBadge: trustBadge,

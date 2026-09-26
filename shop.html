@@ -3,12 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Blades of Grass — shop page for a local beauty business." />
+  <meta name="description" content="Blades of Grass — South Seattle beauty directory." />
   <meta name="theme-color" content="#1a3a2a" />
-  <title>Shop — Blades of Grass</title>
+  <meta property="og:title" content="South Seattle beauty directory" />
+  <meta property="og:description" content="A shop on the South Seattle beauty directory from Blades of Grass." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mack-alt.github.io/bog-beauty-directory/shop.html" />
+  <meta property="og:image" content="https://mack-alt.github.io/bog-beauty-directory/images/styles/hero-seattle-skyline-blue.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="South Seattle beauty directory" />
+  <meta name="twitter:description" content="A shop on the South Seattle beauty directory from Blades of Grass." />
+  <title>Shop — South Seattle beauty directory</title>
   <script>
     (function () {
       document.documentElement.setAttribute("data-look", "1");
+      document.documentElement.setAttribute("data-style", "a");
       try {
         var q = new URLSearchParams(location.search);
         var id = q.get("id");
@@ -21,9 +30,10 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919g" />
   <link rel="stylesheet" href="looks.css?v=20260926i" />
+  <link rel="stylesheet" href="styles-draft.css?v=20260926v" />
 </head>
 <body class="shop-page">
   <header class="site-header shop-header">
@@ -90,12 +100,12 @@
 
   <footer class="site-footer">
     <p><a id="shop-footer-back" href="index.html">Back to directory</a></p>
-    <p>Blades of Grass · Renton / South King County</p>
+    <p>Blades of Grass · South Seattle</p>
     <p class="fine">Only confirmed listing details and owner-supplied enrichment are shown. No invented reviews or photos.</p>
   </footer>
 
-  <script src="looks.js?v=20260926i"></script>
+  <script src="looks.js?v=20260926v"></script>
   <script src="i18n/phrases.js?v=20260919g"></script>
-  <script src="shop.js?v=20260926i"></script>
+  <script src="shop.js?v=20260926v"></script>
 </body>
 </html>

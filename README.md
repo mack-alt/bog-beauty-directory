@@ -1,6 +1,6 @@
 # Blades of Grass — Beauty Directory
 
-Renton / South King County beauty directory (mobile-friendly).
+South Seattle beauty directory (mobile-friendly).
 
 ## Canonical shop model
 

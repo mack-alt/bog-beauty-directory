@@ -509,7 +509,11 @@
     if (!url) return;
     if (navigator.share) {
       event.preventDefault();
-      navigator.share({ title: title, text: title, url: url }).catch(function () {});
+      navigator.share({
+        title: title,
+        text: title + " — South Seattle beauty directory",
+        url: url,
+      }).catch(function () {});
       return;
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -705,7 +709,12 @@
     const demo = isDemoShop(shop);
     const lookOn = !!document.documentElement.getAttribute("data-look");
     applyBeautyTheme(demo && !lookOn);
-    document.title = (demo ? "DEMO — " : "") + name + " — Blades of Grass";
+    document.title = (demo ? "DEMO — " : "") + name + " — South Seattle beauty directory";
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const pageTitle = name + " — South Seattle beauty directory";
+    if (ogTitle) ogTitle.setAttribute("content", pageTitle);
+    if (ogDesc) ogDesc.setAttribute("content", name + " on the South Seattle beauty directory.");
     nameEl.textContent = name;
 
     hideEl(oneLinerEl);
@@ -1043,16 +1052,107 @@
   }
 
   function clearLookExtras() {
-    ["look-gallery", "look-hours", "look-contact", "look-map", "look-float"].forEach((id) => {
+    const back = document.getElementById("shop-back-link");
+    const brand = document.querySelector(".shop-header .brand");
+    if (back && brand && back.parentElement !== brand) {
+      back.classList.remove("shop-back-fab");
+      if (back.dataset.label) {
+        back.textContent = back.dataset.label;
+        back.removeAttribute("aria-label");
+      }
+      brand.insertBefore(back, brand.firstChild);
+    }
+    const lang = document.getElementById("shop-lang");
+    const wrap = document.querySelector(".shop-wrap");
+    const status = document.getElementById("shop-status");
+    if (lang && wrap && lang.parentElement !== wrap) {
+      if (status && status.parentElement === wrap) wrap.insertBefore(lang, status);
+      else wrap.insertBefore(lang, wrap.firstChild);
+    }
+    const sheet = document.getElementById("look-sheet");
+    const shop = document.getElementById("shop");
+    if (sheet && shop) {
+      while (sheet.firstChild) shop.insertBefore(sheet.firstChild, sheet);
+      sheet.remove();
+    }
+    ["look-gallery", "look-hours", "look-contact", "look-map", "look-float", "look-dock"].forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.remove();
     });
+    document.body.classList.remove("has-shop-dock");
+  }
+
+  function mountDraftShop(gallery, shop, toggles) {
+    const back = document.getElementById("shop-back-link");
+    if (back) {
+      if (!back.dataset.label) back.dataset.label = (back.textContent || "").trim();
+      back.classList.add("shop-back-fab");
+      const label = back.dataset.label.replace(/^←\s*/, "") || "Back to directory";
+      back.setAttribute("aria-label", label);
+      back.innerHTML =
+        '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 6.5 9 12l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      gallery.appendChild(back);
+    }
+
+    let sheet = document.getElementById("look-sheet");
+    if (!sheet) {
+      sheet = document.createElement("div");
+      sheet.id = "look-sheet";
+      sheet.className = "look-sheet";
+      shopEl.appendChild(sheet);
+    }
+    Array.from(shopEl.children).forEach((child) => {
+      if (child === gallery || child === sheet) return;
+      sheet.appendChild(child);
+    });
+    const lang = document.getElementById("shop-lang");
+    if (lang) sheet.insertBefore(lang, sheet.firstChild);
+
+    const heroImg = gallery.querySelector("img");
+    if (heroImg) {
+      heroImg.loading = "eager";
+      heroImg.decoding = "async";
+      heroImg.setAttribute("fetchpriority", "high");
+    }
+
+    const dock = document.createElement("nav");
+    dock.id = "look-dock";
+    dock.className = "shop-dock";
+    dock.setAttribute("aria-label", "Contact and booking");
+    function addDock(href, label, fill, external) {
+      const a = document.createElement("a");
+      a.className = "dock-btn" + (fill ? " dock-btn-fill" : "");
+      a.href = href;
+      a.textContent = label;
+      if (external) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      dock.appendChild(a);
+    }
+    const tel = hasValue(shop.phone) ? normalizePhone(shop.phone) : "";
+    if (tel) {
+      addDock("sms:" + tel, t("text"), false, false);
+      addDock("tel:" + tel, t("call"), false, false);
+    }
+    const websiteHref = httpHref(shop.website);
+    const bookingHref = httpHref(shop.bookingUrl) || (toggleOn(toggles, "showBooking") ? websiteHref : "");
+    if (toggleOn(toggles, "showBooking") && isUsableHref(bookingHref)) {
+      addDock(bookingHref, t("book"), true, true);
+    } else {
+      const callBtn = dock.querySelector('a[href^="tel:"]');
+      if (callBtn) callBtn.classList.add("dock-btn-fill");
+    }
+    if (!dock.childElementCount) return;
+    document.body.appendChild(dock);
+    document.body.classList.add("has-shop-dock");
   }
 
   function paintLookExtras(shop, toggles, enrichment, name) {
     if (!window.BogLooks) return;
     clearLookExtras();
     const look = document.documentElement.getAttribute("data-look");
+    const styleOn = !!(window.BogLooks.currentStyle && window.BogLooks.currentStyle());
     const meta = window.BogLooks.categoryMeta(shop.category);
     document.body.style.setProperty("--cat", meta.color);
     document.body.style.setProperty("--cat-soft", meta.soft);
@@ -1124,6 +1224,7 @@
         line.textContent = hours.text;
         sec.appendChild(line);
       }
+      if (styleOn) sec.classList.add("sheet-row");
       shopEl.appendChild(sec);
       if (hoursEl) hoursEl.classList.add("hidden");
     }
@@ -1132,8 +1233,9 @@
     contact.id = "look-contact";
     contact.className = "shop-section look-contact";
     let contactUsed = false;
-    if (hasValue(shop.phone)) {
+      if (hasValue(shop.phone)) {
       const p = document.createElement("p");
+      p.className = "contact-phone";
       const a = document.createElement("a");
       a.href = "tel:" + normalizePhone(shop.phone);
       a.textContent = formatPhone(shop.phone);
@@ -1153,7 +1255,10 @@
       contact.appendChild(p);
       contactUsed = true;
     }
-    if (contactUsed) shopEl.appendChild(contact);
+    if (contactUsed) {
+      if (styleOn) contact.classList.add("sheet-row");
+      shopEl.appendChild(contact);
+    }
 
     if (hasValue(shop.address)) {
       const sec = document.createElement("section");
@@ -1170,11 +1275,14 @@
       frame.src =
         "https://maps.google.com/maps?q=" + encodeURIComponent(shop.address) + "&z=15&output=embed";
       sec.appendChild(frame);
+      if (styleOn) sec.classList.add("sheet-row");
       shopEl.appendChild(sec);
       if (addressEl) addressEl.classList.add("hidden");
     }
 
-    if (look === "1" && hasValue(shop.phone)) {
+    if (styleOn) {
+      mountDraftShop(gallery, shop, toggles);
+    } else if (look === "1" && hasValue(shop.phone)) {
       const tel = normalizePhone(shop.phone);
       const textFirst = shop.textFirst === true;
       const floater = document.createElement("a");
