@@ -113,7 +113,7 @@
     const header = document.querySelector(".site-header");
     const searchLabel = document.querySelector(".search-label");
     if (!header || !searchLabel || header.querySelector(".hero-frame")) return;
-    const hero = window.BogLooks.HERO;
+    const hero = window.BogLooks.heroFor ? window.BogLooks.heroFor() : window.BogLooks.HERO;
     const frame = document.createElement("div");
     frame.className = "hero-frame";
     const img = document.createElement("img");
@@ -140,7 +140,11 @@
     license.textContent = hero.license;
     credit.appendChild(document.createTextNode("Photo: "));
     credit.appendChild(author);
-    credit.appendChild(document.createTextNode(", Wikimedia Commons, "));
+    if (hero.subtle) {
+      credit.appendChild(document.createTextNode(" · "));
+    } else {
+      credit.appendChild(document.createTextNode(", Wikimedia Commons, "));
+    }
     credit.appendChild(license);
     header.appendChild(credit);
   }

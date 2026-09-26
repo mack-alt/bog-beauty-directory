@@ -11,8 +11,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919e" />
   <link rel="stylesheet" href="looks.css?v=20260926i" />
+  <link rel="stylesheet" href="styles-draft.css?v=20260926s" />
   <script>
     document.documentElement.setAttribute("data-look", "1");
+    try {
+      var style = new URLSearchParams(location.search).get("style");
+      if (style === "a" || style === "b" || style === "c") {
+        document.documentElement.setAttribute("data-style", style);
+        var fonts = document.createElement("link");
+        fonts.rel = "stylesheet";
+        fonts.href = "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Manrope:wght@400;500;600;700;800&display=swap";
+        document.head.appendChild(fonts);
+      }
+    } catch (e) {}
   </script>
 </head>
 <body>
@@ -43,7 +54,7 @@
     <p class="fine">Community beauty directory preview. Listings may be pending confirmation.</p>
   </footer>
 
-  <script src="looks.js?v=20260926i"></script>
-  <script src="app.js?v=20260926i"></script>
+  <script src="looks.js?v=20260926s"></script>
+  <script src="app.js?v=20260926s"></script>
 </body>
 </html>

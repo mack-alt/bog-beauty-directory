@@ -11,10 +11,18 @@
       document.documentElement.setAttribute("data-look", "1");
       try {
         var q = new URLSearchParams(location.search);
+        var style = q.get("style");
+        if (style === "a" || style === "b" || style === "c") {
+          document.documentElement.setAttribute("data-style", style);
+          var fonts = document.createElement("link");
+          fonts.rel = "stylesheet";
+          fonts.href = "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Manrope:wght@400;500;600;700;800&display=swap";
+          document.head.appendChild(fonts);
+        }
         var id = q.get("id");
         var slug = (q.get("slug") || "").toLowerCase();
         if (id === "12" || slug === "11-fingers-and-toe") {
-          window.location.replace("index.html");
+          window.location.replace("index.html" + (style === "a" || style === "b" || style === "c" ? "?style=" + style : ""));
         }
       } catch (e) {}
     })();
@@ -24,6 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260919g" />
   <link rel="stylesheet" href="looks.css?v=20260926i" />
+  <link rel="stylesheet" href="styles-draft.css?v=20260926s" />
 </head>
 <body class="shop-page">
   <header class="site-header shop-header">
@@ -94,7 +103,7 @@
     <p class="fine">Only confirmed listing details and owner-supplied enrichment are shown. No invented reviews or photos.</p>
   </footer>
 
-  <script src="looks.js?v=20260926i"></script>
+  <script src="looks.js?v=20260926s"></script>
   <script src="i18n/phrases.js?v=20260919g"></script>
   <script src="shop.js?v=20260926i"></script>
 </body>

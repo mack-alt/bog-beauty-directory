@@ -26,6 +26,63 @@
     return "";
   }
 
+  function currentStyle() {
+    var s = "";
+    try {
+      s = document.documentElement.getAttribute("data-style") || "";
+      if (!s) s = new URLSearchParams(root.location.search).get("style") || "";
+    } catch (err) {
+      s = "";
+    }
+    return s === "a" || s === "b" || s === "c" ? s : "";
+  }
+
+  var SAMPLES = {
+    hair: [
+      { src: "images/styles/cards/hair-1.jpg", alt: "Sample photo of a hair salon appointment" },
+      { src: "images/styles/cards/hair-2.jpg", alt: "Sample photo of a stylist consulting on hair color" },
+      { src: "images/styles/cards/hair-3.jpg", alt: "Sample photo of a haircut in a salon" },
+    ],
+    barber: [
+      { src: "images/styles/cards/barber-1.jpg", alt: "Sample photo of a barber styling hair" },
+      { src: "images/styles/cards/barber-2.jpg", alt: "Sample photo of a barber shop interior" },
+      { src: "images/styles/cards/barber-3.jpg", alt: "Sample photo of a barber giving a haircut" },
+    ],
+    nails: [
+      { src: "images/styles/cards/nails-1.jpg", alt: "Sample photo of a manicure" },
+      { src: "images/styles/cards/nails-2.jpg", alt: "Sample photo of nail art" },
+      { src: "images/styles/cards/nails-3.jpg", alt: "Sample photo of nail extensions" },
+    ],
+    spa: [
+      { src: "images/styles/cards/spa-1.jpg", alt: "Sample photo of a spa facial with warm stones" },
+      { src: "images/styles/cards/spa-2.jpg", alt: "Sample photo of a spa facial massage" },
+      { src: "images/styles/cards/spa-3.jpg", alt: "Sample photo of a spa eye treatment" },
+    ],
+    brows: [
+      { src: "images/styles/cards/brows-1.jpg", alt: "Sample photo of eyelash extensions" },
+      { src: "images/styles/cards/brows-2.jpg", alt: "Sample photo of an eyebrow treatment" },
+      { src: "images/styles/cards/brows-3.jpg", alt: "Sample photo of a lash appointment" },
+    ],
+    beauty: [
+      { src: "images/styles/cards/beauty-1.jpg", alt: "Sample photo of a bright beauty salon interior" },
+      { src: "images/styles/cards/beauty-2.jpg", alt: "Sample photo of a salon reception" },
+      { src: "images/styles/cards/beauty-3.jpg", alt: "Sample photo of stylists working in a salon" },
+    ],
+  };
+  SAMPLES.massage = SAMPLES.spa;
+  SAMPLES.makeup = SAMPLES.beauty;
+  SAMPLES.skin = SAMPLES.spa;
+  SAMPLES.wellness = SAMPLES.spa;
+  SAMPLES.other = SAMPLES.beauty;
+
+  function sampleFor(item) {
+    var meta = categoryMeta(item && item.category);
+    var pool = SAMPLES[meta.key] || SAMPLES.beauty;
+    var id = parseInt(item && item.id, 10);
+    if (isNaN(id)) id = 0;
+    return pool[Math.abs(id) % pool.length];
+  }
+
   function categoryMeta(category) {
     if (category && CATS[category]) return CATS[category];
     var copy = {
@@ -164,6 +221,21 @@
       return;
     }
 
+    if (currentStyle() && kind === "hero") {
+      var sample = sampleFor(item);
+      var sampleImg = document.createElement("img");
+      sampleImg.src = sample.src;
+      sampleImg.alt = sample.alt;
+      sampleImg.loading = "lazy";
+      el.appendChild(sampleImg);
+      el.classList.add("has-sample");
+      var tag = document.createElement("span");
+      tag.className = "slot-note sample-tag";
+      tag.textContent = "Sample photo";
+      el.appendChild(tag);
+      return;
+    }
+
     if (kind === "icon") {
       el.appendChild(svgEl("0 0 24 24", iconMarkup(meta.key), ""));
       return;
@@ -198,6 +270,9 @@
     }
     url.searchParams.delete("look");
     url.searchParams.delete("bare");
+    var style = currentStyle();
+    if (style) url.searchParams.set("style", style);
+    else url.searchParams.delete("style");
     var file = url.pathname.split("/").pop() || "index.html";
     return file + url.search + url.hash;
   }
@@ -243,6 +318,42 @@
     licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
   };
 
+  var PEXELS = "https://www.pexels.com/license/";
+  var STYLE_HEROES = {
+    a: {
+      src: "images/styles/hero-maple-valley-shore.jpg",
+      alt: "Calm lake shore in Maple Valley, Washington",
+      author: "William Jacobs",
+      fileUrl: "https://www.pexels.com/photo/serene-autumn-lake-in-maple-valley-wa-29112024/",
+      license: "Pexels License",
+      licenseUrl: PEXELS,
+      subtle: true,
+    },
+    b: {
+      src: "images/styles/hero-maple-valley-reflections.jpg",
+      alt: "Autumn reflections on a lake in Maple Valley, Washington",
+      author: "William Jacobs",
+      fileUrl: "https://www.pexels.com/photo/autumn-reflections-at-maple-valley-lake-29112020/",
+      license: "Pexels License",
+      licenseUrl: PEXELS,
+      subtle: true,
+    },
+    c: {
+      src: "images/styles/hero-maple-valley-shore-bold.jpg",
+      alt: "Tree-lined lake shore in Maple Valley, Washington",
+      author: "William Jacobs",
+      fileUrl: "https://www.pexels.com/photo/serene-autumn-lake-in-maple-valley-wa-29112024/",
+      license: "Pexels License",
+      licenseUrl: PEXELS,
+      subtle: true,
+    },
+  };
+
+  function heroFor() {
+    var style = currentStyle();
+    return style && STYLE_HEROES[style] ? STYLE_HEROES[style] : HERO;
+  }
+
   function boot() {
     document.documentElement.setAttribute("data-look", "1");
   }
@@ -255,6 +366,8 @@
 
   root.BogLooks = {
     currentLook: currentLook,
+    currentStyle: currentStyle,
+    heroFor: heroFor,
     categoryMeta: categoryMeta,
     mountSlot: mountSlot,
     withLook: withLook,
