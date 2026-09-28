@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex" />
+  <meta name="description" content="A phone demo of a missed call followed by a text back." />
+  <meta name="theme-color" content="#143d2c" />
+  <title>Missed call text back</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+  <div class="phone" id="phone">
+    <header class="chrome">
+      <div id="langs" class="langs" role="group"></div>
+      <p id="demo-pill" class="demo-pill">Demo</p>
+      <button id="shop-edit" class="shop-edit" type="button">
+        <span id="shop-kicker"></span>
+        <span id="shop-value"></span>
+      </button>
+      <form id="shop-form" class="shop-form" hidden>
+        <label class="sr-only" id="shop-label" for="shop-input"></label>
+        <input id="shop-input" type="text" maxlength="60" enterkeyhint="done" autocomplete="off" />
+      </form>
+    </header>
+
+    <section id="screen-idle" class="screen screen-idle">
+      <button id="call-btn" class="call-btn" type="button">
+        <span class="call-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M7 3.8h3l1.2 2.8-1.8 1.1a11 11 0 0 0 5 5l1.1-1.8 2.8 1.2v3A1.8 1.8 0 0 1 16.6 20 14.2 14.2 0 0 1 4 7.4 1.8 1.8 0 0 1 5.8 5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+        </span>
+        <span id="call-label"></span>
+      </button>
+    </section>
+
+    <section id="screen-call" class="screen screen-call" hidden>
+      <div class="rings" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <p id="call-shop" class="call-shop"></p>
+      <p id="call-status" class="call-status"></p>
+    </section>
+
+    <section id="screen-chat" class="screen screen-chat" hidden>
+      <div id="thread" class="thread" aria-live="polite"></div>
+    </section>
+
+    <section id="screen-end" class="screen screen-end" hidden>
+      <p id="end-line" class="end-line"></p>
+      <button id="replay" class="replay" type="button"></button>
+      <p id="credit" class="credit"></p>
+    </section>
+  </div>
+  <script src="demo.js"></script>
+</body>
+</html>
