@@ -256,6 +256,10 @@ function businessLd(item, canonical) {
   }
   const telephone = normalizePhone(item.phone);
   if (telephone) data.telephone = telephone;
+  if (Array.isArray(item.openingHours)) {
+    const hours = item.openingHours.map((row) => String(row || "").trim()).filter(Boolean);
+    if (hours.length) data.openingHours = hours;
+  }
   const site = websiteUrl(item.website);
   if (site) data.sameAs = site;
   const photo = websiteUrl(item.photoUrl);
