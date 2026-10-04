@@ -7,7 +7,7 @@ Each site is a folder with `index.html` and `site.json`. Shared layout and wordi
 ## Add a shop
 
 1. Copy `sites/queenie-nails-and-spa/` to `sites/<slug>/`.
-2. Edit `site.json`: name, tagline, phone, address, hours, services, and the Google Maps search link. Leave `look` off for the light salon layout. Set `"look": "ink"` for the dark studio layout.
+2. Edit `site.json`: name, tagline, phone, address, hours, services, and the Google Maps search link. Set `accent` to that shop’s color.
 3. Leave a service `price` as `""` when the price is not verified. The page shows “ask for price.”
 4. Write a `SOURCES.md` in that folder naming the source for each fact.
 5. Use only free Unsplash or Pexels photos, and keep the “Sample photo” tag. Do not use a photo of a person from the shop’s card.
