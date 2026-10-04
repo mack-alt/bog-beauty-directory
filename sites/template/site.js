@@ -1,4 +1,8 @@
-(function () {
+(function (factory) {
+  var api = factory();
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  if (typeof document !== "undefined") api.boot();
+})(function () {
   var LOCALES = ["en", "vi", "es", "zh", "ko", "th"];
   var STORAGE = "bog-sample-site-lang";
   var COPY = {
@@ -11,8 +15,11 @@
       th: "ตัวอย่างเว็บไซต์โดย Blades of Grass"
     },
     call: { en: "Call", vi: "Gọi", es: "Llamar", zh: "电话", ko: "전화", th: "โทร" },
+    callNow: { en: "Call now", vi: "Gọi ngay", es: "Llamar ahora", zh: "立即致电", ko: "지금 전화", th: "โทรเลย" },
     text: { en: "Text", vi: "Nhắn tin", es: "Mensaje", zh: "短信", ko: "문자", th: "ข้อความ" },
+    textUs: { en: "Text us", vi: "Nhắn ngay", es: "Escríbenos", zh: "发短信", ko: "문자하기", th: "ส่งข้อความ" },
     directions: { en: "Directions", vi: "Chỉ đường", es: "Cómo llegar", zh: "路线", ko: "길찾기", th: "เส้นทาง" },
+    book: { en: "Book", vi: "Đặt lịch", es: "Reservar", zh: "预约", ko: "예약", th: "จอง" },
     note: {
       en: "Text us anytime, we text back.",
       vi: "Nhắn bất cứ lúc nào, tiệm nhắn lại.",
@@ -74,7 +81,48 @@
       zh: "{time} 开门",
       ko: "{time}에 오픈",
       th: "เปิด {time}"
+    },
+    request: {
+      en: "Request a booking",
+      vi: "Xin đặt lịch",
+      es: "Pedir una cita",
+      zh: "预约请求",
+      ko: "예약 요청",
+      th: "ขอจองคิว"
+    },
+    bookFallback: {
+      en: "Call or text to request a time.",
+      vi: "Gọi hoặc nhắn tin để xin giờ.",
+      es: "Llama o envía un mensaje para pedir hora.",
+      zh: "请致电或发短信预约时间。",
+      ko: "전화나 문자로 시간을 요청하세요.",
+      th: "โทรหรือส่งข้อความเพื่อขอเวลา"
+    },
+    skip: {
+      en: "Skip to content",
+      vi: "Bỏ qua, đến nội dung",
+      es: "Saltar al contenido",
+      zh: "跳到内容",
+      ko: "본문으로 건너뛰기",
+      th: "ข้ามไปเนื้อหา"
+    },
+    contact: {
+      en: "Contact the shop",
+      vi: "Liên hệ tiệm",
+      es: "Contactar al local",
+      zh: "联系店铺",
+      ko: "매장 연락",
+      th: "ติดต่อร้าน"
     }
+  };
+
+  var LANG_NAME = {
+    en: "English",
+    vi: "Tiếng Việt",
+    es: "Español",
+    zh: "中文",
+    ko: "한국어",
+    th: "ไทย"
   };
 
   var lang = "en";
@@ -97,41 +145,117 @@
       .replace(/"/g, "&quot;");
   }
 
-  function readLang() {
-    var fromUrl = "";
-    try {
-      fromUrl = new URLSearchParams(location.search).get("lang") || "";
-    } catch (err) {
-      fromUrl = "";
+  function matchLocale(list) {
+    var langs = list;
+    if (!langs) {
+      if (typeof navigator === "undefined") return "en";
+      langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""];
     }
-    fromUrl = fromUrl.toLowerCase();
-    if (LOCALES.indexOf(fromUrl) !== -1) return fromUrl;
-    var stored = "";
-    try {
-      stored = localStorage.getItem(STORAGE) || "";
-    } catch (err) {
-      stored = "";
+    for (var i = 0; i < langs.length; i++) {
+      var base = String(langs[i] || "").toLowerCase().split("-")[0];
+      if (LOCALES.indexOf(base) !== -1) return base;
     }
-    stored = stored.toLowerCase();
-    if (LOCALES.indexOf(stored) !== -1) return stored;
     return "en";
   }
 
-  function setLang(next) {
-    lang = LOCALES.indexOf(next) === -1 ? "en" : next;
-    document.documentElement.lang = lang;
+  function chooseLang(search, stored, navList) {
+    var q = "";
     try {
-      localStorage.setItem(STORAGE, lang);
-    } catch (err) {}
-    var url = new URL(location.href);
-    url.searchParams.set("lang", lang);
-    history.replaceState(null, "", url.pathname + url.search + url.hash);
-    paint();
+      q = new URLSearchParams(search || "").get("lang") || "";
+    } catch (err) {
+      q = "";
+    }
+    q = q.toLowerCase();
+    if (LOCALES.indexOf(q) !== -1) return q;
+    stored = String(stored || "").toLowerCase();
+    if (LOCALES.indexOf(stored) !== -1) return stored;
+    return matchLocale(navList);
   }
 
-  function priceText(service) {
-    var price = service && service.price != null ? String(service.price).trim() : "";
-    return price || t("ask");
+  function readVariant(search) {
+    var v = "";
+    try {
+      v = new URLSearchParams(search || "").get("variant") || "";
+    } catch (err) {
+      v = "";
+    }
+    v = v.toLowerCase();
+    if (v === "soft" || v === "neutral") return "soft";
+    return "bold";
+  }
+
+  function slugFromPath(pathname) {
+    var path = String(pathname || "").replace(/\/index\.html$/i, "/");
+    var bits = path.split("/").filter(Boolean);
+    var at = -1;
+    for (var i = 0; i < bits.length; i++) if (bits[i] === "sites") at = i;
+    if (at !== -1 && bits[at + 1] && bits[at + 1] !== "template") return decodeURIComponent(bits[at + 1]);
+    return "";
+  }
+
+  function formUrl(value) {
+    var raw = String(value || "").trim();
+    if (!raw || /placeholder|paste|example\.invalid|todo/i.test(raw)) return "";
+    try {
+      var url = new URL(raw);
+      if (url.protocol !== "https:") return "";
+      return url.toString();
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function bookingSrc(raw, slug) {
+    var clean = formUrl(raw);
+    if (!clean) return "";
+    var url = new URL(clean);
+    url.searchParams.set("shop_slug", slug || "");
+    return url.toString();
+  }
+
+  function telDigits(phone) {
+    var digits = String(phone || "").replace(/\D/g, "");
+    if (digits.length === 10) return "+1" + digits;
+    if (digits.length === 11 && digits.charAt(0) === "1") return "+" + digits;
+    if (digits.length > 7) return "+" + digits;
+    return "";
+  }
+
+  function mapsLink(item) {
+    var given = String((item && item.mapsUrl) || "").trim();
+    if (/^https:\/\//i.test(given)) return given;
+    var q = [item && item.name, item && item.address].filter(Boolean).join(" ").trim();
+    if (!q) return "";
+    return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+  }
+
+  function serviceList(services) {
+    if (!Array.isArray(services)) return [];
+    return services.map(function (service) {
+      if (typeof service === "string") return { name: service.trim(), price: "" };
+      if (!service || !service.name) return null;
+      return {
+        name: String(service.name).trim(),
+        price: service.price != null ? String(service.price).trim() : ""
+      };
+    }).filter(function (row) { return row && row.name; });
+  }
+
+  function splitHours(hours) {
+    var raw = hours;
+    if (raw == null || raw === "") return [];
+    if (typeof raw === "string") raw = raw.split(/\s*;\s*/);
+    if (!Array.isArray(raw)) return [];
+    return raw.map(function (row) {
+      if (row && typeof row === "object") {
+        return { days: String(row.days || "").trim(), time: String(row.time || "").trim() };
+      }
+      var text = String(row || "").trim();
+      if (!text) return { days: "", time: "" };
+      var match = text.match(/^(.+?)\s+(\d{1,2}(?::\d{2})?\s*(?:am|pm)?\s*[–—-]\s*\d{1,2}(?::\d{2})?\s*(?:am|pm)?)$/i);
+      if (match) return { days: match[1].trim(), time: match[2].replace(/\s+/g, " ").trim() };
+      return { days: text, time: "" };
+    }).filter(function (row) { return row.days; });
   }
 
   function dayIndex(token) {
@@ -181,19 +305,21 @@
     var minute = mins % 60;
     var h12 = hour % 12 || 12;
     var ap = hour >= 12 ? "PM" : "AM";
-    if (minute === 0 && hour >= 12) return String(h12);
     if (minute === 0) return h12 + " " + ap;
     return h12 + ":" + (minute < 10 ? "0" : "") + minute + " " + ap;
   }
 
-  function statusFor(hours) {
+  function statusFor(hours, now) {
+    var rows = Array.isArray(hours) && hours.length && hours[0] && typeof hours[0] === "object" && ("days" in hours[0] || "time" in hours[0])
+      ? hours
+      : splitHours(hours);
     var parts = new Intl.DateTimeFormat("en-US", {
       timeZone: "America/Los_Angeles",
       weekday: "short",
       hour: "2-digit",
       minute: "2-digit",
       hourCycle: "h23"
-    }).formatToParts(new Date());
+    }).formatToParts(now || new Date());
     var got = {};
     parts.forEach(function (part) {
       if (part.type !== "literal") got[part.type] = part.value;
@@ -202,11 +328,12 @@
     var minutes = parseInt(got.hour, 10) * 60 + parseInt(got.minute, 10);
     if (weekday == null || isNaN(minutes)) return null;
     var byDay = {};
-    (hours || []).forEach(function (row) {
+    rows.forEach(function (row) {
       var range = parseRange(row.time);
       if (!range) return;
       parseDays(row.days).forEach(function (day) { byDay[day] = range; });
     });
+    if (!Object.keys(byDay).length) return null;
     var today = byDay[weekday];
     if (today && minutes >= today.open && minutes < today.close) {
       return { open: true, line: t("openNow") + " · " + fill("closesAt", formatWhen(today.close)) };
@@ -221,125 +348,314 @@
     return null;
   }
 
-  function paint() {
+  function primaryAction(status) {
+    if (status && status.open) return { id: "call", labelKey: "callNow" };
+    if (status && status.open === false) return { id: "text", labelKey: "textUs" };
+    return { id: "call", labelKey: "call" };
+  }
+
+  function hexToRgb(hex) {
+    var h = String(hex || "").trim().replace(/^#/, "");
+    if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(h)) return null;
+    if (h.length === 3) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+    var n = parseInt(h, 16);
+    return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+  }
+
+  function rgbToHex(c) {
+    function z(v) {
+      return ("0" + Math.max(0, Math.min(255, Math.round(v))).toString(16)).slice(-2);
+    }
+    return "#" + z(c.r) + z(c.g) + z(c.b);
+  }
+
+  function channelLum(v) {
+    v = v / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  }
+
+  function lum(c) {
+    return 0.2126 * channelLum(c.r) + 0.7152 * channelLum(c.g) + 0.0722 * channelLum(c.b);
+  }
+
+  function contrast(a, b) {
+    var hi = Math.max(lum(a), lum(b));
+    var lo = Math.min(lum(a), lum(b));
+    return (hi + 0.05) / (lo + 0.05);
+  }
+
+  function mix(a, b, amount) {
+    return {
+      r: a.r + (b.r - a.r) * amount,
+      g: a.g + (b.g - a.g) * amount,
+      b: a.b + (b.b - a.b) * amount
+    };
+  }
+
+  function readableFill(rgb) {
+    var white = { r: 255, g: 255, b: 255 };
+    var black = { r: 29, g: 22, b: 20 };
+    if (contrast(rgb, white) >= 4.5) return { fill: rgb, on: white };
+    var cur = rgb;
+    for (var i = 1; i <= 20; i++) {
+      cur = mix(rgb, black, i / 20);
+      if (contrast(cur, white) >= 4.5) return { fill: cur, on: white };
+    }
+    return { fill: black, on: white };
+  }
+
+  function readableMark(rgb, paper) {
+    if (contrast(rgb, paper) >= 3) return rgb;
+    var toward = (paper.r + paper.g + paper.b) / 3 > 160
+      ? { r: 29, g: 22, b: 20 }
+      : { r: 246, g: 241, b: 234 };
+    var cur = rgb;
+    for (var i = 1; i <= 20; i++) {
+      cur = mix(rgb, toward, i / 20);
+      if (contrast(cur, paper) >= 3) return cur;
+    }
+    return toward;
+  }
+
+  function accentVars(hex, dark) {
+    var rgb = hexToRgb(hex);
+    if (!rgb) return null;
+    var paper = dark ? { r: 19, g: 17, b: 16 } : { r: 246, g: 241, b: 234 };
+    var fill = readableFill(rgb);
+    var mark = readableMark(rgb, paper);
+    return {
+      accent: rgbToHex(mark),
+      fill: rgbToHex(fill.fill),
+      on: "#ffffff",
+      blob: "rgba(" + [mark.r, mark.g, mark.b].map(function (n) { return Math.round(n); }).join(",") + "," + (dark ? "0.34" : "0.2") + ")",
+      markContrast: contrast(mark, paper),
+      fillContrast: contrast(fill.fill, fill.on)
+    };
+  }
+
+  function applyAccent(hex) {
+    var root = document.documentElement;
+    ["--accent", "--accent-fill", "--on-accent", "--blob"].forEach(function (name) {
+      root.style.removeProperty(name);
+    });
+    var dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var vars = accentVars(hex, !!dark);
+    if (!vars) return;
+    root.style.setProperty("--accent", vars.accent);
+    root.style.setProperty("--accent-fill", vars.fill);
+    root.style.setProperty("--on-accent", vars.on);
+    root.style.setProperty("--blob", vars.blob);
+  }
+
+  function scribble() {
+    return '<svg class="scribble" viewBox="0 0 200 18" aria-hidden="true" focusable="false"><path d="M3 12c18-8 34-8 48-2c16 6 28-8 46-6c18 2 30 10 52 2c16-6 32-4 48 2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>';
+  }
+
+  function arrow() {
+    return '<svg class="arrow" viewBox="0 0 86 52" aria-hidden="true" focusable="false"><path d="M6 14c20 2 32 10 40 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M34 34l14 10-16 2" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  function photoFigure(photo, eager) {
+    var sample = !photo || photo.sample !== false;
+    var alt = (photo && photo.alt && String(photo.alt).trim()) || t("samplePhoto");
+    return [
+      '<figure class="shot">',
+      '<img src="' + esc(photo.src) + '" alt="' + esc(alt) + '"',
+      eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"',
+      ' decoding="async" />',
+      sample ? '<span class="tag">' + esc(t("samplePhoto")) + "</span>" : "",
+      "</figure>"
+    ].join("");
+  }
+
+  function paint(focusLang) {
     if (!shop) return;
     var root = document.getElementById("app");
+    if (!root) return;
+    document.documentElement.lang = lang;
+    document.documentElement.setAttribute("data-variant", readVariant(location.search));
     document.title = shop.name || "Shop";
-    if (shop.accent) document.documentElement.style.setProperty("--accent", shop.accent);
-    var tel = shop.phone || "";
-    var photos = Array.isArray(shop.photos) ? shop.photos : [];
-    var hero = photos[0];
-    var rest = photos.slice(1);
-    var services = Array.isArray(shop.services) ? shop.services : [];
-    var hours = Array.isArray(shop.hours) ? shop.hours : [];
-    var status = statusFor(hours);
+    var described = document.querySelector('meta[name="description"]');
+    if (described && shop.name) described.setAttribute("content", "Sample shop website for " + shop.name + ".");
+    var skip = document.querySelector(".skip");
+    if (skip) skip.textContent = t("skip");
+    applyAccent(shop.accent);
+
+    var phone = telDigits(shop.phone);
+    var displayPhone = String(shop.phone || "").trim();
+    var maps = mapsLink(shop);
+    var rows = splitHours(shop.hours);
+    var status = statusFor(rows);
+    var action = primaryAction(status);
+    var photos = Array.isArray(shop.photos) ? shop.photos.filter(function (photo) { return photo && photo.src; }) : [];
+    var services = serviceList(shop.services);
+    var links = Array.isArray(shop.links) ? shop.links.filter(function (link) {
+      return link && /^https:\/\//i.test(String(link.href || ""));
+    }) : [];
+    var offer = String(shop.offer || "").trim();
+    var offerSample = offer && shop.offerConfirmed !== true;
+    var slug = slugFromPath(location.pathname);
+    var frame = bookingSrc(shop.bookingUrl, slug);
+    var lead = photos[0];
+    var rest = offer && lead ? photos.slice(1) : photos;
 
     var chips = LOCALES.map(function (code) {
-      return '<button type="button" data-lang="' + code + '" aria-pressed="' + (code === lang ? "true" : "false") + '">' + code.toUpperCase() + "</button>";
+      return '<button type="button" data-lang="' + code + '" aria-pressed="' + (code === lang ? "true" : "false") + '" aria-label="' + esc(code.toUpperCase() + ", " + LANG_NAME[code]) + '">' + code.toUpperCase() + "</button>";
     }).join("");
 
     var menu = services.map(function (service) {
-      return '<li class="svc"><span class="svc-name">' + esc(service.name) + '</span><span class="svc-price">' + esc(priceText(service)) + "</span></li>";
+      var price = service.price || t("ask");
+      return '<li class="svc"><span class="svc-name">' + esc(service.name) + '</span><span class="svc-price">' + esc(price) + "</span></li>";
     }).join("");
 
-    var hourRows = hours.map(function (row) {
+    var hourRows = rows.map(function (row) {
+      if (!row.time) return '<li class="hours-plain"><span>' + esc(row.days) + "</span></li>";
       return "<li><span>" + esc(row.days) + "</span><time>" + esc(row.time) + "</time></li>";
     }).join("");
 
-    var thumbs = rest.map(function (photo) {
-      return '<figure><img src="' + esc(photo.src) + '" alt="' + esc(photo.alt || t("samplePhoto")) + '" /><span class="sample-tag">' + esc(t("samplePhoto")) + "</span></figure>";
+    var thumbs = rest.map(function (photo, index) {
+      return photoFigure(photo, !offer && index === 0);
     }).join("");
 
-    var featured = shop.featuredOffer && shop.featuredOffer.title ? shop.featuredOffer : null;
-    var featuredHtml = "";
-    if (featured) {
-      var sampleOffer = featured.isSample === true;
-      featuredHtml = [
-        '<section class="deal reveal' + (sampleOffer ? " is-sample" : "") + '">',
-        sampleOffer ? '<span class="deal-tag">' + esc(t("sampleOffer")) + "</span>" : "",
-        "<h2>" + esc(featured.title) + "</h2>",
-        featured.detail ? '<p class="deal-detail">' + esc(featured.detail) + "</p>" : "",
-        featured.finePrint ? '<p class="deal-fine">' + esc(featured.finePrint) + "</p>" : "",
-        "</section>"
+    var offerHtml = "";
+    if (offer) {
+      offerHtml = [
+        '<div class="break' + (lead ? " has-photo" : "") + '">',
+        '<div class="blob" aria-hidden="true"></div>',
+        arrow(),
+        '<section class="offer' + (offerSample ? " is-sample" : "") + '">',
+        offerSample ? '<p class="tag">' + esc(t("sampleOffer")) + "</p>" : "",
+        "<h2>" + esc(offer) + "</h2>",
+        "</section>",
+        lead ? photoFigure(lead, true) : "",
+        "</div>"
       ].join("");
     }
-    var showPlainOffer = shop.offer && !(featured && featured.isSample === false);
 
-    var links = Array.isArray(shop.links) ? shop.links : [];
+    var shotsHtml = thumbs
+      ? '<section class="reveal shots-wrap" aria-label="' + esc(t("samplePhoto")) + '"><div class="shots">' + thumbs + "</div></section>"
+      : "";
+    if (!offer && photos.length) {
+      shotsHtml = [
+        '<div class="break shots-only">',
+        '<div class="blob" aria-hidden="true"></div>',
+        '<div class="shots">' + photos.map(function (photo, index) { return photoFigure(photo, index === 0); }).join("") + "</div>",
+        "</div>"
+      ].join("");
+    }
+
     var linkHtml = links.map(function (link) {
-      if (!link || !link.href) return "";
       return '<div><a href="' + esc(link.href) + '" target="_blank" rel="noopener noreferrer">' + esc(link.label || link.href) + "</a></div>";
     }).join("");
 
-    root.className = "app";
+    var callBtn = phone
+      ? '<a class="' + (action.id === "call" ? "primary" : "") + '" href="tel:' + esc(phone) + '">' + esc(action.id === "call" ? t(action.labelKey) : t("call")) + "</a>"
+      : "";
+    var textBtn = phone
+      ? '<a class="' + (action.id === "text" ? "primary" : "") + '" href="sms:' + esc(phone) + '">' + esc(action.id === "text" ? t(action.labelKey) : t("text")) + "</a>"
+      : "";
+    var dirBtn = maps
+      ? '<a href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("directions")) + "</a>"
+      : "";
+    var bookBtn = '<a href="#booking">' + esc(t("book")) + "</a>";
+
+    var booking = [
+      '<section id="booking" class="booking reveal" tabindex="-1">',
+      "<h2>" + esc(t("request")) + "</h2>",
+      frame
+        ? '<iframe class="booking-frame" title="' + esc(t("request")) + '" src="' + esc(frame) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'
+        : "<p>" + esc(t("bookFallback")) + "</p>" + (phone ? '<div class="actions"><a class="btn" href="tel:' + esc(phone) + '">' + esc(t("call")) + '</a><a class="btn" href="sms:' + esc(phone) + '">' + esc(t("text")) + "</a></div>" : ""),
+      "</section>"
+    ].join("");
+
+    var state = status ? (status.open ? "open" : "closed") : "unknown";
     root.innerHTML = [
-      '<header class="hero">',
-      hero ? '<img src="' + esc(hero.src) + '" alt="' + esc(hero.alt || t("samplePhoto")) + '" />' : "",
-      '<div class="hero-shade"></div>',
-      hero ? '<span class="sample-tag">' + esc(t("samplePhoto")) + "</span>" : "",
-      '<div class="hero-top">',
+      '<header class="topbar">',
       '<div class="langs" role="group" aria-label="' + esc(t("language")) + '">' + chips + "</div>",
-      '<p class="pill">' + esc(t("sample")) + "</p>",
-      "</div>",
-      '<div class="hero-copy">',
-      status ? '<p class="status' + (status.open ? " is-open" : "") + '"><span class="dot"></span>' + esc(status.line) + "</p>" : "",
-      "<h1>" + esc(shop.name) + "</h1>",
+      status ? '<p class="status' + (status.open ? " is-open" : "") + '" role="status"><span class="dot" aria-hidden="true"></span>' + esc(status.line) + "</p>" : "",
+      "</header>",
+      '<main id="main">',
+      '<p class="banner">' + esc(t("sample")) + "</p>",
+      "<h1><span>" + esc(shop.name || "Shop") + "</span>" + scribble() + "</h1>",
       shop.tagline ? '<p class="tagline">' + esc(shop.tagline) + "</p>" : "",
       shop.walkIns ? '<p class="walk">' + esc(shop.walkIns) + "</p>" : "",
-      "</div>",
-      "</header>",
-      '<div class="sheet">',
-      featuredHtml,
+      offerHtml,
       '<p class="note reveal">' + esc(t("note")) + "</p>",
-      showPlainOffer ? '<p class="offer reveal">' + esc(shop.offer) + "</p>" : "",
-      '<section class="reveal"><h2>' + esc(t("services")) + '</h2><ul class="menu">' + menu + "</ul></section>",
-      thumbs ? '<section class="reveal" aria-label="' + esc(t("samplePhoto")) + '"><div class="thumbs">' + thumbs + "</div></section>" : "",
-      '<section class="reveal"><h2>' + esc(t("hours")) + '</h2><div class="card"><ul class="hours">' + hourRows + "</ul></div></section>",
-      '<section class="reveal"><h2>' + esc(t("find")) + '</h2><div class="card"><p class="address">' + esc(shop.address) + '</p><a class="map-link" href="' + esc(shop.mapsUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a></div></section>",
-      "<footer class=\"reveal\"><strong>" + esc(shop.name) + "</strong><div>" + esc(shop.address) + "</div><div><a href=\"tel:" + esc(tel) + "\">" + esc(shop.phoneDisplay || tel) + "</a></div>" + linkHtml + '<p class="foot-pill">' + esc(t("sample")) + "</p></footer>",
-      "</div>",
-      '<nav class="dock" aria-label="' + esc(t("call")) + '">',
-      '<a class="dock-call" href="tel:' + esc(tel) + '">' + esc(t("call")) + "</a>",
-      '<a href="sms:' + esc(tel) + '">' + esc(t("text")) + "</a>",
-      '<a href="' + esc(shop.mapsUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(t("directions")) + "</a>",
+      services.length ? '<section class="reveal"><h2>' + esc(t("services")) + '</h2><ul class="menu">' + menu + "</ul></section>" : "",
+      shotsHtml,
+      rows.length ? '<section class="reveal"><h2>' + esc(t("hours")) + '</h2><div class="card"><ul class="hours">' + hourRows + "</ul></div></section>" : "",
+      shop.address ? '<section class="reveal"><h2>' + esc(t("find")) + '</h2><div class="card"><p class="address">' + esc(shop.address) + "</p>" + (maps ? '<a class="btn" href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a>" : "") + "</div></section>" : "",
+      booking,
+      "<footer class=\"reveal\"><strong>" + esc(shop.name || "Shop") + "</strong>" + (shop.address ? "<div>" + esc(shop.address) + "</div>" : "") + (displayPhone && phone ? '<div><a href="tel:' + esc(phone) + '">' + esc(displayPhone) + "</a></div>" : "") + linkHtml + '<p class="banner">' + esc(t("sample")) + "</p></footer>",
+      "</main>",
+      '<nav class="dock" data-state="' + state + '" aria-label="' + esc(t("contact")) + '">',
+      callBtn,
+      textBtn,
+      dirBtn,
+      bookBtn,
       "</nav>"
     ].join("");
 
     Array.prototype.forEach.call(root.querySelectorAll("[data-lang]"), function (button) {
       button.addEventListener("click", function () {
-        setLang(button.getAttribute("data-lang"));
+        var next = button.getAttribute("data-lang");
+        try { localStorage.setItem(STORAGE, next); } catch (err) {}
+        var url = new URL(location.href);
+        url.searchParams.set("lang", next);
+        history.replaceState(null, "", url.pathname + url.search + url.hash);
+        lang = next;
+        paint(next);
       });
     });
 
-    var nodes = root.querySelectorAll(".reveal");
-    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || !("IntersectionObserver" in window)) {
-      Array.prototype.forEach.call(nodes, function (node) { node.classList.add("is-in"); });
-      return;
+    if (focusLang) {
+      var again = root.querySelector('[data-lang="' + focusLang + '"]');
+      if (again) again.focus({ preventScroll: true });
     }
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.18, rootMargin: "0px 0px -6% 0px" });
-    Array.prototype.forEach.call(nodes, function (node) { observer.observe(node); });
   }
 
-  lang = readLang();
-  document.documentElement.lang = lang;
-  fetch("site.json")
-    .then(function (response) {
-      if (!response.ok) throw new Error("site.json");
-      return response.json();
-    })
-    .then(function (data) {
-      shop = data;
-      paint();
-    })
-    .catch(function () {
-      var root = document.getElementById("app");
-      if (root) root.textContent = "This sample page could not load its shop file.";
-    });
-})();
+  function boot() {
+    var stored = "";
+    try { stored = localStorage.getItem(STORAGE) || ""; } catch (err) { stored = ""; }
+    lang = chooseLang(location.search, stored, null);
+    document.documentElement.lang = lang;
+    document.documentElement.setAttribute("data-variant", readVariant(location.search));
+    var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+    if (mq && mq.addEventListener) {
+      mq.addEventListener("change", function () { if (shop) applyAccent(shop.accent); });
+    }
+    fetch("site.json")
+      .then(function (response) {
+        if (!response.ok) throw new Error("site.json");
+        return response.json();
+      })
+      .then(function (data) {
+        shop = data || {};
+        paint();
+      })
+      .catch(function () {
+        var root = document.getElementById("app");
+        if (root) root.textContent = "This sample page could not load its shop file.";
+      });
+  }
+
+  return {
+    boot: boot,
+    chooseLang: chooseLang,
+    readVariant: readVariant,
+    slugFromPath: slugFromPath,
+    formUrl: formUrl,
+    bookingSrc: bookingSrc,
+    telDigits: telDigits,
+    splitHours: splitHours,
+    statusFor: statusFor,
+    primaryAction: primaryAction,
+    accentVars: accentVars,
+    contrast: contrast,
+    hexToRgb: hexToRgb,
+    serviceList: serviceList,
+    mapsLink: mapsLink,
+    COPY: COPY,
+    LOCALES: LOCALES
+  };
+});
