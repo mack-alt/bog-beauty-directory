@@ -1,0 +1,22 @@
+{
+  "name": "Fancy Nails",
+  "phone": "(425) 235-8526",
+  "address": "17919 108th Ave SE, Renton, WA 98055",
+  "hours": "We open 7 days a week",
+  "tagline": "Complete Nails care for Ladies & Gentlemen",
+  "photos": [
+    {
+      "src": "../../images/styles/cards/nails-1.webp",
+      "alt": "Sample photo of a manicure"
+    },
+    {
+      "src": "../../images/styles/cards/nails-2.webp",
+      "alt": "Sample photo of nail art"
+    },
+    {
+      "src": "../../images/styles/cards/nails-3.webp",
+      "alt": "Sample photo of nail extensions"
+    }
+  ],
+  "bookingUrl": ""
+}

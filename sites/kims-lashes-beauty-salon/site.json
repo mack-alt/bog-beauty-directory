@@ -1,26 +1,13 @@
 {
   "name": "Kim's Lashes Beauty Salon",
-  "accent": "#8a6232",
-  "phone": "+14255726271",
-  "phoneDisplay": "(425) 572-6271",
+  "phone": "(425) 572-6271",
   "address": "17707 108th Ave SE #010, Renton, WA 98055",
-  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Kim%27s%20Lashes%20Beauty%20Salon%2017707%20108th%20Ave%20SE%20%23010%20Renton%20WA%2098055",
+  "hours": "Mon–Sat 9:30 AM–7:00 PM; Sunday 10:00 AM–5:00 PM",
   "walkIns": "Appointment & walk-ins welcome",
   "offer": "Gift cards available",
-  "featuredOffer": {
-    "title": "Your offer here — e.g. 10th visit free",
-    "detail": "",
-    "finePrint": "",
-    "isSample": true
-  },
-  "hours": [
-    { "days": "Mon–Sat", "time": "9:30 AM–7:00 PM" },
-    { "days": "Sunday", "time": "10:00 AM–5:00 PM" }
-  ],
-  "services": [
-    { "name": "Eyelash services", "price": "" },
-    { "name": "Brow services", "price": "" }
-  ],
+  "offerConfirmed": true,
+  "accent": "#8a6232",
+  "services": ["Eyelash services", "Brow services"],
   "links": [
     {
       "label": "Instagram",
@@ -29,16 +16,17 @@
   ],
   "photos": [
     {
-      "src": "../../images/styles/cards/brows-1.jpg",
+      "src": "../../images/styles/cards/brows-1.webp",
       "alt": "Sample photo of eyelash extensions"
     },
     {
-      "src": "../../images/styles/cards/brows-2.jpg",
+      "src": "../../images/styles/cards/brows-2.webp",
       "alt": "Sample photo of an eyebrow treatment"
     },
     {
-      "src": "../../images/styles/cards/brows-3.jpg",
+      "src": "../../images/styles/cards/brows-3.webp",
       "alt": "Sample photo of a lash appointment"
     }
-  ]
+  ],
+  "bookingUrl": ""
 }
