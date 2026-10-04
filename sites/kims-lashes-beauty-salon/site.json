@@ -7,6 +7,12 @@
   "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Kim%27s%20Lashes%20Beauty%20Salon%2017707%20108th%20Ave%20SE%20%23010%20Renton%20WA%2098055",
   "walkIns": "Appointment & walk-ins welcome",
   "offer": "Gift cards available",
+  "featuredOffer": {
+    "title": "Your offer here — e.g. 10th visit free",
+    "detail": "",
+    "finePrint": "",
+    "isSample": true
+  },
   "hours": [
     { "days": "Mon–Sat", "time": "9:30 AM–7:00 PM" },
     { "days": "Sunday", "time": "10:00 AM–5:00 PM" }

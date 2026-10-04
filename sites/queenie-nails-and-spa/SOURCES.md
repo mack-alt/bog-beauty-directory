@@ -9,7 +9,7 @@ Nothing on the sample page was guessed. Prices that could not be opened on a liv
 | Phone: (425) 227-0954 | Yes | `listings.json` id 19. The former site’s contact line also showed 425 227 0954 |
 | Hours: Mon–Sat 9:30am–7:00pm; Sunday 10:00am–6:00pm | Yes | `listings.json` id 19. A Yelp hours table indexed for Queenie Nail & Spa at 648 Strander Blvd matches these hours |
 | Tagline: Professional Nail Art Services | Yes | `listings.json` id 19 (`oneLiner`) |
-| Loyalty stamp card available | Yes | `listings.json` id 19 (`offer`). The card’s stamp reward is not printed, so no reward is stated |
+| Featured offer: Loyalty stamp card. A 10-circle stamp card is available. The reward is not printed on the card. | Yes, `isSample` false | `listings.json` id 19 (`offer`) and `shops/19.json` (`internalNote`: back of the card is a 10-circle loyalty stamp card with no printed reward). No public page states a reward, so “10th visit free” is not used |
 | Services: manicure, pedicure, nail art, waxing | Yes, each with “ask for price” | The shop’s former site said it offers nail services, waxing, manicures, pedicure, and nail art (`queeniespanails.com`, DuckDuckGo index, 4 Oct 2026) |
 | Map link | Yes | `listings.json` `googleMapsUrl` (Google Maps search for the name and address) |
 | Photos | Yes, tagged “Sample photo” | Pexels nail photos already credited in `PHOTO_CREDITS.md`. They are not photos of this shop |
