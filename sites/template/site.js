@@ -128,6 +128,7 @@
   var FORM_EMBED = "https://link.msgsndr.com/js/form_embed.js";
   var lang = "en";
   var shop = null;
+  var motionObserver = null;
 
   function t(key) {
     var row = COPY[key] || {};
@@ -461,9 +462,11 @@
     var alt = (photo && photo.alt && String(photo.alt).trim()) || t("samplePhoto");
     return [
       '<figure class="shot">',
+      '<span class="shot-media">',
       '<img src="' + esc(photo.src) + '" alt="' + esc(alt) + '"',
       eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"',
       ' decoding="async" />',
+      "</span>",
       sample ? '<span class="tag">' + esc(t("samplePhoto")) + "</span>" : "",
       "</figure>"
     ].join("");
@@ -534,7 +537,7 @@
     }
 
     var shotsHtml = thumbs
-      ? '<section class="reveal shots-wrap" aria-label="' + esc(t("samplePhoto")) + '"><div class="shots">' + thumbs + "</div></section>"
+      ? '<section class="shots-wrap" aria-label="' + esc(t("samplePhoto")) + '"><div class="shots">' + thumbs + "</div></section>"
       : "";
     if (!offer && photos.length) {
       shotsHtml = [
@@ -561,7 +564,7 @@
     var bookBtn = '<a href="#booking">' + esc(t("book")) + "</a>";
 
     var booking = [
-      '<section id="booking" class="booking reveal" tabindex="-1">',
+      '<section id="booking" class="booking" tabindex="-1">',
       "<h2>" + esc(t("request")) + "</h2>",
       frame
         ? '<iframe class="booking-frame" title="' + esc(t("request")) + '" src="' + esc(frame) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'
@@ -572,6 +575,7 @@
     var state = status ? (status.open ? "open" : "closed") : "unknown";
     root.innerHTML = [
       '<header class="topbar">',
+      '<div class="scroll-progress" aria-hidden="true"></div>',
       '<div class="langs" role="group" aria-label="' + esc(t("language")) + '">' + chips + "</div>",
       status ? '<p class="status' + (status.open ? " is-open" : "") + '" role="status"><span class="dot" aria-hidden="true"></span>' + esc(status.line) + "</p>" : "",
       "</header>",
@@ -614,6 +618,37 @@
       if (again) again.focus({ preventScroll: true });
     }
     ensureBookingEmbed(!!frame);
+    motionFallback();
+  }
+
+  function motionFallback() {
+    if (motionObserver) {
+      motionObserver.disconnect();
+      motionObserver = null;
+    }
+    var root = document.documentElement;
+    root.classList.remove("motion-fallback");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var supported = window.CSS && CSS.supports && CSS.supports("animation-timeline", "view()");
+    if (reduce || supported || typeof IntersectionObserver !== "function") return;
+    root.classList.add("motion-fallback");
+    var nodes = root.querySelectorAll("#app .reveal, #app .shot");
+    var viewHeight = window.innerHeight || 800;
+    var pending = [];
+    Array.prototype.forEach.call(nodes, function (node) {
+      var rect = node.getBoundingClientRect();
+      if (rect.top < viewHeight * 0.9 && rect.bottom > 32) node.classList.add("is-in");
+      else pending.push(node);
+    });
+    if (!pending.length) return;
+    motionObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        motionObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.18, rootMargin: "0px 0px -6% 0px" });
+    pending.forEach(function (node) { motionObserver.observe(node); });
   }
 
   function ensureBookingEmbed(active) {

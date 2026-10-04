@@ -143,4 +143,16 @@ walk(root, []).forEach(function (file) {
   });
 });
 
+const css = fs.readFileSync(path.join(__dirname, "site.css"), "utf8");
+const js = fs.readFileSync(path.join(__dirname, "site.js"), "utf8");
+assert.ok(/animation-timeline:\s*view\(\)/.test(css), "view timeline");
+assert.ok(/animation-timeline:\s*scroll\(root\)/.test(css), "scroll timeline");
+assert.ok(/prefers-reduced-motion:\s*reduce/.test(css), "reduced motion");
+assert.ok(/IntersectionObserver/.test(js), "observer fallback");
+assert.ok(/scroll-progress/.test(js), "progress mark");
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails"].forEach(function (slug) {
+  const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
+  assert.ok(!json.motion && !json.animation, slug + " has no motion field");
+});
+
 console.log("site template tests passed");

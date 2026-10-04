@@ -63,7 +63,7 @@ These work for every shop. Do not add fields for them.
 - **Soft preview.** Open the page with `?variant=soft`. The default look is `?variant=bold` (or no query). Same shop, two looks.
 - **Language.** The chip follows the phone language when we have that language (English, Vietnamese, Spanish, Chinese, Korean, Thai). A tap on a chip wins and is remembered.
 - **Call now / Text us.** During open hours the main button says “Call now.” After hours it says “Text us.” If the hours line has no clock times, the buttons stay “Call” and “Text,” and no open/closed badge is shown.
-- **Fonts, motion, dark mode.** One display font and one body font, a small scroll fade, and dark mode. They follow the phone. Reduced motion turns the fade off.
+- **Fonts, motion, dark mode.** One display font and one body font, dark mode, and scroll motion (a reading line, the name settling as it leaves, sections sliding in, photos opening). They follow the phone. Reduced motion keeps the page still.
 
 ## Test the form
 

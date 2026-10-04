@@ -101,6 +101,20 @@ body { min-height: 100dvh; }
   backdrop-filter: blur(14px);
 }
 
+.scroll-progress {
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  right: 14px;
+  top: 0;
+  height: 4px;
+  border-radius: 0 0 3px 3px;
+  background: var(--accent-fill);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
 .langs {
   display: flex;
   flex: 1 1 220px;
@@ -272,6 +286,14 @@ h1 span { display: block; }
   border-radius: 18px;
   background: var(--shot);
   aspect-ratio: 4 / 5;
+}
+
+.shot-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .shot img {
@@ -494,17 +516,91 @@ html[data-variant="soft"] .dock a.primary {
 
 .reveal { opacity: 1; }
 
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: reading linear both;
+    animation-timeline: scroll(root);
+  }
+
+  main > h1 {
+    transform-origin: left top;
+    animation: settle linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 90px;
+  }
+}
+
 @supports (animation-timeline: view()) {
   .reveal {
     animation: rise linear both;
     animation-timeline: view();
-    animation-range: entry 0% entry 40%;
+    animation-range: entry 0% entry 65%;
+  }
+
+  .shot {
+    view-timeline: --frame block;
+  }
+
+  .shot-media {
+    animation: unveil linear both, drift linear both;
+    animation-timeline: --frame;
+    animation-range: entry 0% entry 70%, cover 0% cover 100%;
   }
 }
 
+@keyframes reading {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes settle {
+  from { transform: none; }
+  to { transform: translateY(-16px) scale(0.8); }
+}
+
 @keyframes rise {
-  from { transform: translateY(12px); }
+  from { transform: translateY(36px); }
   to { transform: none; }
+}
+
+@keyframes unveil {
+  from { clip-path: inset(16% 9% 20% 9% round 18px); }
+  to { clip-path: inset(0 round 18px); }
+}
+
+@keyframes drift {
+  from { transform: translateY(6%) scale(1.12); }
+  to { transform: translateY(-6%) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .break.has-photo .offer,
+  .shots-only .shot:first-child {
+    position: sticky;
+    top: 4.75rem;
+  }
+
+  .shots-only .shot:first-child { z-index: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.motion-fallback .reveal {
+    transform: translateY(28px);
+  }
+
+  html.motion-fallback .reveal.is-in {
+    transform: none;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html.motion-fallback .shot-media {
+    clip-path: inset(16% 9% 20% 9% round 18px);
+  }
+
+  html.motion-fallback .shot.is-in .shot-media {
+    clip-path: inset(0 round 18px);
+    transition: clip-path 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }
 
 @media (min-width: 560px) {
@@ -525,9 +621,20 @@ html[data-variant="soft"] .dock a.primary {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal {
+  .scroll-progress { display: none; }
+  .reveal,
+  main > h1,
+  .shot-media,
+  .break.has-photo .offer,
+  .shots-only .shot:first-child {
     animation: none !important;
-    opacity: 1 !important;
+    transition: none !important;
     transform: none !important;
+    clip-path: none !important;
+  }
+  .break.has-photo .offer,
+  .shots-only .shot:first-child {
+    position: relative;
+    top: auto;
   }
 }
