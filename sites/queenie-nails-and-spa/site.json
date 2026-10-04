@@ -1,0 +1,33 @@
+{
+  "name": "Queenie Nails & Spa",
+  "tagline": "Professional Nail Art Services",
+  "phone": "+14252270954",
+  "phoneDisplay": "(425) 227-0954",
+  "address": "648 Strander Blvd, Tukwila, WA 98188",
+  "mapsUrl": "https://www.google.com/maps/search/?api=1&query=Queenie%20Nails%20%26%20Spa%20648%20Strander%20Blvd%20Tukwila%20WA%2098188",
+  "hours": [
+    { "days": "Mon–Sat", "time": "9:30am–7:00pm" },
+    { "days": "Sunday", "time": "10:00am–6:00pm" }
+  ],
+  "offer": "Loyalty stamp card available",
+  "services": [
+    { "name": "Manicure", "price": "" },
+    { "name": "Pedicure", "price": "" },
+    { "name": "Nail art", "price": "" },
+    { "name": "Waxing", "price": "" }
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/nails-1.jpg",
+      "alt": "Sample photo of a manicure"
+    },
+    {
+      "src": "../../images/styles/cards/nails-2.jpg",
+      "alt": "Sample photo of nail art"
+    },
+    {
+      "src": "../../images/styles/cards/nails-3.jpg",
+      "alt": "Sample photo of nail extensions"
+    }
+  ]
+}
