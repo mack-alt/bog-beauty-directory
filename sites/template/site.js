@@ -48,6 +48,14 @@
       ko: "샘플 사진",
       th: "ภาพตัวอย่าง"
     },
+    sampleOffer: {
+      en: "Sample offer",
+      vi: "Ưu đãi mẫu",
+      es: "Oferta de muestra",
+      zh: "示例优惠",
+      ko: "샘플 혜택",
+      th: "ข้อเสนอตัวอย่าง"
+    },
     language: { en: "Language", vi: "Ngôn ngữ", es: "Idioma", zh: "语言", ko: "언어", th: "ภาษา" },
     openNow: { en: "Open now", vi: "Đang mở", es: "Abierto ahora", zh: "营业中", ko: "영업 중", th: "เปิดอยู่" },
     closed: { en: "Closed", vi: "Đang đóng", es: "Cerrado", zh: "已打烊", ko: "영업 종료", th: "ปิดแล้ว" },
@@ -242,6 +250,21 @@
       return '<figure><img src="' + esc(photo.src) + '" alt="' + esc(photo.alt || t("samplePhoto")) + '" /><span class="sample-tag">' + esc(t("samplePhoto")) + "</span></figure>";
     }).join("");
 
+    var featured = shop.featuredOffer && shop.featuredOffer.title ? shop.featuredOffer : null;
+    var featuredHtml = "";
+    if (featured) {
+      var sampleOffer = featured.isSample === true;
+      featuredHtml = [
+        '<section class="deal reveal' + (sampleOffer ? " is-sample" : "") + '">',
+        sampleOffer ? '<span class="deal-tag">' + esc(t("sampleOffer")) + "</span>" : "",
+        "<h2>" + esc(featured.title) + "</h2>",
+        featured.detail ? '<p class="deal-detail">' + esc(featured.detail) + "</p>" : "",
+        featured.finePrint ? '<p class="deal-fine">' + esc(featured.finePrint) + "</p>" : "",
+        "</section>"
+      ].join("");
+    }
+    var showPlainOffer = shop.offer && !(featured && featured.isSample === false);
+
     var links = Array.isArray(shop.links) ? shop.links : [];
     var linkHtml = links.map(function (link) {
       if (!link || !link.href) return "";
@@ -266,8 +289,9 @@
       "</div>",
       "</header>",
       '<div class="sheet">',
+      featuredHtml,
       '<p class="note reveal">' + esc(t("note")) + "</p>",
-      shop.offer ? '<p class="offer reveal">' + esc(shop.offer) + "</p>" : "",
+      showPlainOffer ? '<p class="offer reveal">' + esc(shop.offer) + "</p>" : "",
       '<section class="reveal"><h2>' + esc(t("services")) + '</h2><ul class="menu">' + menu + "</ul></section>",
       thumbs ? '<section class="reveal" aria-label="' + esc(t("samplePhoto")) + '"><div class="thumbs">' + thumbs + "</div></section>" : "",
       '<section class="reveal"><h2>' + esc(t("hours")) + '</h2><div class="card"><ul class="hours">' + hourRows + "</ul></div></section>",

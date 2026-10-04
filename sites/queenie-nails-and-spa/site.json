@@ -11,6 +11,12 @@
     { "days": "Sunday", "time": "10:00am–6:00pm" }
   ],
   "offer": "Loyalty stamp card available",
+  "featuredOffer": {
+    "title": "Loyalty stamp card",
+    "detail": "A 10-circle stamp card is available.",
+    "finePrint": "The reward is not printed on the card.",
+    "isSample": false
+  },
   "services": [
     { "name": "Manicure", "price": "" },
     { "name": "Pedicure", "price": "" },
