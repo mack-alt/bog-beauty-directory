@@ -1,0 +1,96 @@
+{
+  "shopName": "Queenie Nails & Spa",
+  "accent": "#9c3d52",
+  "checkDate": "October 2026",
+  "headline": "Your reviews are in good shape. The old website and online booking are the two spots to fix.",
+  "areas": [
+    {
+      "title": "Google listing",
+      "grade": "yellow",
+      "found": "Birdeye’s page for Queenie Nail Salon at 648 Strander Blvd shows 4.4 from 501 Google reviews, checked 4 Oct 2026. The same page lists Tuesday opening at 9:00 AM. The shop card says Monday–Saturday open at 9:30 AM. The other days match the card: 9:30 AM–7:00 PM, and Sunday 10:00 AM–6:00 PM.",
+      "why": "A guest who follows the listing may show up at 9:00 on a Tuesday. The 4.4 itself is a strong public rating.",
+      "fix": "If you open at 9:30, set Tuesday on the Google listing to match the card. Add a few current photos when you can.",
+      "notChecked": [
+        "Photo count on the Google listing",
+        "Whether the owner replies to reviews"
+      ]
+    },
+    {
+      "title": "Website",
+      "grade": "red",
+      "found": "We opened queeniespanails.com on 4 Oct 2026. It is not the Tukwila salon. The page is an unrelated Indonesian site, last modified 3 Oct 2026. queenie-nail-spa.business.site returns a 404. Birdeye still lists http://queeniespanails.com/ as this shop’s website. A price list for the Tukwila salon is not on that live domain.",
+      "why": "Someone who taps the website from a listing does not reach Queenie.",
+      "fix": "Use a one-page site with your name, phone, hours, and a text-us line. A sample preview is already in the box below.",
+      "notChecked": [
+        "Mobile layout of a shop site, because no shop site is there to open"
+      ]
+    },
+    {
+      "title": "Phone and texting",
+      "grade": "visit",
+      "found": "Not checked. This row waits for a live call on the visit. We did not call (425) 227-0954 for this report.",
+      "why": "The front-desk question is simple: if nobody picks up, does a text come back?",
+      "fix": "Call during open hours and fill in the line below.",
+      "checkLine": "Called at __:__ — answered? / text-back?"
+    },
+    {
+      "title": "Online booking",
+      "grade": "red",
+      "found": "No online booking link is stored for this shop, and none turned up for 648 Strander Blvd. Fresha pages for other salons with Queen in the name are in Everett and Queen Anne, not this address.",
+      "why": "A guest who wants a time still has to get through on the phone.",
+      "fix": "Add one booking link you control, or a text line that can answer when the phone is busy."
+    },
+    {
+      "title": "Reviews vs nearby",
+      "grade": "yellow",
+      "found": "These Google counts are the ones Birdeye showed on 4 Oct 2026. Nail Bar & Spa in the directory is the Southcenter door. Public pages call that door TH Nail Bar & Spa, at the same address and the same phone, (206) 397-3959.",
+      "why": "When the ratings sit this close, a guest often leans toward the shop with more reviews.",
+      "fix": "Ask happy guests for a Google review when the visit went well. Reply history was not checked.",
+      "compare": [
+        { "name": "Queenie Nails & Spa", "detail": "4.4 · 501 reviews", "you": true },
+        { "name": "HT Nail Bar", "detail": "4.5 · 635 reviews" },
+        { "name": "Nail Bar & Spa", "detail": "4.6 · 1,030 reviews" }
+      ]
+    }
+  ],
+  "did": [
+    {
+      "label": "A free listing in the Blades of Grass directory",
+      "href": "../../shop/queenie-nails-and-spa/"
+    },
+    {
+      "label": "A sample website preview",
+      "href": "../../sites/queenie-nails-and-spa/"
+    }
+  ],
+  "cta": {
+    "line": "Want help fixing the reds? Call or text Kenny 206-743-6296",
+    "phone": "+12067436296",
+    "bookUrl": "https://api.leadconnectorhq.com/widget/bookings/bog-front-desk-demo"
+  },
+  "sources": [
+    {
+      "label": "Google review count and hours: Birdeye, Queenie Nail Salon, 648 Strander Blvd, checked 4 Oct 2026",
+      "href": "https://reviews.birdeye.com/queenie-nail-salon-170089100360606"
+    },
+    {
+      "label": "HT Nail Bar Google count: Birdeye, 331 Strander Blvd, checked 4 Oct 2026",
+      "href": "https://reviews.birdeye.com/ht-nail-bar-170122736551890"
+    },
+    {
+      "label": "TH Nail Bar & Spa Google count: Birdeye, 17250 Southcenter Pkwy #140, phone (206) 397-3959, checked 4 Oct 2026",
+      "href": "https://reviews.birdeye.com/th-nail-bar-spa-170122711383624"
+    },
+    {
+      "label": "queeniespanails.com opened 4 Oct 2026: unrelated Indonesian page, last modified 3 Oct 2026",
+      "href": "https://queeniespanails.com/"
+    },
+    {
+      "label": "queenie-nail-spa.business.site returned 404 on 4 Oct 2026",
+      "href": "https://queenie-nail-spa.business.site/"
+    },
+    {
+      "label": "Card hours, phone, and no booking link: listings.json id 19 and shops/19.json"
+    }
+  ]
+}
