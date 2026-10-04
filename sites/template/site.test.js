@@ -128,7 +128,15 @@ walk(root, []).forEach(function (file) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(/noindex/.test(html), slug + " noindex");
   assert.ok(json.name && json.phone && json.address, slug + " card fields");
-  assert.ok(Object.prototype.hasOwnProperty.call(json, "bookingUrl"), slug + " bookingUrl");
+  assert.strictEqual(
+    json.bookingUrl,
+    "https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd",
+    slug + " bookingUrl"
+  );
+  assert.strictEqual(
+    site.bookingSrc(json.bookingUrl, slug),
+    json.bookingUrl + "?shop_slug=" + slug
+  );
   (json.photos || []).forEach(function (photo) {
     assert.ok(/\.webp(\?|$)/.test(photo.src), slug + " webp");
     assert.ok(photo.alt, slug + " alt");

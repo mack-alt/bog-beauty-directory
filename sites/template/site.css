@@ -401,6 +401,8 @@ section { margin-top: 28px; }
 
 #booking { scroll-margin-top: 96px; }
 
+.booking:has(.booking-frame) { min-height: 760px; }
+
 .booking h2 { margin-bottom: 10px; }
 
 .booking p { margin: 0 0 14px; }
