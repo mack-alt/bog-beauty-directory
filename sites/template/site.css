@@ -123,7 +123,7 @@ h1 {
   line-height: 1.02;
 }
 
-.tagline {
+.tagline, .walk {
   margin: 10px 0 0;
   color: var(--muted);
   font-size: 1.05rem;
@@ -280,4 +280,85 @@ footer a { color: inherit; }
     overflow: hidden;
     box-shadow: 0 24px 60px rgba(44, 36, 32, 0.12);
   }
+}
+
+/* Dark studio layout. The light salon layout stays the default. */
+html[data-look="ink"] {
+  --ink: #f4efe8;
+  --muted: #c4b8ac;
+  --rose: #e4c59a;
+  --rose-deep: #f4efe8;
+  --cream: #12100e;
+  --paper: #1c1815;
+  --line: rgba(244, 239, 232, 0.12);
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Manrope", system-ui, sans-serif;
+  background: #070605;
+  color: var(--ink);
+}
+
+html[data-look="ink"] .langs button[aria-pressed="true"] {
+  background: var(--rose);
+  color: #1a140f;
+}
+
+html[data-look="ink"] .pill {
+  background: rgba(244, 239, 232, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(228, 197, 154, 0.45);
+}
+
+html[data-look="ink"] .hero-photo {
+  margin: 0;
+  border-radius: 0;
+  aspect-ratio: 5 / 4;
+}
+
+html[data-look="ink"] h1 {
+  font-weight: 500;
+  font-size: 2.45rem;
+  letter-spacing: -0.02em;
+}
+
+html[data-look="ink"] .actions {
+  grid-template-columns: 1fr;
+}
+
+html[data-look="ink"] .btn {
+  border-radius: 4px;
+  min-height: 52px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+}
+
+html[data-look="ink"] .btn-call { color: #1a140f; }
+
+html[data-look="ink"] .btn-text {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rose);
+}
+
+html[data-look="ink"] .note {
+  background: transparent;
+  border-left: 2px solid var(--rose);
+  border-radius: 0;
+  padding-left: 14px;
+}
+
+html[data-look="ink"] .menu,
+html[data-look="ink"] .hours {
+  background: transparent;
+  border-radius: 0;
+}
+
+html[data-look="ink"] .price,
+html[data-look="ink"] .hours time { color: var(--rose); }
+
+html[data-look="ink"] .thumbs figure { border-radius: 2px; }
+
+html[data-look="ink"] .map-link {
+  background: transparent;
+  color: var(--rose);
+  box-shadow: inset 0 0 0 1px var(--rose);
+  border-radius: 4px;
 }

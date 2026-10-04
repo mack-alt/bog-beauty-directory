@@ -131,6 +131,16 @@
     }).join("");
 
     var offer = shop.offer ? '<p class="offer">' + esc(shop.offer) + "</p>" : "";
+    var walk = shop.walkIns ? '<p class="walk">' + esc(shop.walkIns) + "</p>" : "";
+    var links = Array.isArray(shop.links) ? shop.links : [];
+    var linkHtml = links.map(function (link) {
+      if (!link || !link.href) return "";
+      return '<div><a href="' + esc(link.href) + '" target="_blank" rel="noopener noreferrer">' + esc(link.label || link.href) + "</a></div>";
+    }).join("");
+    var look = shop.look || "salon";
+    document.documentElement.setAttribute("data-look", look);
+    root.className = "app";
+    root.setAttribute("data-look", look);
 
     root.innerHTML = [
       '<header class="top">',
@@ -143,6 +153,7 @@
       '<div class="hero-copy">',
       "<h1>" + esc(shop.name) + "</h1>",
       shop.tagline ? '<p class="tagline">' + esc(shop.tagline) + "</p>" : "",
+      walk,
       "</div>",
       '<div class="actions">',
       '<a class="btn btn-call" href="tel:' + esc(tel) + '">' + esc(t("call")) + "</a>",
@@ -154,7 +165,7 @@
       thumbs ? '<section aria-label="' + esc(t("samplePhoto")) + '"><div class="thumbs">' + thumbs + "</div></section>" : "",
       '<section><h2>' + esc(t("hours")) + '</h2><ul class="hours">' + hourRows + "</ul></section>",
       '<section><h2>' + esc(t("find")) + '</h2><p class="address">' + esc(shop.address) + '</p><a class="map-link" href="' + esc(shop.mapsUrl) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a></section>",
-      "<footer><strong>" + esc(shop.name) + "</strong><div>" + esc(shop.address) + "</div><div><a href=\"tel:" + esc(tel) + "\">" + esc(shop.phoneDisplay || tel) + '</a></div><p class="foot-pill">' + esc(t("sample")) + "</p></footer>"
+      "<footer><strong>" + esc(shop.name) + "</strong><div>" + esc(shop.address) + "</div><div><a href=\"tel:" + esc(tel) + "\">" + esc(shop.phoneDisplay || tel) + "</a></div>" + linkHtml + '<p class="foot-pill">' + esc(t("sample")) + "</p></footer>"
     ].join("");
 
     Array.prototype.forEach.call(root.querySelectorAll("[data-lang]"), function (button) {
