@@ -125,6 +125,7 @@
     th: "ไทย"
   };
 
+  var FORM_EMBED = "https://link.msgsndr.com/js/form_embed.js";
   var lang = "en";
   var shop = null;
 
@@ -612,6 +613,21 @@
       var again = root.querySelector('[data-lang="' + focusLang + '"]');
       if (again) again.focus({ preventScroll: true });
     }
+    ensureBookingEmbed(!!frame);
+  }
+
+  function ensureBookingEmbed(active) {
+    var existing = document.querySelector("script[data-bog-form-embed]");
+    if (!active) {
+      if (existing) existing.remove();
+      return;
+    }
+    if (existing) return;
+    var script = document.createElement("script");
+    script.src = FORM_EMBED;
+    script.async = true;
+    script.setAttribute("data-bog-form-embed", "true");
+    document.body.appendChild(script);
   }
 
   function boot() {
@@ -656,6 +672,7 @@
     serviceList: serviceList,
     mapsLink: mapsLink,
     COPY: COPY,
-    LOCALES: LOCALES
+    LOCALES: LOCALES,
+    FORM_EMBED: FORM_EMBED
   };
 });
