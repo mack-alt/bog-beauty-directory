@@ -2,8 +2,8 @@
 /**
  * Build crawlable home cards, /shop/<slug>/ pages, sitemap.xml, robots.txt, and llms.txt.
  * Reads listings.json only. Does not invent hours, reviews, ratings, or services.
- * The textback-demo page and /sites/ sample shop sites are not listings:
- * never add them to the sitemap, llms.txt, or shop pages.
+ * The textback-demo page, /sites/ sample shop sites, and /reports/ checkups
+ * are not listings: never add them to the sitemap, llms.txt, or shop pages.
  * Run: node scripts/build-pages.js
  */
 "use strict";
@@ -551,7 +551,7 @@ function main() {
   const urls = [SITE + "/"]
     .concat(shops.map((item) => SITE + "/shop/" + item._slug + "/"))
     .filter(function (loc) {
-      return loc.indexOf("/textback-demo") === -1 && loc.indexOf("/sites/") === -1;
+      return loc.indexOf("/textback-demo") === -1 && loc.indexOf("/sites/") === -1 && loc.indexOf("/reports/") === -1;
     });
   const sitemap =
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -590,8 +590,8 @@ function main() {
   lines.push("");
   fs.writeFileSync(path.join(ROOT, "llms.txt"), lines.join("\n"));
   var published = sitemap + "\n" + lines.join("\n");
-  if (published.indexOf("textback-demo") !== -1 || published.indexOf("/sites/") !== -1) {
-    throw new Error("textback-demo and sample sites must stay out of the sitemap and llms.txt");
+  if (published.indexOf("textback-demo") !== -1 || published.indexOf("/sites/") !== -1 || published.indexOf("/reports/") !== -1) {
+    throw new Error("textback-demo, sample sites, and checkup reports must stay out of the sitemap and llms.txt");
   }
 
   const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
