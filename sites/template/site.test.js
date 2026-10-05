@@ -142,6 +142,22 @@ assert.deepStrictEqual(site.serviceList(["Manicure", { name: "Pedicure", price: 
   { name: "Pedicure", price: "" }
 ]);
 
+function named(list) {
+  return list.map(function (name) { return { name: name, price: "" }; });
+}
+const four = site.menuHtml(named(["A", "B", "C", "D"]));
+assert.ok(four.indexOf("<details") === -1, "short menus stay open");
+assert.strictEqual((four.match(/class="svc"/g) || []).length, 4);
+const six = site.menuHtml(named(["1", "2", "3", "4", "5", "6"]));
+assert.ok(six.indexOf("<details") === -1, "six services stay open");
+const seven = site.menuHtml(named(["1", "2", "3", "4", "5", "6", "7"]));
+assert.ok(/See all services \(7\)/.test(seven));
+assert.ok(seven.indexOf(">6<") < seven.indexOf("<details"));
+assert.ok(seven.indexOf("<details") < seven.indexOf(">7<"));
+site.LOCALES.forEach(function (code) {
+  assert.ok(site.COPY.seeAll[code].indexOf("{n}") !== -1, code + " see all");
+});
+
 const root = path.join(__dirname, "..");
 function walk(dir, out) {
   fs.readdirSync(dir, { withFileTypes: true }).forEach(function (ent) {
@@ -212,7 +228,19 @@ const diamond = JSON.parse(fs.readFileSync(path.join(root, "diamond-nails", "sit
 assert.ok(!diamond.tagline && !diamond.walkIns && !diamond.links);
 assert.ok(!/\$/.test(JSON.stringify(diamond.services)));
 assert.ok(/call to confirm/i.test(diamond.hours));
+const diamondMenu = site.menuHtml(site.serviceList(diamond.services));
+assert.ok(/See all services \(27\)/.test(diamondMenu));
+assert.ok(diamondMenu.indexOf("Classic Manicure") < diamondMenu.indexOf("Deluxe Pedicure"));
+assert.ok(diamondMenu.indexOf("Deluxe Pedicure") < diamondMenu.indexOf("<details"));
+assert.ok(diamondMenu.indexOf("<details") < diamondMenu.indexOf("Gel/Shellac add-on"));
+assert.ok(diamondMenu.indexOf("Gel/Shellac add-on") < diamondMenu.indexOf("Polish change, hands or feet"));
+const queenieMenu = site.menuHtml(site.serviceList(JSON.parse(fs.readFileSync(path.join(root, "queenie-nails-and-spa", "site.json"), "utf8")).services));
+assert.ok(queenieMenu.indexOf("<details") === -1);
 const wave = JSON.parse(fs.readFileSync(path.join(root, "beauty-wave", "site.json"), "utf8"));
+const waveMenu = site.menuHtml(site.serviceList(wave.services));
+assert.ok(/See all services \(10\)/.test(waveMenu));
+assert.ok(waveMenu.indexOf("Hair cut only") < waveMenu.indexOf("<details"));
+assert.ok(waveMenu.indexOf("<details") < waveMenu.indexOf("Perm spiral"));
 assert.strictEqual(wave.links[0].href, "https://beauty-wave.square.site/");
 assert.ok(/booking page/i.test(wave.priceNote));
 assert.ok(!/outlook/i.test(JSON.stringify(wave)));
