@@ -565,6 +565,7 @@ function main() {
     "# Google fetches robots.txt from the domain root, not from a project subpath.\n" +
     "User-agent: *\n" +
     "Allow: /\n" +
+    "Disallow: /bog-beauty-directory/sites/\n" +
     "\n" +
     "Sitemap: " +
     SITE +
