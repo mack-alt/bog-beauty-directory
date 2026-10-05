@@ -405,6 +405,31 @@ section { margin-top: 28px; }
 
 .menu { display: grid; gap: 8px; }
 
+.more { margin-top: 8px; }
+
+.more summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 750;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+
+.more summary::-webkit-details-marker { display: none; }
+
+.more[open] summary { margin-bottom: 8px; }
+
 .svc {
   display: flex;
   align-items: center;

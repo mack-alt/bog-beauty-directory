@@ -61,6 +61,14 @@
       th: "โทรเพื่อยืนยัน"
     },
     services: { en: "Services", vi: "Dịch vụ", es: "Servicios", zh: "服务", ko: "서비스", th: "บริการ" },
+    seeAll: {
+      en: "See all services ({n})",
+      vi: "Xem tất cả dịch vụ ({n})",
+      es: "Ver todos los servicios ({n})",
+      zh: "查看全部服务（{n}）",
+      ko: "전체 서비스 보기 ({n})",
+      th: "ดูบริการทั้งหมด ({n})"
+    },
     hours: { en: "Hours", vi: "Giờ mở cửa", es: "Horario", zh: "营业时间", ko: "영업시간", th: "เวลาเปิด" },
     find: { en: "Find us", vi: "Địa chỉ", es: "Dónde estamos", zh: "地址", ko: "오시는 길", th: "ที่อยู่" },
     maps: {
@@ -284,6 +292,16 @@
         price: service.price != null ? String(service.price).trim() : ""
       };
     }).filter(function (row) { return row && row.name; });
+  }
+
+  function menuHtml(services) {
+    var rows = (services || []).map(function (service) {
+      var price = service.price || t("ask");
+      return '<li class="svc"><span class="svc-name">' + esc(service.name) + '</span><span class="svc-price">' + esc(price) + "</span></li>";
+    });
+    if (rows.length <= 6) return '<ul class="menu">' + rows.join("") + "</ul>";
+    var label = t("seeAll").replace("{n}", String(rows.length));
+    return '<ul class="menu">' + rows.slice(0, 6).join("") + '</ul><details class="more"><summary>' + esc(label) + "</summary><ul class=\"menu\">" + rows.slice(6).join("") + "</ul></details>";
   }
 
   function splitHours(hours) {
@@ -562,10 +580,7 @@
       return '<button type="button" data-lang="' + code + '" aria-pressed="' + (code === lang ? "true" : "false") + '" aria-label="' + esc(code.toUpperCase() + ", " + LANG_NAME[code]) + '">' + code.toUpperCase() + "</button>";
     }).join("");
 
-    var menu = services.map(function (service) {
-      var price = service.price || t("ask");
-      return '<li class="svc"><span class="svc-name">' + esc(service.name) + '</span><span class="svc-price">' + esc(price) + "</span></li>";
-    }).join("");
+    var menu = menuHtml(services);
 
     var hourRows = rows.map(function (row) {
       if (!row.time) return '<li class="hours-plain"><span>' + esc(row.days) + "</span></li>";
@@ -660,7 +675,7 @@
       shop.walkIns ? '<p class="walk">' + esc(shop.walkIns) + "</p>" : "",
       offerHtml,
       '<p class="note reveal">' + esc(t("note")) + "</p>",
-      services.length ? '<section class="reveal"><h2>' + esc(t("services")) + "</h2>" + (String(shop.priceNote || "").trim() ? '<p class="price-note">' + esc(String(shop.priceNote).trim()) + "</p>" : "") + '<ul class="menu">' + menu + "</ul></section>" : "",
+      services.length ? '<section class="reveal"><h2>' + esc(t("services")) + "</h2>" + (String(shop.priceNote || "").trim() ? '<p class="price-note">' + esc(String(shop.priceNote).trim()) + "</p>" : "") + menu + "</section>" : "",
       shotsHtml,
       rows.length ? '<section class="reveal"><h2>' + esc(t("hours")) + '</h2><div class="card"><ul class="hours">' + hourRows + "</ul></div></section>" : "",
       shop.address ? '<section class="reveal"><h2>' + esc(t("find")) + '</h2><div class="card"><p class="address">' + esc(shop.address) + "</p>" + (String(shop.extra || "").trim() ? '<p class="aside">' + esc(String(shop.extra).trim()) + "</p>" : "") + (maps ? '<a class="btn" href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a>" : "") + "</div></section>" : "",
@@ -779,6 +794,7 @@
     contrast: contrast,
     hexToRgb: hexToRgb,
     serviceList: serviceList,
+    menuHtml: menuHtml,
     mapsLink: mapsLink,
     safeDirectory: safeDirectory,
     giftLine: giftLine,
