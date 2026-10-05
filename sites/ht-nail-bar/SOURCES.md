@@ -7,10 +7,11 @@ Private preview for 331 Strander Blvd. This is not Queenie Nails & Spa at 648 St
 | Name: HT Nail Bar | Yes | Card, printed `HT NAIL BAR`. Same name in `shops/20.json` |
 | Phone: (206) 420-1479 | Yes | Card prints `206-420-1479` under the Strander address. Same number in `shops/20.json` |
 | Address: 331 Strander Blvd, Tukwila, WA 98188 | Yes | Card. Same address in `shops/20.json` |
-| Second location line | Yes, under the name | Card prints `Second Location:`, `NAIL BAR & SPA`, `17250 Southcenter Pkwy, Ste 140`, `Tukwila, WA 98188-3240`, `Phone: 206-397-3959`. Call, Text, and Directions on this page stay on the Strander shop |
+| Hours: Mon–Sat 9:30am–7:30pm; Sunday 10:00am–6:00pm | Yes | The shop’s own site, checked Oct 5, 2026. Not printed on the card |
+| Second location line | Yes, under Find us, not under the name | Card prints `Second Location:`, `NAIL BAR & SPA`, `17250 Southcenter Pkwy, Ste 140`, `Tukwila, WA 98188-3240`, `Phone: 206-397-3959`. Call, Text, and Directions on this page stay on the Strander shop |
 | Website | Yes | Card prints `htnailbartukwila.com`. `shops/20.json` stores `https://htnailbartukwila.com` |
 | Instagram and Facebook | Yes | Card prints `@htnailbartukwila` next to the Facebook and Instagram marks. `shops/20.json` stores the matching `https` profile URLs |
-| Hours, services, prices, reviews | No | Not printed on this card. `shops/20.json` hours are empty |
+| Services, prices, reviews | No | Not printed on the card. Service groups on the shop’s own site were not copied as a menu |
 | Photos | Yes, tagged Sample photo | Pexels nail photos already credited in `PHOTO_CREDITS.md`. They are not photos of this shop |
 | Booking form | Yes | Shared HighLevel form in `bookingUrl`. The page adds `shop_slug=ht-nail-bar` |
 

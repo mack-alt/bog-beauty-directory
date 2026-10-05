@@ -1,0 +1,50 @@
+{
+  "name": "Diamond Nails",
+  "phone": "(425) 430-2504",
+  "address": "17625 108th Ave SE, North Benson Center, Renton, WA 98055",
+  "hours": "Mon–Sat 10:00am–7:00pm; Sunday: call to confirm",
+  "services": [
+    "Classic Manicure",
+    "Deluxe Manicure",
+    "Gel/Shellac Manicure",
+    "Dipping Powder",
+    "Express Pedicure",
+    "Deluxe Pedicure",
+    "Gel/Shellac add-on",
+    "Waxing, forehead",
+    "Waxing, eyebrows",
+    "Waxing, lip",
+    "Waxing, chin",
+    "Waxing, sideburns",
+    "Waxing, full face",
+    "Waxing, underarms",
+    "Waxing, half arms",
+    "Waxing, half back",
+    "Waxing, stomach",
+    "Waxing, upper legs",
+    "Waxing, lower legs",
+    "Waxing, half legs",
+    "Acrylic full set",
+    "Acrylic white tip full set",
+    "Pink & white full set",
+    "P&W fill",
+    "Ombre full set",
+    "Toe acrylic",
+    "Polish change, hands or feet"
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/nails-1.webp",
+      "alt": "Sample photo of a manicure"
+    },
+    {
+      "src": "../../images/styles/cards/nails-2.webp",
+      "alt": "Sample photo of nail art"
+    },
+    {
+      "src": "../../images/styles/cards/nails-3.webp",
+      "alt": "Sample photo of nail extensions"
+    }
+  ],
+  "bookingUrl": "https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"
+}

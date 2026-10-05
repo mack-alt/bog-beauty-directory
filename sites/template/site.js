@@ -21,12 +21,20 @@
     directions: { en: "Directions", vi: "Chỉ đường", es: "Cómo llegar", zh: "路线", ko: "길찾기", th: "เส้นทาง" },
     book: { en: "Book", vi: "Đặt lịch", es: "Reservar", zh: "预约", ko: "예약", th: "จอง" },
     note: {
-      en: "Text us anytime, we text back.",
-      vi: "Nhắn bất cứ lúc nào, tiệm nhắn lại.",
-      es: "Escríbenos cuando quieras. Te respondemos por mensaje.",
-      zh: "随时发短信，我们会回。",
-      ko: "언제든 문자 주세요. 답장드릴게요.",
-      th: "ส่งข้อความได้ทุกเมื่อ เราตอบกลับ"
+      en: "Call, text, or book below.",
+      vi: "Gọi, nhắn, hoặc đặt lịch bên dưới.",
+      es: "Llama, escribe o reserva abajo.",
+      zh: "请在下方致电、发短信或预约。",
+      ko: "아래에서 전화, 문자 또는 예약하세요.",
+      th: "โทร ส่งข้อความ หรือจองด้านล่าง"
+    },
+    confirm: {
+      en: "Call to confirm",
+      vi: "Gọi để xác nhận",
+      es: "Llama para confirmar",
+      zh: "请致电确认",
+      ko: "전화로 확인해 주세요",
+      th: "โทรเพื่อยืนยัน"
     },
     services: { en: "Services", vi: "Dịch vụ", es: "Servicios", zh: "服务", ko: "서비스", th: "บริการ" },
     hours: { en: "Hours", vi: "Giờ mở cửa", es: "Horario", zh: "营业时间", ko: "영업시간", th: "เวลาเปิด" },
@@ -335,11 +343,16 @@
       if (!range) return;
       parseDays(row.days).forEach(function (day) { byDay[day] = range; });
     });
-    if (!Object.keys(byDay).length) return null;
+    if (!Object.keys(byDay).length && !rows.some(function (row) { return confirmDays(row).length; })) return null;
     var today = byDay[weekday];
     if (today && minutes >= today.open && minutes < today.close) {
       return { open: true, line: t("openNow") + " · " + fill("closesAt", formatWhen(today.close)) };
     }
+    var confirmToday = false;
+    rows.forEach(function (row) {
+      if (confirmDays(row).indexOf(weekday) !== -1) confirmToday = true;
+    });
+    if (confirmToday) return { open: null, line: t("confirm") };
     if (today && minutes < today.open) {
       return { open: false, line: t("closed") + " · " + fill("opensAt", formatWhen(today.open)) };
     }
@@ -348,6 +361,13 @@
       if (next) return { open: false, line: t("closed") + " · " + fill("opensAt", formatWhen(next.open)) };
     }
     return null;
+  }
+
+  function confirmDays(row) {
+    var blob = String((row && row.days) || "") + " " + String((row && row.time) || "");
+    if (!/call to confirm/i.test(blob)) return [];
+    var label = String(row.days || "").split(":")[0].trim();
+    return parseDays(label);
   }
 
   function primaryAction(status) {
@@ -463,8 +483,8 @@
     return [
       '<figure class="shot">',
       '<span class="shot-media">',
-      '<img src="' + esc(photo.src) + '" alt="' + esc(alt) + '"',
-      eager ? ' loading="eager" fetchpriority="high"' : ' loading="lazy"',
+      '<img src="' + esc(photo.src) + '" alt="' + esc(alt) + '" width="800" height="1000"',
+      ' loading="eager"' + (eager ? ' fetchpriority="high"' : ""),
       ' decoding="async" />',
       "</span>",
       sample ? '<span class="tag">' + esc(t("samplePhoto")) + "</span>" : "",
@@ -551,6 +571,11 @@
     var linkHtml = links.map(function (link) {
       return '<div><a href="' + esc(link.href) + '" target="_blank" rel="noopener noreferrer">' + esc(link.label || link.href) + "</a></div>";
     }).join("");
+    var bookAlt = links.filter(function (link) {
+      return /^book\b/i.test(String(link.label || ""));
+    }).map(function (link) {
+      return '<a class="book-alt" href="' + esc(link.href) + '" target="_blank" rel="noopener noreferrer">' + esc(link.label) + "</a>";
+    }).join("");
 
     var callBtn = phone
       ? '<a class="' + (action.id === "call" ? "primary" : "") + '" href="tel:' + esc(phone) + '">' + esc(action.id === "call" ? t(action.labelKey) : t("call")) + "</a>"
@@ -566,13 +591,14 @@
     var booking = [
       '<section id="booking" class="booking" tabindex="-1">',
       "<h2>" + esc(t("request")) + "</h2>",
+      bookAlt,
       frame
         ? '<iframe class="booking-frame" title="' + esc(t("request")) + '" src="' + esc(frame) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'
         : "<p>" + esc(t("bookFallback")) + "</p>" + (phone ? '<div class="actions"><a class="btn" href="tel:' + esc(phone) + '">' + esc(t("call")) + '</a><a class="btn" href="sms:' + esc(phone) + '">' + esc(t("text")) + "</a></div>" : ""),
       "</section>"
     ].join("");
 
-    var state = status ? (status.open ? "open" : "closed") : "unknown";
+    var state = !status ? "unknown" : status.open === true ? "open" : status.open === false ? "closed" : "confirm";
     root.innerHTML = [
       '<header class="topbar">',
       '<div class="scroll-progress" aria-hidden="true"></div>',
@@ -586,10 +612,10 @@
       shop.walkIns ? '<p class="walk">' + esc(shop.walkIns) + "</p>" : "",
       offerHtml,
       '<p class="note reveal">' + esc(t("note")) + "</p>",
-      services.length ? '<section class="reveal"><h2>' + esc(t("services")) + '</h2><ul class="menu">' + menu + "</ul></section>" : "",
+      services.length ? '<section class="reveal"><h2>' + esc(t("services")) + "</h2>" + (String(shop.priceNote || "").trim() ? '<p class="price-note">' + esc(String(shop.priceNote).trim()) + "</p>" : "") + '<ul class="menu">' + menu + "</ul></section>" : "",
       shotsHtml,
       rows.length ? '<section class="reveal"><h2>' + esc(t("hours")) + '</h2><div class="card"><ul class="hours">' + hourRows + "</ul></div></section>" : "",
-      shop.address ? '<section class="reveal"><h2>' + esc(t("find")) + '</h2><div class="card"><p class="address">' + esc(shop.address) + "</p>" + (maps ? '<a class="btn" href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a>" : "") + "</div></section>" : "",
+      shop.address ? '<section class="reveal"><h2>' + esc(t("find")) + '</h2><div class="card"><p class="address">' + esc(shop.address) + "</p>" + (String(shop.extra || "").trim() ? '<p class="aside">' + esc(String(shop.extra).trim()) + "</p>" : "") + (maps ? '<a class="btn" href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("maps")) + "</a>" : "") + "</div></section>" : "",
       booking,
       "<footer class=\"reveal\"><strong>" + esc(shop.name || "Shop") + "</strong>" + (shop.address ? "<div>" + esc(shop.address) + "</div>" : "") + (displayPhone && phone ? '<div><a href="tel:' + esc(phone) + '">' + esc(displayPhone) + "</a></div>" : "") + linkHtml + '<p class="banner">' + esc(t("sample")) + "</p></footer>",
       "</main>",
