@@ -47,6 +47,22 @@ assert.strictEqual(
 );
 assert.strictEqual(site.bookingSrc("", "fancy-nails"), "");
 
+assert.strictEqual(site.safeDirectory("../../shop/fancy-nails/"), "../../shop/fancy-nails/");
+assert.strictEqual(
+  site.safeDirectory("https://mack-alt.github.io/bog-beauty-directory/shop/ht-nail-bar/"),
+  "https://mack-alt.github.io/bog-beauty-directory/shop/ht-nail-bar/"
+);
+assert.strictEqual(site.safeDirectory("javascript:alert(1)"), "");
+assert.strictEqual(site.safeDirectory("../help/"), "");
+assert.strictEqual(site.safeDirectory("/shop/fancy-nails/"), "");
+assert.strictEqual(site.giftLine("Fancy Nails"), "A free gift for Fancy Nails from Blades of Grass");
+site.LOCALES.forEach(function (code) {
+  assert.ok(site.COPY.gift[code].indexOf("{name}") !== -1, code + " gift");
+  assert.ok(site.COPY.giftListing[code], code + " listing label");
+  assert.ok(site.COPY.giftHelp[code], code + " help label");
+  assert.ok(!/\bAI\b/.test(site.COPY.gift[code] + site.COPY.giftListing[code] + site.COPY.giftHelp[code]));
+});
+
 assert.strictEqual(site.telDigits("(425) 227-0954"), "+14252270954");
 assert.strictEqual(site.telDigits("+1 425-572-6271"), "+14255726271");
 
@@ -169,6 +185,11 @@ assert.ok(/IntersectionObserver/.test(js), "observer fallback");
 assert.ok(/scroll-progress/.test(js), "progress mark");
 assert.ok(!/Text us anytime/.test(js), "no text-back promise");
 assert.ok(!/animation-timeline:\s*--frame/.test(css), "photos are not clip-revealed");
+assert.ok(/\.gift\s*\{[^}]*position:\s*static/.test(css), "gift banner is in normal flow");
+assert.ok(!/\.gift\s*\{[^}]*position:\s*(?:fixed|sticky)/.test(css), "gift banner is not stuck");
+assert.ok(/class="gift"/.test(js), "gift banner markup");
+assert.ok(/safeDirectory\(/.test(js), "listing url check");
+assert.ok(!/\.gift[^\{]*position:\s*(?:fixed|sticky)/.test(css));
 ["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(!json.motion && !json.animation, slug + " has no motion field");
@@ -199,5 +220,21 @@ const ht = JSON.parse(fs.readFileSync(path.join(root, "ht-nail-bar", "site.json"
 assert.ok(!ht.tagline);
 assert.ok(/9:30am/.test(ht.hours));
 assert.ok(/Second location/.test(ht.extra));
+
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
+  const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
+  assert.strictEqual(json.directoryUrl, "../../shop/" + slug + "/", slug + " directoryUrl");
+  assert.strictEqual(site.safeDirectory(json.directoryUrl), json.directoryUrl);
+});
+
+const help = fs.readFileSync(path.join(root, "help", "index.html"), "utf8");
+assert.ok(/noindex,\s*nofollow/.test(help), "help noindex");
+assert.ok(help.indexOf("206-743-6296") !== -1, "help text line");
+assert.ok(help.indexOf("mack@lovebog.com") !== -1, "help email");
+assert.strictEqual((help.match(/<span class="blank" data-shop-blank>/g) || []).length, 2, "both language blanks");
+assert.ok(/textContent/.test(help), "shop name is text, not html");
+assert.ok(!/innerHTML/.test(help), "help does not inject html");
+assert.ok(/@media print/.test(help), "print layout");
+assert.ok(help.indexOf("/sites/") === -1, "help does not link a sample");
 
 console.log("site template tests passed");

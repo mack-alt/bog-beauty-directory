@@ -2,7 +2,7 @@
 
 One-page sample sites for shop owners. They are not part of the directory. Each page is `noindex, nofollow`. The page build keeps `/sites/` out of `sitemap.xml` and `llms.txt`, and `robots.txt` disallows `/bog-beauty-directory/sites/`. Do not link a sample site from the directory.
 
-Shared layout: `template/site.css` and `template/site.js`. Each shop is a folder with `index.html` and `site.json`.
+Shared layout: `template/site.css` and `template/site.js`. Each shop is a folder with `index.html` and `site.json`. A gift banner at the top of each sample links to the public listing when `directoryUrl` is set, and to `help/` so the owner can send corrections. `help/` is unlisted the same way: `noindex, nofollow`, and it is not linked from the directory.
 
 To add a shop, follow [docs/new-shop-in-15-minutes.md](../docs/new-shop-in-15-minutes.md).
 
