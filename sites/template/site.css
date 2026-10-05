@@ -162,7 +162,7 @@ body { min-height: 100dvh; }
 
 .status.is-open .dot { background: #1f7a45; }
 
-main { padding: 22px 16px 128px; }
+main { padding: 22px 16px calc(190px + env(safe-area-inset-bottom)); }
 
 .banner {
   margin: 0 0 12px;
@@ -204,10 +204,21 @@ h1 span { display: block; }
   font-weight: 500;
 }
 
-.walk, .note {
+.walk, .note, .aside, .price-note {
   margin: 10px 0 0;
   color: var(--muted);
   font-weight: 600;
+}
+
+.aside, .price-note { font-size: 0.95rem; }
+
+.book-alt {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0 0 12px;
+  color: var(--ink);
+  font-weight: 750;
 }
 
 .break {
@@ -309,7 +320,7 @@ h1 span { display: block; }
   position: absolute;
   z-index: 1;
   left: 8px;
-  bottom: 8px;
+  top: 12px;
 }
 
 .break.has-photo .shot {
@@ -536,16 +547,6 @@ html[data-variant="soft"] .dock a.primary {
     animation-timeline: view();
     animation-range: entry 0% entry 65%;
   }
-
-  .shot {
-    view-timeline: --frame block;
-  }
-
-  .shot-media {
-    animation: unveil linear both, drift linear both;
-    animation-timeline: --frame;
-    animation-range: entry 0% entry 70%, cover 0% cover 100%;
-  }
 }
 
 @keyframes reading {
@@ -561,16 +562,6 @@ html[data-variant="soft"] .dock a.primary {
 @keyframes rise {
   from { transform: translateY(36px); }
   to { transform: none; }
-}
-
-@keyframes unveil {
-  from { clip-path: inset(16% 9% 20% 9% round 18px); }
-  to { clip-path: inset(0 round 18px); }
-}
-
-@keyframes drift {
-  from { transform: translateY(6%) scale(1.12); }
-  to { transform: translateY(-6%) scale(1.12); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -591,15 +582,6 @@ html[data-variant="soft"] .dock a.primary {
   html.motion-fallback .reveal.is-in {
     transform: none;
     transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  html.motion-fallback .shot-media {
-    clip-path: inset(16% 9% 20% 9% round 18px);
-  }
-
-  html.motion-fallback .shot.is-in .shot-media {
-    clip-path: inset(0 round 18px);
-    transition: clip-path 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 

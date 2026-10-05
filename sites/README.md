@@ -30,4 +30,12 @@ Private preview from the card and `shops/16.json`. Hours and the three printed l
 
 ### HT Nail Bar
 
-Private preview for 331 Strander Blvd, from the card and `shops/20.json`. Hours are not printed. The card’s second location is shown as a line under the name. Call and Directions stay on Strander.
+Private preview for 331 Strander Blvd, from the card and `shops/20.json`. Hours are from the shop’s own site. The card’s second location is under Find us. Call and Directions stay on Strander.
+
+### Diamond Nails
+
+Private preview from the visit brief. Sunday says “call to confirm” and is not marked open or closed. Service names only. The shop website is not linked.
+
+### Beauty Wave
+
+Private preview from the visit brief. Square prices are labeled as from the booking page. Book on Square is a second link. The email is not on the page.

@@ -1,0 +1,42 @@
+{
+  "name": "Beauty Wave",
+  "phone": "(425) 226-8811",
+  "address": "18665 108th Ave SE, Renton, WA 98055",
+  "hours": "Tue–Sat 10:00am–5:00pm; Sun–Mon closed",
+  "tagline": "Haircuts and perms, 30+ years at this location",
+  "walkIns": "By appointment",
+  "priceNote": "Prices from the shop's booking page; please confirm when booking.",
+  "services": [
+    { "name": "Hair cut only", "price": "$30" },
+    { "name": "Hair cut & shampoo", "price": "$35" },
+    { "name": "Hair cut, shampoo & dry", "price": "$40" },
+    { "name": "Senior (67+) cut only", "price": "$25" },
+    { "name": "Senior cut & shampoo", "price": "$30" },
+    { "name": "Senior cut, shampoo & dry", "price": "$35" },
+    { "name": "Shampoo set", "price": "$40" },
+    { "name": "Perm short hair", "price": "$100" },
+    { "name": "Perm long hair", "price": "$150" },
+    { "name": "Perm spiral (3 hours; depends on length and fullness; includes 2 boxes, extra box $15)", "price": "$250" }
+  ],
+  "links": [
+    {
+      "label": "Book on Square",
+      "href": "https://beauty-wave.square.site/"
+    }
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/hair-1.webp",
+      "alt": "Sample photo of a hair appointment"
+    },
+    {
+      "src": "../../images/styles/cards/hair-2.webp",
+      "alt": "Sample photo of a hairstylist with a client"
+    },
+    {
+      "src": "../../images/styles/cards/hair-3.webp",
+      "alt": "Sample photo of a haircut"
+    }
+  ],
+  "bookingUrl": "https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"
+}

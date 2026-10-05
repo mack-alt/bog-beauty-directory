@@ -32,12 +32,14 @@ Optional:
 
 | Field | When to fill it |
 | --- | --- |
-| `hours` | The hours line from the card. A normal hyphen is fine: `Mon-Sat 9:30am-7:00pm; Sunday 10:00am-6:00pm`. If the card has no clock times, paste the words it does use, such as `We open 7 days a week`. |
+| `hours` | The hours line from the card. A normal hyphen is fine: `Mon-Sat 9:30am-7:00pm; Sunday 10:00am-6:00pm`. If the card has no clock times, paste the words it does use, such as `We open 7 days a week`. If one day is unconfirmed, write `Sunday: call to confirm`. That day does not show as open or closed. |
+| `extra` | A second line that is not the tagline, such as another location. It shows under Find us. |
+| `priceNote` | A short line above the service list when prices are shown, such as where the prices came from. |
 | `tagline` | The short line from the card, if there is one. |
 | `walkIns` | Only if the card says walk-ins or appointments. |
 | `offer` | Only an offer printed on the card or already checked in public. |
 | `offerConfirmed` | Set to `true` only when that offer is confirmed. If you leave it off, the page marks the offer Sample. |
-| `services` | Service names only. Leave the price off. The page says “ask for price.” |
+| `services` | Service names. Leave the price off unless the shop published it. An empty price says “ask for price.” |
 | `links` | A real `https` link, such as Instagram: `{ "label": "Instagram", "href": "https://..." }`. |
 | `photos` | `{ "src": "...webp", "alt": "Sample photo of a manicure" }`. Stock photos stay labeled Sample. For a real photo of this shop, set `"sample": false` and write a real alt. |
 | `accent` | A brand color from the card, like `#9c3d52`. Skip it to use the default. |

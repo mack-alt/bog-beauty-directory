@@ -61,6 +61,19 @@ assert.deepStrictEqual(site.splitHours("Mon\u2013Fri 9:00am\u20137:00pm; Sat\u20
   { days: "Mon\u2013Fri", time: "9:00am\u20137:00pm" },
   { days: "Sat\u2013Sun", time: "9:00am\u20136:00pm" }
 ]);
+
+const diamondHours = "Mon\u2013Sat 10:00am\u20137:00pm; Sunday: call to confirm";
+const diamondSun = site.statusFor(diamondHours, at("2026-10-04T18:00:00Z"));
+assert.strictEqual(diamondSun.open, null);
+assert.ok(/confirm/i.test(diamondSun.line));
+assert.strictEqual(site.primaryAction(diamondSun).labelKey, "call");
+const diamondMon = site.statusFor(diamondHours, at("2026-10-05T18:00:00Z"));
+assert.strictEqual(diamondMon.open, true);
+const diamondSat = site.statusFor(diamondHours, at("2026-10-04T03:00:00Z"));
+assert.strictEqual(diamondSat.open, false);
+
+const waveSun = site.statusFor("Tue\u2013Sat 10:00am\u20135:00pm; Sun\u2013Mon closed", at("2026-10-04T18:00:00Z"));
+assert.strictEqual(waveSun.open, false);
 assert.deepStrictEqual(site.splitHours([{ days: "Sunday", time: "10:00am\u20136:00pm" }]), [
   { days: "Sunday", time: "10:00am\u20136:00pm" }
 ]);
@@ -127,7 +140,7 @@ walk(root, []).forEach(function (file) {
   assert.ok(!/\bAI\b/.test(text), "banned wording in " + file);
 });
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
   const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(/noindex,\s*nofollow/.test(html), slug + " noindex");
@@ -154,7 +167,9 @@ assert.ok(/animation-timeline:\s*scroll\(root\)/.test(css), "scroll timeline");
 assert.ok(/prefers-reduced-motion:\s*reduce/.test(css), "reduced motion");
 assert.ok(/IntersectionObserver/.test(js), "observer fallback");
 assert.ok(/scroll-progress/.test(js), "progress mark");
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar"].forEach(function (slug) {
+assert.ok(!/Text us anytime/.test(js), "no text-back promise");
+assert.ok(!/animation-timeline:\s*--frame/.test(css), "photos are not clip-revealed");
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(!json.motion && !json.animation, slug + " has no motion field");
 });
@@ -171,5 +186,18 @@ assert.ok(/scroll-progress/.test(js), "progress mark");
 });
 const robots = fs.readFileSync(path.join(root, "..", "robots.txt"), "utf8");
 assert.ok(/Disallow:\s*\/bog-beauty-directory\/sites\//.test(robots), "robots disallow");
+
+const diamond = JSON.parse(fs.readFileSync(path.join(root, "diamond-nails", "site.json"), "utf8"));
+assert.ok(!diamond.tagline && !diamond.walkIns && !diamond.links);
+assert.ok(!/\$/.test(JSON.stringify(diamond.services)));
+assert.ok(/call to confirm/i.test(diamond.hours));
+const wave = JSON.parse(fs.readFileSync(path.join(root, "beauty-wave", "site.json"), "utf8"));
+assert.strictEqual(wave.links[0].href, "https://beauty-wave.square.site/");
+assert.ok(/booking page/i.test(wave.priceNote));
+assert.ok(!/outlook/i.test(JSON.stringify(wave)));
+const ht = JSON.parse(fs.readFileSync(path.join(root, "ht-nail-bar", "site.json"), "utf8"));
+assert.ok(!ht.tagline);
+assert.ok(/9:30am/.test(ht.hours));
+assert.ok(/Second location/.test(ht.extra));
 
 console.log("site template tests passed");
