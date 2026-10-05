@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>A note for the shop</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: #fff;
+      color: #1d1614;
+      font-family: Palatino, "Palatino Linotype", Georgia, "Liberation Serif", "DejaVu Serif", serif;
+      font-size: 1.15rem;
+      line-height: 1.45;
+    }
+    .sheet {
+      max-width: 40rem;
+      margin: 0 auto;
+      padding: 28px 22px 56px;
+    }
+    h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1.7rem;
+      line-height: 1.15;
+    }
+    .from {
+      margin: 0 0 1.2rem;
+      font-size: 0.95rem;
+    }
+    p { margin: 0 0 0.9rem; }
+    .name-line { margin: 1.1rem 0 1.2rem; }
+    .blank {
+      display: inline-block;
+      min-width: 12rem;
+      max-width: 100%;
+      padding: 0 0.15rem 0.05rem;
+      border-bottom: 2px dotted #1d1614;
+      overflow-wrap: anywhere;
+      vertical-align: baseline;
+    }
+    .reach {
+      margin: 0;
+      font-weight: 700;
+    }
+    .reach + .reach { margin-top: 0.25rem; }
+    section + section { margin-top: 2.5rem; }
+    @media print {
+      body { background: #fff; }
+      .sheet { max-width: none; padding: 0.4in 0.55in; }
+      section + section { break-before: page; margin-top: 0; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <section lang="en">
+      <h1>A note for the shop</h1>
+      <p class="from">From Blades of Grass</p>
+      <p class="name-line">Shop name: <span class="blank" data-shop-blank>........................</span></p>
+      <p>If something on the sample page is wrong, or you want a real photo or your menu on it, text or email.</p>
+      <p class="reach">Text 206-743-6296</p>
+      <p class="reach">mack@lovebog.com</p>
+    </section>
+    <section lang="vi">
+      <h1>Ghi chú cho tiệm</h1>
+      <p class="from">Từ Blades of Grass</p>
+      <p class="name-line">Tên tiệm: <span class="blank" data-shop-blank>........................</span></p>
+      <p>Nếu trang mẫu có chỗ chưa đúng, hoặc tiệm muốn dùng ảnh thật hay thực đơn, hãy nhắn hoặc email.</p>
+      <p class="reach">Text 206-743-6296</p>
+      <p class="reach">mack@lovebog.com</p>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var name = "";
+      try {
+        name = new URLSearchParams(location.search).get("shop") || "";
+      } catch (err) {
+        name = "";
+      }
+      name = String(name).replace(/^\s+|\s+$/g, "");
+      if (!name) return;
+      var nodes = document.querySelectorAll("[data-shop-blank]");
+      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = name;
+    })();
+  </script>
+</body>
+</html>

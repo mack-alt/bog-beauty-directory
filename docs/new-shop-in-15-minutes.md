@@ -43,6 +43,7 @@ Optional:
 | `links` | A real `https` link, such as Instagram: `{ "label": "Instagram", "href": "https://..." }`. |
 | `photos` | `{ "src": "...webp", "alt": "Sample photo of a manicure" }`. Stock photos stay labeled Sample. For a real photo of this shop, set `"sample": false` and write a real alt. |
 | `accent` | A brand color from the card, like `#9c3d52`. Skip it to use the default. |
+| `directoryUrl` | The shop’s public directory page, one line: `../../shop/<slug>/`. The gift banner’s “Your free listing” button uses it. Leave it off when the shop has no listing, and that button stays hidden. |
 | `bookingUrl` | Keep the shared form URL above. This is the only booking field. The template appends `?shop_slug=<folder>`. |
 
 ```json

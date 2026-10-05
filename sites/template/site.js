@@ -14,6 +14,30 @@
       ko: "Blades of Grass 샘플 사이트 미리보기",
       th: "ตัวอย่างเว็บไซต์โดย Blades of Grass"
     },
+    gift: {
+      en: "A free gift for {name} from Blades of Grass",
+      vi: "Một món quà miễn phí cho {name} từ Blades of Grass",
+      es: "Un regalo gratis para {name}, de Blades of Grass",
+      zh: "Blades of Grass 送给 {name} 的一份免费礼物",
+      ko: "Blades of Grass가 {name}에 드리는 무료 선물",
+      th: "ของขวัญฟรีสำหรับ {name} จาก Blades of Grass"
+    },
+    giftListing: {
+      en: "Your free listing",
+      vi: "Trang danh bạ miễn phí",
+      es: "Tu ficha gratis",
+      zh: "你的免费名录",
+      ko: "무료 목록",
+      th: "หน้าร้านฟรีของคุณ"
+    },
+    giftHelp: {
+      en: "Help make this better",
+      vi: "Giúp làm trang này tốt hơn",
+      es: "Ayuda a mejorarlo",
+      zh: "帮忙改进",
+      ko: "더 좋게 만들기",
+      th: "ช่วยทำให้ดีขึ้น"
+    },
     call: { en: "Call", vi: "Gọi", es: "Llamar", zh: "电话", ko: "전화", th: "โทร" },
     callNow: { en: "Call now", vi: "Gọi ngay", es: "Llamar ahora", zh: "立即致电", ko: "지금 전화", th: "โทรเลย" },
     text: { en: "Text", vi: "Nhắn tin", es: "Mensaje", zh: "短信", ko: "문자", th: "ข้อความ" },
@@ -145,6 +169,17 @@
 
   function fill(key, time) {
     return t(key).replace("{time}", time);
+  }
+
+  function safeDirectory(url) {
+    var value = String(url || "").trim();
+    if (/^(\.\.\/)+shop\/[a-z0-9-]+\/?$/.test(value)) return value;
+    if (/^https:\/\/mack-alt\.github\.io\/bog-beauty-directory\/shop\/[a-z0-9-]+\/?$/.test(value)) return value;
+    return "";
+  }
+
+  function giftLine(name) {
+    return t("gift").replace("{name}", name || "");
   }
 
   function esc(value) {
@@ -599,7 +634,20 @@
     ].join("");
 
     var state = !status ? "unknown" : status.open === true ? "open" : status.open === false ? "closed" : "confirm";
+    var shopName = String(shop.name || "").trim();
+    var listingUrl = safeDirectory(shop.directoryUrl);
+    var helpUrl = "../help/?shop=" + encodeURIComponent(shopName);
+    var gift = [
+      '<aside class="gift">',
+      "<p>" + giftLine(esc(shopName)) + "</p>",
+      '<div class="gift-actions">',
+      listingUrl ? '<a href="' + esc(listingUrl) + '">' + esc(t("giftListing")) + "</a>" : "",
+      '<a href="' + esc(helpUrl) + '">' + esc(t("giftHelp")) + "</a>",
+      "</div>",
+      "</aside>"
+    ].join("");
     root.innerHTML = [
+      gift,
       '<header class="topbar">',
       '<div class="scroll-progress" aria-hidden="true"></div>',
       '<div class="langs" role="group" aria-label="' + esc(t("language")) + '">' + chips + "</div>",
@@ -732,6 +780,8 @@
     hexToRgb: hexToRgb,
     serviceList: serviceList,
     mapsLink: mapsLink,
+    safeDirectory: safeDirectory,
+    giftLine: giftLine,
     COPY: COPY,
     LOCALES: LOCALES,
     FORM_EMBED: FORM_EMBED
