@@ -1,92 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="robots" content="noindex, nofollow" />
-  <title>A note for the shop</title>
-  <style>
-    :root { color-scheme: light; }
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0;
-      background: #fff;
-      color: #1d1614;
-      font-family: Palatino, "Palatino Linotype", Georgia, "Liberation Serif", "DejaVu Serif", serif;
-      font-size: 1.15rem;
-      line-height: 1.45;
-    }
-    .sheet {
-      max-width: 40rem;
-      margin: 0 auto;
-      padding: 28px 22px 56px;
-    }
-    h1 {
-      margin: 0 0 0.4rem;
-      font-size: 1.7rem;
-      line-height: 1.15;
-    }
-    .from {
-      margin: 0 0 1.2rem;
-      font-size: 0.95rem;
-    }
-    p { margin: 0 0 0.9rem; }
-    .name-line { margin: 1.1rem 0 1.2rem; }
-    .blank {
-      display: inline-block;
-      min-width: 12rem;
-      max-width: 100%;
-      padding: 0 0.15rem 0.05rem;
-      border-bottom: 2px dotted #1d1614;
-      overflow-wrap: anywhere;
-      vertical-align: baseline;
-    }
-    .reach {
-      margin: 0;
-      font-weight: 700;
-    }
-    .reach + .reach { margin-top: 0.25rem; }
-    section + section { margin-top: 2.5rem; }
-    @media print {
-      body { background: #fff; }
-      .sheet { max-width: none; padding: 0.4in 0.55in; }
-      section + section { break-before: page; margin-top: 0; }
-      a { color: inherit; text-decoration: none; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Make your free website shine — Blades of Grass</title>
+<style>
+  :root{--green:#1f5c3f;--leaf:#2f8a5b;--cream:#fbf7ef;--ink:#1d2320;--soft:#e7f1ea;--sun:#f4c64e}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif}
+  .page{max-width:680px;margin:0 auto;padding:22px 18px 28px;background:#fff}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{font-weight:800;color:var(--green);letter-spacing:.02em;font-size:14px;text-transform:uppercase}
+  .lang{font-size:12px;font-weight:700;background:var(--soft);color:var(--green);border-radius:999px;padding:4px 10px}
+  h1{font-size:30px;line-height:1.08;margin:14px 0 6px;letter-spacing:-.01em}
+  h1 .hi{background:linear-gradient(transparent 62%,var(--sun) 62%)}
+  .lead{margin:0 0 14px;font-size:16.5px}
+  .shop{display:flex;gap:8px;align-items:flex-end;margin:0 0 14px;font-weight:700;font-size:14px}
+  .shop span{flex:1;border-bottom:2px dotted #9bb3a5;height:20px}
+  .shop span:not(:empty){height:auto;min-height:20px;padding-bottom:1px;overflow-wrap:anywhere}
+  ul.ck{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  ul.ck li{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--soft);border-radius:14px;padding:10px 12px}
+  .box{flex:0 0 24px;height:24px;border:2.5px solid var(--green);border-radius:6px;margin-top:1px}
+  .ic{flex:0 0 26px;font-size:21px;line-height:1.1}
+  ul.ck b{display:block;font-size:16px}
+  ul.ck small{display:block;color:#4a5550;font-size:14px}
+  .send{margin:16px 0 10px;background:var(--green);color:#fff;border-radius:16px;padding:14px 16px}
+  .send h2{margin:0 0 6px;font-size:19px}
+  .send p{margin:2px 0;font-size:16px}
+  .send a{color:#fff;font-weight:800;text-decoration:underline}
+  .tips{font-size:13.5px;color:#4a5550;margin:8px 0 0}
+  .tips li{margin:2px 0}
+  .foot{margin-top:12px;font-size:12.5px;color:#66706b;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .vi{margin-top:26px;border-top:3px dashed var(--soft);padding-top:18px}
+  .note{font-size:12px;color:#8a5a00;background:#fff6dc;border-radius:8px;padding:6px 10px;margin:8px 0 0}
+  @media (min-width:640px){ul.ck{grid-template-columns:1fr 1fr}}
+  @media print{
+    @page{size:letter;margin:0.45in}
+    body{background:#fff;font-size:12.5pt}
+    .page{max-width:none;padding:0}
+    h1{font-size:24pt;margin-top:8px}
+    .lead{font-size:12.5pt;margin-bottom:10px}
+    ul.ck{grid-template-columns:1fr 1fr;gap:7px}
+    ul.ck li{padding:7px 9px;break-inside:avoid}
+    ul.ck b{font-size:12.5pt} ul.ck small{font-size:10.5pt}
+    .send{-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:10px 14px}
+    h1 .hi,.lang,.note{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .vi{break-before:page;border-top:0;margin-top:0;padding-top:0}
+  }
+</style>
 </head>
 <body>
-  <main class="sheet">
-    <section lang="en">
-      <h1>A note for the shop</h1>
-      <p class="from">From Blades of Grass</p>
-      <p class="name-line">Shop name: <span class="blank" data-shop-blank>........................</span></p>
-      <p>If something on the sample page is wrong, or you want a real photo or your menu on it, text or email.</p>
-      <p class="reach">Text 206-743-6296</p>
-      <p class="reach">mack@lovebog.com</p>
-    </section>
-    <section lang="vi">
-      <h1>Ghi chú cho tiệm</h1>
-      <p class="from">Từ Blades of Grass</p>
-      <p class="name-line">Tên tiệm: <span class="blank" data-shop-blank>........................</span></p>
-      <p>Nếu trang mẫu có chỗ chưa đúng, hoặc tiệm muốn dùng ảnh thật hay thực đơn, hãy nhắn hoặc email.</p>
-      <p class="reach">Text 206-743-6296</p>
-      <p class="reach">mack@lovebog.com</p>
-    </section>
-  </main>
-  <script>
-    (function () {
-      var name = "";
-      try {
-        name = new URLSearchParams(location.search).get("shop") || "";
-      } catch (err) {
-        name = "";
-      }
-      name = String(name).replace(/^\s+|\s+$/g, "");
-      if (!name) return;
-      var nodes = document.querySelectorAll("[data-shop-blank]");
-      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = name;
-    })();
-  </script>
+<main class="page">
+  <section aria-labelledby="en-title">
+    <div class="top"><span class="brand">🌱 Blades of Grass</span><span class="lang">English</span></div>
+    <h1 id="en-title">Let's make your free website look <span class="hi">just like you</span></h1>
+    <p class="lead">Your sample page is a gift. It's a good start, but it uses sample photos for now. Check off what you can share and we'll swap in the real thing. Send a little or a lot, whenever you have time.</p>
+    <p class="shop">Shop name: <span></span></p>
+    <ul class="ck">
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📸</span><span><b>3–5 real photos</b><small>Your best work and your storefront. Phone photos are perfect.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">✨</span><span><b>Your logo</b><small>A photo of your sign or business card works.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">💲</span><span><b>Full price menu</b><small>A photo of the menu on your wall is fine.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🕘</span><span><b>Your hours</b><small>Plus any days you close early or stay late.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🏆</span><span><b>Top 3 services you're known for</b><small>What do regulars always ask for?</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🗣️</span><span><b>Languages you speak</b><small>You and your team. We show them on your page.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📅</span><span><b>How you like to book</b><small>Call, text, walk-in, or an online booking link?</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📱</span><span><b>Social links</b><small>Instagram, Facebook, TikTok, Yelp.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">💬</span><span><b>One sentence about you</b><small>How you started, or what you love about your work.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🎁</span><span><b>Your special offer + loyalty/rewards program</b><small>Your first-visit deal, punch card, or points. We feature it up top.</small></span></li>
+    </ul>
+    <div class="send">
+      <h2>Send it to Kenny, any way you like</h2>
+      <p>📲 Text photos to <a href="sms:+12067436296">206-743-6296</a></p>
+      <p>✉️ Or email <a href="mailto:mack@lovebog.com?subject=Photos%20for%20my%20website">mack@lovebog.com</a></p>
+    </div>
+    <ul class="tips">
+      <li>Photo tip: near a window, clean table, hold the phone steady.</li>
+      <li>Please ask before sending a photo that shows a client's face.</li>
+      <li>Your sample page stays private until you say yes.</li>
+    </ul>
+    <div class="foot"><span>Kenny Mack · Blades of Grass · Renton, WA</span><span>Thank you! 🙏</span></div>
+  </section>
+
+  <section class="vi" lang="vi" aria-labelledby="vi-title">
+    <div class="top"><span class="brand">🌱 Blades of Grass</span><span class="lang">Tiếng Việt</span></div>
+    <h1 id="vi-title">Cùng làm trang web miễn phí <span class="hi">đúng là tiệm của bạn</span></h1>
+    <p class="lead">Trang web mẫu là quà tặng cho tiệm. Hiện trang đang dùng hình mẫu. Hãy đánh dấu những gì bạn có thể gửi, chúng tôi sẽ thay bằng hình và thông tin thật. Gửi ít hay nhiều, lúc nào rảnh cũng được.</p>
+    <p class="shop">Tên tiệm: <span></span></p>
+    <ul class="ck">
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📸</span><span><b>3–5 hình thật</b><small>Mẫu làm đẹp nhất và mặt tiền tiệm. Chụp bằng điện thoại là được.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">✨</span><span><b>Logo của tiệm</b><small>Hình bảng hiệu hoặc danh thiếp cũng được.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">💲</span><span><b>Bảng giá đầy đủ</b><small>Chụp bảng giá trên tường là được.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🕘</span><span><b>Giờ mở cửa</b><small>Và những ngày đóng sớm hoặc mở trễ.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🏆</span><span><b>3 dịch vụ nổi tiếng nhất</b><small>Khách quen hay chọn dịch vụ nào?</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🗣️</span><span><b>Ngôn ngữ tiệm nói được</b><small>Của bạn và thợ trong tiệm.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📅</span><span><b>Cách khách đặt hẹn</b><small>Gọi, nhắn tin, ghé thẳng, hay đặt online?</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">📱</span><span><b>Mạng xã hội</b><small>Instagram, Facebook, TikTok, Yelp.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">💬</span><span><b>Một câu về bạn</b><small>Bạn bắt đầu thế nào, hoặc bạn thích gì ở nghề.</small></span></li>
+      <li><span class="box" aria-hidden="true"></span><span class="ic" aria-hidden="true">🎁</span><span><b>Ưu đãi đặc biệt + chương trình khách hàng thân thiết</b><small>Giảm giá lần đầu, thẻ tích điểm, hoặc điểm thưởng. Chúng tôi đưa lên đầu trang.</small></span></li>
+    </ul>
+    <div class="send">
+      <h2>Gửi cho Kenny, cách nào cũng được</h2>
+      <p>📲 Nhắn tin hình đến <a href="sms:+12067436296">206-743-6296</a></p>
+      <p>✉️ Hoặc email <a href="mailto:mack@lovebog.com?subject=H%C3%ACnh%20cho%20trang%20web">mack@lovebog.com</a></p>
+    </div>
+    <ul class="tips">
+      <li>Mẹo chụp hình: gần cửa sổ, bàn sạch, cầm máy cho vững.</li>
+      <li>Xin hỏi ý khách trước khi gửi hình có mặt khách.</li>
+      <li>Trang mẫu được giữ riêng tư cho đến khi bạn đồng ý.</li>
+    </ul>
+    <div class="foot"><span>Kenny Mack · Blades of Grass · Renton, WA</span><span>Cảm ơn bạn! 🙏</span></div>
+  </section>
+</main>
+<script>
+(function () {
+  var name = "";
+  try {
+    name = new URLSearchParams(location.search).get("shop") || "";
+  } catch (err) {
+    name = "";
+  }
+  name = String(name).replace(/^\s+|\s+$/g, "");
+  if (!name) return;
+  var nodes = document.querySelectorAll(".shop > span");
+  for (var i = 0; i < nodes.length; i++) nodes[i].textContent = name;
+})();
+</script>
 </body>
 </html>
