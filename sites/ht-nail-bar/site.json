@@ -1,0 +1,36 @@
+{
+  "name": "HT Nail Bar",
+  "phone": "(206) 420-1479",
+  "address": "331 Strander Blvd, Tukwila, WA 98188",
+  "tagline": "Second location: Nail Bar & Spa, 17250 Southcenter Pkwy, Ste 140, Tukwila, WA 98188-3240. (206) 397-3959",
+  "accent": "#6a2744",
+  "links": [
+    {
+      "label": "Website",
+      "href": "https://htnailbartukwila.com"
+    },
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/htnailbartukwila/"
+    },
+    {
+      "label": "Facebook",
+      "href": "https://www.facebook.com/htnailbartukwila/"
+    }
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/nails-1.webp",
+      "alt": "Sample photo of a manicure"
+    },
+    {
+      "src": "../../images/styles/cards/nails-2.webp",
+      "alt": "Sample photo of nail art"
+    },
+    {
+      "src": "../../images/styles/cards/nails-3.webp",
+      "alt": "Sample photo of nail extensions"
+    }
+  ],
+  "bookingUrl": "https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"
+}

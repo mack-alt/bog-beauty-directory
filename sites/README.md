@@ -1,6 +1,6 @@
 # Sample shop sites
 
-One-page sample sites for shop owners. They are not part of the directory. Each page is `noindex`. The page build keeps `/sites/` out of `sitemap.xml` and `llms.txt`. Do not link a sample site from the directory.
+One-page sample sites for shop owners. They are not part of the directory. Each page is `noindex, nofollow`. The page build keeps `/sites/` out of `sitemap.xml` and `llms.txt`, and `robots.txt` disallows `/bog-beauty-directory/sites/`. Do not link a sample site from the directory.
 
 Shared layout: `template/site.css` and `template/site.js`. Each shop is a folder with `index.html` and `site.json`.
 
@@ -22,4 +22,12 @@ The card is a 10-circle loyalty stamp card. No reward is printed on it. The page
 
 ### Fancy Nails
 
-Test shop built from `shops/17.json` and `listings.json` id 17. That record has no offer and no service prices, so the page does not add them.
+Test shop built from `shops/17.json` and `listings.json` id 17, then checked against the card. The card adds “North Benson Fred Meyer Shopping Center.” That record has no offer and no service prices, so the page does not add them.
+
+### Jerry's Barbershop
+
+Private preview from the card and `shops/16.json`. Hours and the three printed lines are on the page. A handwritten margin note is not.
+
+### HT Nail Bar
+
+Private preview for 331 Strander Blvd, from the card and `shops/20.json`. Hours are not printed. The card’s second location is shown as a line under the name. Call and Directions stay on Strander.

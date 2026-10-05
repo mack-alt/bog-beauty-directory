@@ -12,7 +12,7 @@ If `bookingUrl` is empty, Book still scrolls to “Request a booking” and show
 
 1. Photograph the business card (and a menu, if they hand you one). Read the name, phone, address, hours, and any offer printed on it.
 2. Copy `sites/fancy-nails/` to `sites/<slug>/`. Use the directory slug when the shop is already listed, such as `fancy-nails` from `shops/17.json`.
-3. Edit `site.json` (see the field list below). Change the `<title>` in `index.html` to the shop name. Leave `<meta name="robots" content="noindex">` as it is.
+3. Edit `site.json` (see the field list below). Change the `<title>` in `index.html` to the shop name. Leave `<meta name="robots" content="noindex, nofollow">` as it is.
 4. Publish to `main`. GitHub Pages serves the folder at `https://mack-alt.github.io/bog-beauty-directory/sites/<slug>/`.
 5. On a phone, test Call, Text, Directions, and Book. Book should land on “Request a booking” and show the shared form. A test submit should show up in HighLevel for that shop.
 

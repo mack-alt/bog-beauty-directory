@@ -2,5 +2,6 @@
 # Google fetches robots.txt from the domain root, not from a project subpath.
 User-agent: *
 Allow: /
+Disallow: /bog-beauty-directory/sites/
 
 Sitemap: https://mack-alt.github.io/bog-beauty-directory/sitemap.xml
