@@ -17,7 +17,7 @@
   "tiktok": null,
   "facebook": null,
   "email": null,
-  "bookingUrl": null,
+  "bookingUrl": "https://booking.gocheckin.net/v2/18076",
   "services": [
     "Manicure — ask for price",
     "Pedicure — ask for price",
@@ -50,7 +50,7 @@
     "showPhotos": false,
     "showServices": true,
     "showHours": true,
-    "showBooking": false,
+    "showBooking": true,
     "showWebsite": false,
     "showInstagram": false,
     "showIg": false,

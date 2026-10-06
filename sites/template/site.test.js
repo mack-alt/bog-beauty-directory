@@ -180,7 +180,7 @@ walk(root, []).forEach(function (file) {
   assert.ok(!/\bAI\b/.test(text), "banned wording in " + file);
 });
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "diamond-nails", "tn-hair-salon"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "tn-hair-salon"].forEach(function (slug) {
   const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(/noindex,\s*nofollow/.test(html), slug + " noindex");
@@ -204,7 +204,8 @@ walk(root, []).forEach(function (file) {
 const ownBook = {
   "jerrys-barbershop": "https://jerrybarbershop.glossgenius.com/booking-flow",
   "ht-nail-bar": "https://booking.gocheckin.net/v2/13594",
-  "beauty-wave": "https://beauty-wave.square.site/s/appointments"
+  "beauty-wave": "https://beauty-wave.square.site/s/appointments",
+  "diamond-nails": "https://booking.gocheckin.net/v2/18076"
 };
 Object.keys(ownBook).forEach(function (slug) {
   const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");

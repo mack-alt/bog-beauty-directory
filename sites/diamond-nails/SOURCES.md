@@ -10,7 +10,7 @@ Private preview. Nothing on the page was guessed. No card photo was in this batc
 | Sunday: call to confirm | Yes | Visit brief. The shop’s own site says Sunday 10am–4pm. A place record, loc8nearme, and BestProsInTown say 10am–5pm. The page does not pick one. On Sunday the badge says “Call to confirm” and does not say open or closed |
 | Service names | Yes, each “ask for price” | Names on the shop’s own service page, fetched Oct 5, 2026. Dollar amounts on that page are from a 2023 footer, so they are not shown |
 | Photos | Yes, tagged Sample photo | Pexels nail photos already credited in `PHOTO_CREDITS.md`. They are not photos of this shop |
-| Booking form | Yes | Shared HighLevel form. The page adds `shop_slug=diamond-nails` |
+| Book button | Yes | Kenny confirmed the shop's GoCheckin page: https://booking.gocheckin.net/v2/18076. Not the shared form |
 
 ## Checked and not used
 
