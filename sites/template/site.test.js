@@ -180,7 +180,7 @@ walk(root, []).forEach(function (file) {
   assert.ok(!/\bAI\b/.test(text), "banned wording in " + file);
 });
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "diamond-nails", "tn-hair-salon"].forEach(function (slug) {
   const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(/noindex,\s*nofollow/.test(html), slug + " noindex");
@@ -194,6 +194,26 @@ walk(root, []).forEach(function (file) {
     site.bookingSrc(json.bookingUrl, slug),
     json.bookingUrl + "?shop_slug=" + slug
   );
+  assert.strictEqual(site.isLeadForm(json.bookingUrl), true);
+  (json.photos || []).forEach(function (photo) {
+    assert.ok(/\.webp(\?|$)/.test(photo.src), slug + " webp");
+    assert.ok(photo.alt, slug + " alt");
+  });
+});
+
+const ownBook = {
+  "jerrys-barbershop": "https://jerrybarbershop.glossgenius.com/",
+  "ht-nail-bar": "https://booking.gocheckin.net/v2/13594",
+  "beauty-wave": "https://beauty-wave.square.site/s/appointments"
+};
+Object.keys(ownBook).forEach(function (slug) {
+  const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");
+  const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
+  assert.ok(/noindex,\s*nofollow/.test(html), slug + " noindex");
+  assert.strictEqual(json.bookingUrl, ownBook[slug], slug + " bookingUrl");
+  assert.strictEqual(site.bookTarget(json.bookingUrl), ownBook[slug]);
+  assert.strictEqual(site.isLeadForm(json.bookingUrl), false);
+  assert.ok(!/[?&]shop_slug=/.test(site.bookTarget(json.bookingUrl)), slug + " shop_slug");
   (json.photos || []).forEach(function (photo) {
     assert.ok(/\.webp(\?|$)/.test(photo.src), slug + " webp");
     assert.ok(photo.alt, slug + " alt");
@@ -265,7 +285,7 @@ assert.ok(/Second location/.test(ht.extra));
 const nail = JSON.parse(fs.readFileSync(path.join(root, "my-nail-area", "site.json"), "utf8"));
 const nailHtml = fs.readFileSync(path.join(root, "my-nail-area", "index.html"), "utf8");
 assert.ok(/noindex,\s*nofollow/.test(nailHtml), "my-nail-area noindex");
-assert.strictEqual(nail.bookingUrl, "https://www.vagaro.com/mynailarea");
+assert.strictEqual(nail.bookingUrl, "https://www.vagaro.com/mynailarea/services");
 assert.strictEqual(site.bookTarget(nail.bookingUrl), nail.bookingUrl);
 assert.strictEqual(site.isLeadForm(nail.bookingUrl), false);
 assert.ok(!/leadconnectorhq/.test(JSON.stringify(nail)));

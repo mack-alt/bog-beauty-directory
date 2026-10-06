@@ -330,6 +330,7 @@ function shopPage(item, slug) {
   const prettyPhone = formatPhone(item.phone);
   const site = websiteUrl(item.website);
   const photo = websiteUrl(item.photoUrl);
+  const book = item.showBooking === true ? websiteUrl(item.bookingUrl) : "";
   const facts = [
     '<section id="shop-static" class="shop-static">',
     '<p class="brand-mark">Blades of Grass</p>',
@@ -338,6 +339,7 @@ function shopPage(item, slug) {
     item.address ? "<p>" + esc(item.address) + "</p>" : "",
     tel ? '<p><a href="tel:' + esc(tel) + '">' + esc(prettyPhone || tel) + "</a></p>" : "",
     site ? '<p><a href="' + esc(site) + '">' + esc(site) + "</a></p>" : "",
+    ...(book ? ['<p><a href="' + esc(book) + '">' + esc(book) + "</a></p>"] : []),
     trust ? "<p>" + esc(trust) + "</p>" : "",
     '<p><a href="index.html">Back to directory</a></p>',
     "</section>",
