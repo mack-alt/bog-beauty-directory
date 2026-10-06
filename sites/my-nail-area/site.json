@@ -1,0 +1,54 @@
+{
+  "name": "My Nail Area",
+  "directoryUrl": "../../shop/my-nail-area/",
+  "phone": "(253) 765-8036",
+  "address": "275 SW 41st St, Renton, WA 98057",
+  "hours": "Monday 9:00am–6:30pm; Tuesday 9:00am–6:00pm; Wednesday 9:00am–6:30pm; Thursday 9:00am–6:00pm; Friday 9:00am–7:00pm; Sat–Sun closed",
+  "tagline": "Russian Manicure & Builder gel Studio",
+  "offer": "After 6 services, enjoy 20% off your 7th visit.",
+  "offerConfirmed": true,
+  "priceNote": "Prices from the shop's Vagaro page; please confirm when booking.",
+  "services": [
+    { "name": "Build up a broken nail", "price": "$25" },
+    { "name": "Short nails hard gel reapplication, no design, base gel color", "price": "Starting at $110" },
+    { "name": "Medium nails hard gel reapplication, no design, base gel color", "price": "Starting at $125" },
+    { "name": "Short full set hard gel extensions, hard gel or poly gel. Add colour or design (additional price)", "price": "Starting at $150" },
+    { "name": "Medium full set hard gel extensions, no design. Add colour or design (additional price)", "price": "Starting at $165" },
+    { "name": "E-file manicure", "price": "$85" },
+    { "name": "Men manicure", "price": "Starting at $100" },
+    { "name": "E-file manicure and gel removal", "price": "$110" },
+    { "name": "Acrylic removal", "price": "$50" },
+    { "name": "Gel removal", "price": "Starting at $40" },
+    { "name": "E-file dry Russian-style pedicure, no polish", "price": "Starting at $100" },
+    { "name": "Gel color polish E-file dry pedicure", "price": "Starting at $125" },
+    { "name": "Gel colour on toenails and cuticle maintenance, E-file, no feet maintenance", "price": "Starting at $100" },
+    { "name": "Pedicure KART, no gel polish", "price": "Starting at $120" },
+    { "name": "Pedicure KART with gel polish", "price": "$150" },
+    { "name": "Pedicure for men KART", "price": "Starting at $120" }
+  ],
+  "links": [
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/my_nail_area/"
+    },
+    {
+      "label": "Google reviews",
+      "href": "https://www.google.com/maps/search/?api=1&query=My%20Nail%20Area&query_place_id=ChIJNwuMOAddkFQRyZWXdltQZ3U"
+    }
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/nails-1.webp",
+      "alt": "Sample photo of a manicure"
+    },
+    {
+      "src": "../../images/styles/cards/nails-2.webp",
+      "alt": "Sample photo of nail art"
+    },
+    {
+      "src": "../../images/styles/cards/nails-3.webp",
+      "alt": "Sample photo of nail extensions"
+    }
+  ],
+  "bookingUrl": "https://www.vagaro.com/mynailarea"
+}
