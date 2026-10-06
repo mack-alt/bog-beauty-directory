@@ -256,7 +256,7 @@ assert.ok(/Disallow:\s*\/bog-beauty-directory\/sites\//.test(robots), "robots di
 const diamond = JSON.parse(fs.readFileSync(path.join(root, "diamond-nails", "site.json"), "utf8"));
 assert.ok(!diamond.tagline && !diamond.walkIns && !diamond.links);
 assert.ok(!/\$/.test(JSON.stringify(diamond.services)));
-assert.ok(/call to confirm/i.test(diamond.hours));
+assert.strictEqual(diamond.hours, "Mon\u2013Fri 10:00am\u20137:00pm; Sat 10:00am\u20136:00pm; Sun 10:00am\u20134:00pm");
 const diamondMenu = site.menuHtml(site.serviceList(diamond.services));
 assert.ok(/See all services \(27\)/.test(diamondMenu));
 assert.ok(diamondMenu.indexOf("Classic Manicure") < diamondMenu.indexOf("Deluxe Pedicure"));
