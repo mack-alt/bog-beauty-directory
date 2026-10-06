@@ -34,7 +34,7 @@ Private preview for 331 Strander Blvd, from the card and `shops/20.json`. Hours 
 
 ### Diamond Nails
 
-Private preview from the visit brief. Sunday says “call to confirm” and is not marked open or closed. Service names only. The shop website is not linked.
+Private preview from the visit brief. Hours are Mon–Fri 10:00am–7:00pm, Sat 10:00am–6:00pm, Sun 10:00am–4:00pm. Service names only. The shop website is not linked.
 
 ### Beauty Wave
 
