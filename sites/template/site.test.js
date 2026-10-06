@@ -202,7 +202,7 @@ walk(root, []).forEach(function (file) {
 });
 
 const ownBook = {
-  "jerrys-barbershop": "https://jerrybarbershop.glossgenius.com/",
+  "jerrys-barbershop": "https://jerrybarbershop.glossgenius.com/booking-flow",
   "ht-nail-bar": "https://booking.gocheckin.net/v2/13594",
   "beauty-wave": "https://beauty-wave.square.site/s/appointments"
 };
