@@ -46,6 +46,14 @@ assert.strictEqual(
   "https://forms.example/widget/abc?uid=1&shop_slug=kims-lashes-beauty-salon"
 );
 assert.strictEqual(site.bookingSrc("", "fancy-nails"), "");
+assert.strictEqual(site.isLeadForm("https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"), true);
+assert.strictEqual(site.isLeadForm("https://www.vagaro.com/mynailarea"), false);
+assert.strictEqual(site.bookTarget("https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"), "");
+assert.strictEqual(site.bookTarget("https://www.vagaro.com/mynailarea"), "https://www.vagaro.com/mynailarea");
+assert.strictEqual(site.bookTarget(""), "");
+site.LOCALES.forEach(function (code) {
+  assert.ok(site.COPY.bookOut[code], code + " book out");
+});
 
 assert.strictEqual(site.safeDirectory("../../shop/fancy-nails/"), "../../shop/fancy-nails/");
 assert.strictEqual(
@@ -206,7 +214,7 @@ assert.ok(!/\.gift\s*\{[^}]*position:\s*(?:fixed|sticky)/.test(css), "gift banne
 assert.ok(/class="gift"/.test(js), "gift banner markup");
 assert.ok(/safeDirectory\(/.test(js), "listing url check");
 assert.ok(!/\.gift[^\{]*position:\s*(?:fixed|sticky)/.test(css));
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon", "my-nail-area"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(!json.motion && !json.animation, slug + " has no motion field");
 });
@@ -254,8 +262,31 @@ const ht = JSON.parse(fs.readFileSync(path.join(root, "ht-nail-bar", "site.json"
 assert.ok(!ht.tagline);
 assert.ok(/9:30am/.test(ht.hours));
 assert.ok(/Second location/.test(ht.extra));
+const nail = JSON.parse(fs.readFileSync(path.join(root, "my-nail-area", "site.json"), "utf8"));
+const nailHtml = fs.readFileSync(path.join(root, "my-nail-area", "index.html"), "utf8");
+assert.ok(/noindex,\s*nofollow/.test(nailHtml), "my-nail-area noindex");
+assert.strictEqual(nail.bookingUrl, "https://www.vagaro.com/mynailarea");
+assert.strictEqual(site.bookTarget(nail.bookingUrl), nail.bookingUrl);
+assert.strictEqual(site.isLeadForm(nail.bookingUrl), false);
+assert.ok(!/leadconnectorhq/.test(JSON.stringify(nail)));
+assert.ok(!nail.walkIns);
+assert.strictEqual(nail.offerConfirmed, true);
+assert.ok(/please confirm when booking/.test(nail.priceNote));
+assert.strictEqual(nail.links[1].href, "https://www.google.com/maps/search/?api=1&query=My%20Nail%20Area&query_place_id=ChIJNwuMOAddkFQRyZWXdltQZ3U");
+const nailMenu = site.menuHtml(site.serviceList(nail.services));
+assert.ok(/See all services \(16\)/.test(nailMenu));
+assert.ok(nailMenu.indexOf("E-file manicure") < nailMenu.indexOf("<details"));
+assert.ok(nailMenu.indexOf("<details") < nailMenu.indexOf("Men manicure"));
+assert.strictEqual(site.statusFor(nail.hours, at("2026-10-05T17:00:00Z")).open, true);
+assert.strictEqual(site.statusFor(nail.hours, at("2026-10-06T01:30:00Z")).open, false);
+assert.strictEqual(site.statusFor(nail.hours, at("2026-10-03T18:00:00Z")).open, false);
+assert.strictEqual(site.statusFor(nail.hours, at("2026-10-04T18:00:00Z")).open, false);
+(nail.photos || []).forEach(function (photo) {
+  assert.ok(/\.webp(\?|$)/.test(photo.src));
+  assert.ok(photo.alt);
+});
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon", "my-nail-area"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.strictEqual(json.directoryUrl, "../../shop/" + slug + "/", slug + " directoryUrl");
   assert.strictEqual(site.safeDirectory(json.directoryUrl), json.directoryUrl);
@@ -277,8 +308,11 @@ const kit = fs.readFileSync(path.join(root, "kit", "index.html"), "utf8");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "kit", "manifest.webmanifest"), "utf8"));
 assert.ok(/noindex,\s*nofollow/.test(kit), "kit noindex");
 assert.ok(kit.indexOf("<script") === -1, "kit has no script");
-assert.strictEqual((kit.match(/class="shop"/g) || []).length, 8);
-assert.strictEqual((kit.match(/sms:\?&amp;body=/g) || []).length, 8);
+assert.strictEqual((kit.match(/class="shop"/g) || []).length, 9);
+assert.strictEqual((kit.match(/sms:\?&amp;body=/g) || []).length, 9);
+assert.ok(kit.indexOf("TN Hair Salon") < kit.indexOf("My Nail Area"));
+assert.ok(kit.indexOf(">My Nail Area<") < kit.indexOf("HT Nail Bar"));
+assert.ok(kit.indexOf("sites%2Fmy-nail-area%2F") !== -1);
 assert.ok(kit.indexOf('href="../help/"') !== -1);
 assert.strictEqual(manifest.name, "Kenny's Gift Kit");
 assert.strictEqual(manifest.short_name, "Gift Kit");

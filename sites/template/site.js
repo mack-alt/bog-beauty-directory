@@ -138,6 +138,14 @@
       ko: "전화나 문자로 시간을 요청하세요.",
       th: "โทรหรือส่งข้อความเพื่อขอเวลา"
     },
+    bookOut: {
+      en: "This opens the shop's booking page.",
+      vi: "Nút này mở trang đặt lịch của tiệm.",
+      es: "Esto abre la página de reservas del local.",
+      zh: "这会打开店铺的预约页面。",
+      ko: "매장의 예약 페이지가 열립니다.",
+      th: "ปุ่มนี้เปิดหน้าจองของร้าน"
+    },
     skip: {
       en: "Skip to content",
       vi: "Bỏ qua, đến nội dung",
@@ -264,6 +272,23 @@
     var url = new URL(clean);
     url.searchParams.set("shop_slug", slug || "");
     return url.toString();
+  }
+
+  function isLeadForm(raw) {
+    var clean = formUrl(raw);
+    if (!clean) return false;
+    try {
+      var url = new URL(clean);
+      return url.hostname === "api.leadconnectorhq.com" && /\/widget\/form\//.test(url.pathname);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function bookTarget(raw) {
+    var clean = formUrl(raw);
+    if (!clean || isLeadForm(raw)) return "";
+    return clean;
   }
 
   function telDigits(phone) {
@@ -572,7 +597,8 @@
     var offer = String(shop.offer || "").trim();
     var offerSample = offer && shop.offerConfirmed !== true;
     var slug = slugFromPath(location.pathname);
-    var frame = bookingSrc(shop.bookingUrl, slug);
+    var external = bookTarget(shop.bookingUrl);
+    var frame = external ? "" : (isLeadForm(shop.bookingUrl) ? bookingSrc(shop.bookingUrl, slug) : "");
     var lead = photos[0];
     var rest = offer && lead ? photos.slice(1) : photos;
 
@@ -636,15 +662,20 @@
     var dirBtn = maps
       ? '<a href="' + esc(maps) + '" target="_blank" rel="noopener noreferrer">' + esc(t("directions")) + "</a>"
       : "";
-    var bookBtn = '<a href="#booking">' + esc(t("book")) + "</a>";
+    var bookBtn = external
+      ? '<a href="' + esc(external) + '" target="_blank" rel="noopener noreferrer">' + esc(t("book")) + "</a>"
+      : '<a href="#booking">' + esc(t("book")) + "</a>";
 
+    var bookingBody = frame
+      ? '<iframe class="booking-frame" title="' + esc(t("request")) + '" src="' + esc(frame) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'
+      : external
+        ? "<p>" + esc(t("bookOut")) + '</p><div class="actions"><a class="btn" href="' + esc(external) + '" target="_blank" rel="noopener noreferrer">' + esc(t("book")) + "</a></div>"
+        : "<p>" + esc(t("bookFallback")) + "</p>" + (phone ? '<div class="actions"><a class="btn" href="tel:' + esc(phone) + '">' + esc(t("call")) + '</a><a class="btn" href="sms:' + esc(phone) + '">' + esc(t("text")) + "</a></div>" : "");
     var booking = [
       '<section id="booking" class="booking" tabindex="-1">',
       "<h2>" + esc(t("request")) + "</h2>",
       bookAlt,
-      frame
-        ? '<iframe class="booking-frame" title="' + esc(t("request")) + '" src="' + esc(frame) + '" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>'
-        : "<p>" + esc(t("bookFallback")) + "</p>" + (phone ? '<div class="actions"><a class="btn" href="tel:' + esc(phone) + '">' + esc(t("call")) + '</a><a class="btn" href="sms:' + esc(phone) + '">' + esc(t("text")) + "</a></div>" : ""),
+      bookingBody,
       "</section>"
     ].join("");
 
@@ -786,6 +817,8 @@
     slugFromPath: slugFromPath,
     formUrl: formUrl,
     bookingSrc: bookingSrc,
+    isLeadForm: isLeadForm,
+    bookTarget: bookTarget,
     telDigits: telDigits,
     splitHours: splitHours,
     statusFor: statusFor,
