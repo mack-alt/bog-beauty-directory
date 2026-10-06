@@ -273,4 +273,20 @@ assert.ok(!/innerHTML/.test(help), "help does not inject html");
 assert.ok(/@media print/.test(help), "print layout");
 assert.ok(help.indexOf("/sites/") === -1, "help does not link a sample");
 
+const kit = fs.readFileSync(path.join(root, "kit", "index.html"), "utf8");
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "kit", "manifest.webmanifest"), "utf8"));
+assert.ok(/noindex,\s*nofollow/.test(kit), "kit noindex");
+assert.ok(kit.indexOf("<script") === -1, "kit has no script");
+assert.strictEqual((kit.match(/class="shop"/g) || []).length, 8);
+assert.strictEqual((kit.match(/sms:\?&amp;body=/g) || []).length, 8);
+assert.ok(kit.indexOf('href="../help/"') !== -1);
+assert.strictEqual(manifest.name, "Kenny's Gift Kit");
+assert.strictEqual(manifest.short_name, "Gift Kit");
+assert.strictEqual(manifest.display, "standalone");
+assert.strictEqual(manifest.start_url, "/bog-beauty-directory/sites/kit/");
+assert.strictEqual(manifest.scope, "/bog-beauty-directory/sites/kit/");
+assert.ok(fs.existsSync(path.join(root, "kit", "icon-192.png")));
+assert.ok(fs.existsSync(path.join(root, "kit", "icon-512.png")));
+assert.ok(fs.existsSync(path.join(root, "kit", "apple-touch-icon.png")));
+
 console.log("site template tests passed");
