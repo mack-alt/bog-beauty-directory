@@ -47,7 +47,7 @@
     "showRating": false,
     "showPhotos": false,
     "showServices": false,
-    "showBooking": false,
+    "showBooking": true,
     "showWebsite": false,
     "showInstagram": false,
     "showIg": false,

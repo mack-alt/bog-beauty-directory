@@ -13,7 +13,7 @@ Private preview. Nothing on the page was guessed.
 | Instagram | Yes | https://www.instagram.com/my_nail_area/ in `shops/13.json`, and “Find us on Instagram @my_nail_area” on their Vagaro page |
 | Google reviews link | Yes, no stars or counts | `shops/13.json` `googleReviewsUrl` |
 | Photos | Yes, tagged Sample photo | Nail photos already used on the other sample sites. They are not photos of this shop |
-| Book button | Yes, their Vagaro page | https://www.vagaro.com/mynailarea — the `bookingUrl` in `shops/13.json`, and the page that loaded their studio. Not the shared form |
+| Book button | Yes, their Vagaro services page | https://www.vagaro.com/mynailarea/services — the sample `bookingUrl`. Not the shared form |
 
 ## Checked and not used
 
