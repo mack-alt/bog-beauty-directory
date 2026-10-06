@@ -172,7 +172,7 @@ walk(root, []).forEach(function (file) {
   assert.ok(!/\bAI\b/.test(text), "banned wording in " + file);
 });
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
   const html = fs.readFileSync(path.join(root, slug, "index.html"), "utf8");
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(/noindex,\s*nofollow/.test(html), slug + " noindex");
@@ -206,7 +206,7 @@ assert.ok(!/\.gift\s*\{[^}]*position:\s*(?:fixed|sticky)/.test(css), "gift banne
 assert.ok(/class="gift"/.test(js), "gift banner markup");
 assert.ok(/safeDirectory\(/.test(js), "listing url check");
 assert.ok(!/\.gift[^\{]*position:\s*(?:fixed|sticky)/.test(css));
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.ok(!json.motion && !json.animation, slug + " has no motion field");
 });
@@ -241,6 +241,12 @@ const waveMenu = site.menuHtml(site.serviceList(wave.services));
 assert.ok(/See all services \(10\)/.test(waveMenu));
 assert.ok(waveMenu.indexOf("Hair cut only") < waveMenu.indexOf("<details"));
 assert.ok(waveMenu.indexOf("<details") < waveMenu.indexOf("Perm spiral"));
+const tn = JSON.parse(fs.readFileSync(path.join(root, "tn-hair-salon", "site.json"), "utf8"));
+assert.ok(!tn.links);
+assert.ok(!/tnhairsaloon/.test(JSON.stringify(tn)));
+assert.strictEqual(tn.priceNote, "Prices from the shop's card; please confirm when booking.");
+assert.strictEqual(site.statusFor(tn.hours, at("2026-10-05T18:00:00Z")).open, true);
+assert.strictEqual(site.statusFor(tn.hours, at("2026-10-04T20:00:00Z")).open, true);
 assert.strictEqual(wave.links[0].href, "https://beauty-wave.square.site/");
 assert.ok(/booking page/i.test(wave.priceNote));
 assert.ok(!/outlook/i.test(JSON.stringify(wave)));
@@ -249,7 +255,7 @@ assert.ok(!ht.tagline);
 assert.ok(/9:30am/.test(ht.hours));
 assert.ok(/Second location/.test(ht.extra));
 
-["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave"].forEach(function (slug) {
+["queenie-nails-and-spa", "kims-lashes-beauty-salon", "fancy-nails", "jerrys-barbershop", "ht-nail-bar", "diamond-nails", "beauty-wave", "tn-hair-salon"].forEach(function (slug) {
   const json = JSON.parse(fs.readFileSync(path.join(root, slug, "site.json"), "utf8"));
   assert.strictEqual(json.directoryUrl, "../../shop/" + slug + "/", slug + " directoryUrl");
   assert.strictEqual(site.safeDirectory(json.directoryUrl), json.directoryUrl);

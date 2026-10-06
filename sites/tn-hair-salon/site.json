@@ -1,0 +1,35 @@
+{
+  "name": "TN Hair Salon",
+  "directoryUrl": "../../shop/tn-hair-salon/",
+  "phone": "(425) 656-0753",
+  "address": "330 SW 43rd St #H, Renton, WA 98057",
+  "hours": "Mon–Sat 9:00am–7:00pm; Sun 10:00am–6:00pm",
+  "tagline": "Family Hair Care • Wax • Facial",
+  "walkIns": "Walk-ins welcome",
+  "priceNote": "Prices from the shop's card; please confirm when booking.",
+  "services": [
+    { "name": "Men's cut", "price": "$8" },
+    { "name": "Women's cut", "price": "$12 & up" },
+    { "name": "Eyebrow wax", "price": "$8" },
+    { "name": "Facial", "price": "$35" },
+    { "name": "Partial highlight", "price": "$45 & up" },
+    { "name": "Makeup/updo", "price": "$30" },
+    { "name": "Perm", "price": "" },
+    { "name": "Color", "price": "" }
+  ],
+  "photos": [
+    {
+      "src": "../../images/styles/cards/hair-1.webp",
+      "alt": "Sample photo of a hair appointment"
+    },
+    {
+      "src": "../../images/styles/cards/hair-2.webp",
+      "alt": "Sample photo of a hairstylist with a client"
+    },
+    {
+      "src": "../../images/styles/cards/hair-3.webp",
+      "alt": "Sample photo of a haircut"
+    }
+  ],
+  "bookingUrl": "https://api.leadconnectorhq.com/widget/form/Bi8NlF4wVCXBNGLHlYpd"
+}
