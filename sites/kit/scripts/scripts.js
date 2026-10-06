@@ -201,6 +201,37 @@
           ]
         },
         {
+          id: "doesnt-want-a-website",
+          title: "She doesn't want a website (but hers could use fresh eyes)",
+          from: "5. She doesn't want a website (but hers could use fresh eyes)",
+          next: "big-question",
+          blocks: [
+            {
+              say: "When: she says no to a new site, and you've checked that her current site could use an update."
+            },
+            {
+              cue: "1. Respect the no",
+              say: "Totally fair, you've already got a site. Can I leave you something small anyway?"
+            },
+            {
+              cue: "2. Give the gift (hand her the card or text it)",
+              say: "I took a look and wrote down 3 quick things that could bring in more bookings. It's free, and you or your web person can do them."
+            },
+            {
+              cue: "3. Big Question",
+              say: "\"Of those 3, which one bugs you most?\" Or: \"What do you wish your site did better?\""
+            },
+            {
+              cue: "4. Leave with a day",
+              say: "I'll swing by Thursday to see if any of it helped.",
+              tips: [
+                "Common fixes to look for: Book button hard to find, old hours or prices, slow or broken on a phone, no photos of her work, no way to text the shop (that one sets up Visit 2). She keeps full control of her site.",
+                "before the visit, write the 3 fixes on a \"3 things I fixed for you\" style note (see gift-picker.md). Don't invent results."
+              ]
+            }
+          ]
+        },
+        {
           id: "no-website",
           title: "No website yet",
           from: "5. How does it go live? — I don't have a website",
