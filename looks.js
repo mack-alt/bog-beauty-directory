@@ -355,8 +355,10 @@
     if (parts.length < 2 || !parts.every(function (part) { return day.test(part); })) return null;
     return parts.map(function (part) {
       var split = part.match(/^(.+?)\s+(\d.*|closed.*)$/i);
-      if (!split) return { label: part, value: "" };
-      return { label: split[1].trim(), value: split[2].trim() };
+      if (split) return { label: split[1].trim(), value: split[2].trim() };
+      var note = part.match(/^((?:mon|tue|wed|thu|fri|sat|sun)[a-z]*(?:\s*[–—-]\s*(?:mon|tue|wed|thu|fri|sat|sun)[a-z]*)?)\s+(.+)$/i);
+      if (note) return { label: note[1].trim(), value: note[2].trim() };
+      return { label: part, value: "" };
     });
   }
 

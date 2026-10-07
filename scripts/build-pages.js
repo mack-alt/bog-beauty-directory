@@ -18,7 +18,7 @@ const ASSET = {
   looksCss: "20260926i",
   draft: "20261007a",
   phrases: "20260926x",
-  looks: "20260926y",
+  looks: "20261007b",
   shop: "20260926y",
 };
 
