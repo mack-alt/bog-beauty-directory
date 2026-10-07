@@ -512,7 +512,8 @@
             },
             {
               cue: "The guarantee",
-              say: "Month one is guaranteed. If you're not happy, you get your money back or a credit."
+              say: "First-month satisfaction guarantee: if you're not happy in your first month, you get your money back or a credit toward another service. We'll ask for a quick chance to hear your feedback, but it's not required.",
+              tips: ["No conditions: the refund or credit doesn't depend on the tune-ups, attendance, or feedback. The four short tune-ups (Setup, Week 1, Week 2, Week 4) are something we promise."]
             },
             {
               cue: "If she asks about a yearly price",
@@ -622,7 +623,7 @@
           blocks: [
             {
               cue: "Is there a contract? Can I cancel?",
-              say: "It's month to month. And month one is guaranteed. If you're not happy, you get your money back or a credit.",
+              say: "It's month to month. And if you're not happy in your first month, you get your money back or a credit toward another service. We'll ask for a quick chance to hear your feedback, but it's not required.",
               tips: [
                 "Month to month is set. Cancel details beyond that (like notice) aren't, so don't promise more than that.",
                 "Say \"Let me check and tell you.\""
@@ -689,7 +690,7 @@
           blocks: [
             {
               cue: "It's too expensive.",
-              say: "Fair question. What's one regular client worth to you in a year? If this keeps one from going somewhere else, does it pay for itself? And month one is guaranteed."
+              say: "Fair question. What's one regular client worth to you in a year? If this keeps one from going somewhere else, does it pay for itself? And if you're not happy in your first month, you get your money back or a credit toward another service."
             }
           ]
         },
