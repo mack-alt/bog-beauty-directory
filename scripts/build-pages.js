@@ -16,7 +16,7 @@ const SITE = "https://mack-alt.github.io/bog-beauty-directory";
 const ASSET = {
   css: "20260919g",
   looksCss: "20260926i",
-  draft: "20260926y",
+  draft: "20261007a",
   phrases: "20260926x",
   looks: "20260926y",
   shop: "20260926y",
