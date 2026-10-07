@@ -439,7 +439,7 @@ html[data-style] body.has-shop-dock .contact-phone { display: none; }
 html[data-style] .look-contact:not(:has(p:not(.contact-phone))) { display: none; }
 
 html[data-style] body.has-shop-dock .look-primary,
-html[data-style] body.shop-page .look-more { display: none; }
+html[data-style] body.has-shop-dock .look-more { display: none; }
 
 html[data-style] .shop-dock {
   position: fixed;

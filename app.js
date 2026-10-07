@@ -104,9 +104,11 @@
   }
 
   function normalizePhone(phone) {
-    if (!phone) return "";
+    if (phone == null || String(phone).trim() === "") return "";
     const digits = String(phone).replace(/[^\d+]/g, "");
-    return digits.startsWith("+") ? digits : digits.replace(/^1?/, "+1");
+    const bare = digits.replace(/\D/g, "");
+    if (!bare) return "";
+    return digits.startsWith("+") ? "+" + bare : digits.replace(/^1?/, "+1");
   }
 
   function formatPhone(phone) {
