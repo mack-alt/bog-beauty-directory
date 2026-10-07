@@ -167,7 +167,7 @@
                 "Your phone: 206-743-6296 · Email: mack@lovebog.com",
                 "Gift Kit page (on your phone): https://mack-alt.github.io/bog-beauty-directory/sites/kit/",
                 "Owner checklist (\"Help make this better\"): https://mack-alt.github.io/bog-beauty-directory/sites/help/",
-                "Book a time with Kenny (Sample Studio demo booking page, matches the demo line 206-408-3794): https://api.leadconnectorhq.com/widget/bookings/sample-studio-demo"
+                "Book a time with Kenny: https://api.leadconnectorhq.com/widget/bookings/bog-front-desk-demo"
               ]
             }
           ]
@@ -727,7 +727,7 @@
             {
               cue: "I need to ask my husband / partner.",
               say: "Of course. Can I come back when he's here? What day works for you both? Or pick a time here.",
-              tips: ["Book a time with Kenny (Sample Studio demo booking page, matches the demo line 206-408-3794): https://api.leadconnectorhq.com/widget/bookings/sample-studio-demo"]
+              tips: ["Book a time with Kenny: https://api.leadconnectorhq.com/widget/bookings/bog-front-desk-demo"]
             }
           ]
         },
