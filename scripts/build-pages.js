@@ -19,7 +19,7 @@ const ASSET = {
   draft: "20261007a",
   phrases: "20260926x",
   looks: "20261007b",
-  shop: "20260926y",
+  shop: "20261007c",
 };
 
 const CATS = {

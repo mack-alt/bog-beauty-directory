@@ -79,6 +79,18 @@
     return digits.startsWith("+") ? "+" + bare : digits.replace(/^1?/, "+1");
   }
 
+  // A listing that sets sms uses that field for Text. An empty sms hides Text.
+  // Listings that omit sms keep a Text link from the phone number.
+  function textNumber(shop) {
+    if (!shop) return "";
+    if (Object.prototype.hasOwnProperty.call(shop, "sms")) {
+      if (!hasValue(shop.sms)) return "";
+      return normalizePhone(shop.sms);
+    }
+    if (!hasValue(shop.phone)) return "";
+    return normalizePhone(shop.phone);
+  }
+
   function formatPhone(phone) {
     if (!phone) return "";
     const d = String(phone).replace(/\D/g, "");
@@ -883,18 +895,17 @@
       actionsEl.appendChild(a);
     }
 
-    if (hasValue(shop.phone)) {
-      const tel = normalizePhone(shop.phone);
-      if (tel) {
-        const callHref = "tel:" + tel;
-        const textHref = "sms:" + tel;
-        if (shop.textFirst === true) {
-          appendAction(textHref, t("text"), "btn-primary");
-          appendAction(callHref, t("call"), "btn-secondary");
-        } else {
-          appendAction(callHref, t("call"), "btn-primary");
-          appendAction(textHref, t("text"), "btn-secondary");
-        }
+    const tel = hasValue(shop.phone) ? normalizePhone(shop.phone) : "";
+    const textTel = textNumber(shop);
+    if (tel || textTel) {
+      const callHref = tel ? "tel:" + tel : "";
+      const textHref = textTel ? "sms:" + textTel : "";
+      if (shop.textFirst === true && textHref) {
+        appendAction(textHref, t("text"), "btn-primary");
+        appendAction(callHref, t("call"), "btn-secondary");
+      } else {
+        appendAction(callHref, t("call"), "btn-primary");
+        appendAction(textHref, t("text"), "btn-secondary");
       }
     }
     appendAction(mapHref(shop), t("directions"), "btn-secondary", { external: true });
@@ -1159,10 +1170,9 @@
       dock.appendChild(a);
     }
     const tel = hasValue(shop.phone) ? normalizePhone(shop.phone) : "";
-    if (tel) {
-      addDock("sms:" + tel, t("text"), false, false);
-      addDock("tel:" + tel, t("call"), false, false);
-    }
+    const textTel = textNumber(shop);
+    if (textTel) addDock("sms:" + textTel, t("text"), false, false);
+    if (tel) addDock("tel:" + tel, t("call"), false, false);
     const websiteHref = httpHref(shop.website);
     const bookingHref = httpHref(shop.bookingUrl) || (toggleOn(toggles, "showBooking") ? websiteHref : "");
     if (toggleOn(toggles, "showBooking") && isUsableHref(bookingHref)) {
@@ -1312,14 +1322,15 @@
       mountDraftShop(gallery, shop, toggles);
     } else if (look === "1" && hasValue(shop.phone)) {
       const tel = normalizePhone(shop.phone);
-      const textFirst = shop.textFirst === true;
+      const textTel = textNumber(shop);
+      const useText = shop.textFirst === true && !!textTel;
       const floater = document.createElement("a");
       floater.id = "look-float";
       floater.className = "float-contact";
-      floater.href = (textFirst ? "sms:" : "tel:") + tel;
+      floater.href = (useText ? "sms:" : "tel:") + (useText ? textTel : tel);
       floater.innerHTML =
         '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3.8h3l1.2 2.8-1.8 1.1a11 11 0 0 0 5 5l1.1-1.8 2.8 1.2v3A1.8 1.8 0 0 1 16.6 20 14.2 14.2 0 0 1 4 7.4 1.8 1.8 0 0 1 5.8 5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
-      floater.appendChild(document.createTextNode(textFirst ? t("text") : t("call")));
+      floater.appendChild(document.createTextNode(useText ? t("text") : t("call")));
       document.body.appendChild(floater);
     }
   }
