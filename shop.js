@@ -72,9 +72,11 @@
   }
 
   function normalizePhone(phone) {
-    if (!phone) return "";
+    if (!hasValue(phone)) return "";
     const digits = String(phone).replace(/[^\d+]/g, "");
-    return digits.startsWith("+") ? digits : digits.replace(/^1?/, "+1");
+    const bare = digits.replace(/\D/g, "");
+    if (!bare) return "";
+    return digits.startsWith("+") ? "+" + bare : digits.replace(/^1?/, "+1");
   }
 
   function formatPhone(phone) {
@@ -509,7 +511,7 @@
 
   /** Basics-safe link-out. Not a SHELF toggle — show when place id or URL is present. */
   function googleReviewsHref(shop) {
-    const explicit = httpHref(shop && shop.googleReviewsUrl) || httpHref(shop && shop.googleMapsUrl);
+    const explicit = httpHref(shop && shop.googleReviewsUrl);
     if (explicit) return explicit;
     const placeId = shop && shop.googlePlaceId;
     if (!hasValue(placeId)) return "";
