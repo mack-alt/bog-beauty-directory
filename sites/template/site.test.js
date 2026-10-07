@@ -358,6 +358,8 @@ assert.ok(!/\$397|first 90 days|\$2,970|in your language/.test(scriptsJs), "no o
 assert.ok(scriptsJs.indexOf("First-month satisfaction guarantee: if you're not happy in your first month, you get your money back or a credit toward another service. We'll ask for a quick chance to hear your feedback, but it's not required.") !== -1, "final guarantee wording");
 assert.ok(!/Month one is guaranteed|month one is guaranteed|To qualify for (a )?refund/.test(scriptsJs), "no old guarantee wording or refund conditions");
 assert.ok(!/\bAI\b/.test(scriptsJs), "no AI in shop-facing copy");
+assert.ok(scriptsJs.indexOf("https://api.leadconnectorhq.com/widget/bookings/sample-studio-demo") !== -1, "Sample Studio demo booking link");
+assert.ok(scriptsJs.indexOf("bog-front-desk-demo") === -1, "old booking link removed");
 assert.ok(scriptsJs.indexOf("Let me check that for your shop and tell you.") !== -1);
 assert.ok(scriptsJs.indexOf("Let me check and tell you.") !== -1);
 assert.ok(scriptsJs.indexOf('id: "guarantee"') === -1, "no empty guarantee scenario");
