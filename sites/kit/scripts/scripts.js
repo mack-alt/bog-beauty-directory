@@ -407,7 +407,7 @@
     {
       id: "visit-2",
       title: "Visit 2",
-      from: "8. Visit 2: the offer — opener, demo, founding offer",
+      from: "8. Visit 2: the offer — opener, demo, founding offer, annual option",
       scenarios: [
         {
           id: "return-opener",
@@ -483,7 +483,7 @@
               tips: [
                 "Not confirmed yet. Don't say yes.",
                 "whether texts can come from her own shop number isn't confirmed yet",
-                "Visit 2: don't say \"yes\" to what isn't set. Texting live date, her shop number, and cancel terms aren't confirmed yet. Say \"Let me check and tell you.\""
+                "Visit 2: don't say \"yes\" to what isn't set. Texting live date, her shop number, and cancel details (beyond month to month) aren't confirmed yet. Say \"Let me check and tell you.\""
               ]
             },
             {
@@ -499,23 +499,37 @@
         {
           id: "offer",
           title: "The $297 offer",
-          from: "8. Visit 2 — The founding offer + guarantee, close, and $297 a month or one time",
+          from: "8. Visit 2 — The founding offer, guarantee, annual option, close, and $297 a month or one time",
           blocks: [
             {
-              cue: "The founding offer + guarantee",
-              say: "Founding shops pay $297 a month for the first 90 days. I set it all up, in your language. If you're not happy after month one, you get your money back or a credit.",
+              cue: "The founding offer",
+              say: "My first ten founding shops get the full front desk for $297 a month plus tax, with that rate guaranteed for your first year. Calls and texts are included. It's month to month, and billing starts when your line goes live.",
               tips: [
-                "$297 a month, founding-shop price, first 90 days. Month one: happy, or money back or a credit.",
-                "$297 is the founding price for the first 90 days (later price not set)"
+                "First ten founding shops: $297 a month plus tax, rate guaranteed for her first 12 months while she stays subscribed. Month to month. Calls and texts included (no per-minute charges).",
+                "First charge starts the day her line goes live. No price increase during her first 12 months.",
+                "English only at launch. Don't promise other languages yet."
               ]
             },
             {
+              cue: "The guarantee",
+              say: "Month one is guaranteed. If you're not happy, you get your money back or a credit."
+            },
+            {
+              cue: "If she asks about a yearly price",
+              say: "After your first month, you can keep paying monthly or choose $2,500 plus tax for the next full year.",
+              tips: ["Her first month is billed separately at $297 plus tax. Then $2,500 plus tax covers the next 12 months, prepaid. Saves $1,064 before tax (12 × $297 = $3,564)."]
+            },
+            {
               cue: "$297 a month, or one time?",
-              say: "$297 a month. That's the founding price for the first 90 days."
+              say: "$297 a month plus tax, and that rate is guaranteed for your first year. It's month to month."
+            },
+            {
+              cue: "Do I pay extra for calls or texts?",
+              say: "No. Calls and texts are included. There are no per-minute charges."
             },
             {
               cue: "Close",
-              say: "Want to be one of the first shops on this street? I can set it up today, or come back Monday. Which is better?"
+              say: "I'm only taking ten founding shops at this price. Want to be one? Let's pick your setup day. It takes about 20 minutes."
             }
           ]
         }
@@ -524,7 +538,7 @@
     {
       id: "she-says-yes",
       title: "She says yes",
-      from: "8. Visit 2 — payment, charge day, Plan B, checklist, cancel; 9. Annual offer; 10. After 90 days",
+      from: "8. Visit 2 — payment, charge day, Plan B, checklist, cancel; 9. Annual option; 10. After the first year",
       scenarios: [
         {
           id: "yes-line",
@@ -534,7 +548,7 @@
           blocks: [
             {
               cue: "Card at the yes (taking payment)",
-              say: "Great! I'm sending you a secure payment link right now. It's $297 a month, charged automatically, and you get a receipt every time. Go ahead and tap it. I'll wait.",
+              say: "Great! I'm sending you a secure payment link right now. It's $297 a month plus tax, charged automatically, and you get a receipt every time. Go ahead and tap it. I'll wait.",
               tips: ["🆕 Until texting is approved, don't send the payment link at the yes. Book the setup day, use the Plan B line below, and send the link the day her text line goes live."]
             }
           ]
@@ -547,8 +561,8 @@
           blocks: [
             {
               cue: "Does this charge me today?",
-              say: "No. Your first charge starts the day your text line goes live.",
-              tips: ["first charge starts the day her text line goes live"]
+              say: "No. Your first charge starts the day your line goes live.",
+              tips: ["First charge starts the day her line goes live."]
             }
           ]
         },
@@ -575,7 +589,8 @@
           blocks: [
             {
               cue: "Then the checklist + shop profile",
-              say: "Last thing: the checklist. Your menu, hours, and your offer go into your site and your front desk. Your friends can test it before it goes live."
+              say: "Last thing: we'll take about 20 minutes together to gather your menu, hours, prices, and your offer, and I do the rest. We test your line before it goes live.",
+              tips: ["Booking goes into her calendar only after her calendar connection is verified."]
             },
             {
               cue: "If she'd rather pay by check or Zelle",
@@ -607,43 +622,43 @@
           blocks: [
             {
               cue: "Is there a contract? Can I cancel?",
-              say: "Month one is guaranteed. If you're not happy, you get your money back or a credit.",
+              say: "It's month to month. And month one is guaranteed. If you're not happy, you get your money back or a credit.",
               tips: [
-                "Cancel terms after month one aren't set yet. Don't promise more than that.",
-                "cancel terms aren't set, so only promise the month-one guarantee",
+                "Month to month is set. Cancel details beyond that (like notice) aren't, so don't promise more than that.",
                 "Say \"Let me check and tell you.\""
               ]
             }
           ]
         },
         {
-          id: "after-90-days",
-          title: "After 90 days",
-          from: "10. Top objections — What happens after 90 days?",
+          id: "after-first-year",
+          title: "After the first year",
+          from: "10. Top objections — What happens after the first year?",
           blocks: [
             {
-              cue: "What happens after 90 days?",
-              say: "Good question. You're a founding shop, so that's your price for the first 90 days. I'll sit down with you well before then and go over it.",
-              tips: ["Don't promise a day-91 price. It isn't set yet."]
+              cue: "What happens after the first year?",
+              say: "Good question. Your $297 rate is guaranteed for your first 12 months as long as you stay on. We'll give you at least 30 days' notice of your renewal rate before your founding monthly rate or prepaid annual term ends.",
+              tips: ["Don't promise a renewal price. It isn't set yet."]
             }
           ]
         },
         {
           id: "annual-offer",
-          title: "Annual offer",
-          from: "9. Annual offer",
+          title: "Annual option",
+          from: "9. Annual option (after her first month)",
           blocks: [
             {
               say: "Your first month: [real count] missed calls texted back, [real count] booked.",
-              tips: [
-                "Lead with the bonuses, not the discount.",
-                "Never make up results. Only quote a shop's real counts, with her OK."
-              ]
+              tips: ["Never make up results. Only quote a shop's real counts, with her OK."]
             },
-            { say: "Want to make it a full year? You get [bonus 1] and [bonus 2]." },
             {
-              say: "The year is $2,970. That's like 2 months free.",
-              tips: ["Use her real numbers only, even small ones. Bonuses aren't picked yet, so don't name one that isn't real. Don't promise any price after day 90. Just say \"founding price.\""]
+              say: "After your first month, you can keep paying monthly or choose $2,500 plus tax for the next full year.",
+              tips: ["Her first month is billed separately at $297 plus tax. The $2,500 plus tax covers the next 12 months, prepaid."]
+            },
+            {
+              cue: "If she asks what she saves",
+              say: "Twelve months at $297 is $3,564. The year prepaid is $2,500, so you save $1,064 before tax.",
+              tips: ["Use her real numbers only, even small ones. Don't name bonuses; none are part of the offer."]
             }
           ]
         }
@@ -735,7 +750,7 @@
           blocks: [
             {
               cue: "I don't trust texting robots.",
-              say: "I get it, me too. You pick the words, in your language. You see every text. Your friends and family test it first. Want to see it on my phone right now?"
+              say: "I get it, me too. You pick the words. You see every text. Your friends and family test it first. Want to see it on my phone right now?"
             }
           ]
         },
